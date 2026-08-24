@@ -27,16 +27,19 @@ interface AgentMetadata {
 }
 
 const AGENTS_LIST: AgentMetadata[] = [
+  // Row 1 (Cols 0-3)
   { id: 'pm', code: 'A01-PM', name: 'PM / Brain', colIndex: 0, gridRow: 0, gridCol: 0 },
   { id: 'idea', code: 'A02-IDEA', name: 'Idea Gen', colIndex: 1, gridRow: 0, gridCol: 1 },
   { id: 'designer', code: 'A03-DESIGNER', name: 'UI/UX Designer', colIndex: 2, gridRow: 0, gridCol: 2 },
   { id: 'html_dev', code: 'A04-HTML', name: 'HTML Dev', colIndex: 3, gridRow: 0, gridCol: 3 },
 
+  // Row 2 (Cols 0-3)
   { id: 'css_dev', code: 'A05-CSS', name: 'CSS Dev', colIndex: 4, gridRow: 1, gridCol: 0 },
   { id: 'js_dev', code: 'A06-JS', name: 'JS Dev', colIndex: 5, gridRow: 1, gridCol: 1 },
   { id: 'animation_dev', code: 'A07-ANIM', name: 'Animation Dev', colIndex: 6, gridRow: 1, gridCol: 2 },
   { id: 'backend_dev', code: 'A08-BACKEND', name: 'Backend Dev', colIndex: 7, gridRow: 1, gridCol: 3 },
 
+  // Row 3 (Cols 0-3)
   { id: 'db_dev', code: 'A09-DB', name: 'Database Setup', colIndex: 8, gridRow: 2, gridCol: 0 },
   { id: 'debugger_1', code: 'A10-BUGGER1', name: 'Frontend QA', colIndex: 9, gridRow: 2, gridCol: 1 },
   { id: 'debugger_2', code: 'A11-BUGGER2', name: 'System QA', colIndex: 10, gridRow: 2, gridCol: 2 },
@@ -57,27 +60,30 @@ interface DeskNode {
   glowRing: PIXI.Graphics;
   sprite: PIXI.Sprite;
   badgeContainer: PIXI.Container;
-  pillBg: PIXI.Graphics;
-  pillText: PIXI.Text;
+  badgeBg: PIXI.Graphics;
+  badgeTitle: PIXI.Text;
+  statusDot: PIXI.Graphics;
+  statusText: PIXI.Text;
   status: AgentStatus;
   baseY: number;
   bounceOffset: number;
   textures: AgentTextures | null;
-  walkerSprite?: PIXI.AnimatedSprite | PIXI.Sprite | null;
+  breakSprite: PIXI.AnimatedSprite | PIXI.Sprite | null;
+  isWalking: boolean;
 }
 
-const CANVAS_WIDTH = 1000;
-const CANVAS_HEIGHT = 700;
+const CANVAS_WIDTH = 1080;
+const CANVAS_HEIGHT = 760;
 
-// Coordinates for the 3x4 grid layout
-const START_X = 120;
-const START_Y = 140;
-const SPACING_X = 220;
-const SPACING_Y = 180;
+// Spacious 3-Row x 4-Column Office Grid Configuration
+const START_X = 140;
+const START_Y = 165;
+const SPACING_X = 240;
+const SPACING_Y = 195;
 
-// Coordinates for the dedicated Coffee Break Station
-const COFFEE_STATION_X = 860;
-const COFFEE_STATION_Y = 60;
+// Coffee Break Station Anchor Point (Top Right Corner)
+const COFFEE_STATION_X = 940;
+const COFFEE_STATION_Y = 65;
 
 export default function OfficeCanvas({
   wsUrl = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:4001',
@@ -94,12 +100,18 @@ export default function OfficeCanvas({
     let ws: WebSocket | null = null;
     const deskNodes = new Map<string, DeskNode>();
 
-    // 1. Initialize Pixi Application
+    // 1. Configure Nearest-Neighbor Pixel Art Sharpness Globally
+    if (PIXI.settings) {
+      PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
+      PIXI.settings.ROUND_PIXELS = true;
+    }
+
+    // 2. Initialize Pixi Application
     const app = new PIXI.Application({
       width: CANVAS_WIDTH,
       height: CANVAS_HEIGHT,
-      backgroundColor: 0x0f172a, // Deep slate office background
-      antialias: true,
+      backgroundColor: 0x090e1a, // Premium dark slate background
+      antialias: false,
       resolution: typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1,
       autoDensity: true,
     });
@@ -108,12 +120,13 @@ export default function OfficeCanvas({
     if (canvasElement && containerRef.current) {
       canvasElement.style.width = '100%';
       canvasElement.style.height = '100%';
-      canvasElement.style.borderRadius = '12px';
-      canvasElement.style.boxShadow = '0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5)';
+      canvasElement.style.borderRadius = '14px';
+      canvasElement.style.boxShadow = '0 12px 32px -4px rgba(0, 0, 0, 0.6)';
+      canvasElement.style.imageRendering = 'pixelated';
       containerRef.current.appendChild(canvasElement);
     }
 
-    // 2. Layers
+    // 3. Layer Architecture
     const floorLayer = new PIXI.Container();
     const deskLayer = new PIXI.Container();
     const walkerLayer = new PIXI.Container();
@@ -124,17 +137,17 @@ export default function OfficeCanvas({
     app.stage.addChild(walkerLayer);
     app.stage.addChild(uiLayer);
 
-    // 3. Render Floor Grid & Room Aesthetics
+    // 4. Render Styled Office Floor & Lounge
     const drawFloorPlan = () => {
       const g = new PIXI.Graphics();
 
-      // Floor tiles
-      g.beginFill(0x131d35);
-      g.drawRoundedRect(16, 16, CANVAS_WIDTH - 32, CANVAS_HEIGHT - 32, 16);
+      // Main Floor Area
+      g.beginFill(0x0f172a);
+      g.drawRoundedRect(16, 16, CANVAS_WIDTH - 32, CANVAS_HEIGHT - 32, 18);
       g.endFill();
 
-      // Subtle isometric / grid lines
-      g.lineStyle(1, 0x1e293b, 0.5);
+      // Subtle Cyberpunk Grid Lines
+      g.lineStyle(1, 0x1e293b, 0.4);
       for (let x = 40; x < CANVAS_WIDTH - 40; x += 40) {
         g.moveTo(x, 24);
         g.lineTo(x, CANVAS_HEIGHT - 24);
@@ -144,58 +157,67 @@ export default function OfficeCanvas({
         g.lineTo(CANVAS_WIDTH - 24, y);
       }
 
-      // Department borders & zone markers
-      g.lineStyle(2, 0x38bdf8, 0.2);
-      g.drawRoundedRect(30, 80, CANVAS_WIDTH - 60, CANVAS_HEIGHT - 100, 12);
+      // Department Outer Frame
+      g.lineStyle(2, 0x38bdf8, 0.15);
+      g.drawRoundedRect(32, 85, CANVAS_WIDTH - 64, CANVAS_HEIGHT - 105, 14);
 
-      // Coffee Break Lounge Area (Top Right)
-      g.beginFill(0x271e1b, 0.85);
-      g.lineStyle(2, 0xf97316, 0.4);
-      g.drawRoundedRect(COFFEE_STATION_X - 100, COFFEE_STATION_Y - 35, 200, 70, 10);
+      // Dedicated Coffee Lounge Zone (Top Right)
+      g.beginFill(0x1e1713, 0.95);
+      g.lineStyle(2, 0xf97316, 0.5);
+      g.drawRoundedRect(COFFEE_STATION_X - 110, COFFEE_STATION_Y - 42, 230, 84, 12);
+      g.endFill();
+
+      // Coffee Espresso Bar Counter Graphic
+      g.beginFill(0x2d1c15);
+      g.lineStyle(1.5, 0x7c2d12);
+      g.drawRoundedRect(COFFEE_STATION_X - 25, COFFEE_STATION_Y - 20, 60, 36, 6);
+      g.endFill();
+
+      // Espresso Machine on Counter
+      g.beginFill(0x451a03);
+      g.lineStyle(1, 0xf97316);
+      g.drawRoundedRect(COFFEE_STATION_X - 15, COFFEE_STATION_Y - 14, 40, 24, 4);
       g.endFill();
 
       floorLayer.addChild(g);
 
-      // Lounge Labels
-      const coffeeLabel = new PIXI.Text('☕ COFFEE & COOLDOWN LOUNGE', {
-        fontFamily: 'Inter, system-ui, sans-serif',
+      // Coffee Lounge Text Badges
+      const coffeeTitle = new PIXI.Text('☕ COFFEE & COOLDOWN STATION', {
+        fontFamily: 'system-ui, -apple-system, sans-serif',
         fontSize: 10,
         fontWeight: 'bold',
         fill: 0xf97316,
-        letterSpacing: 1,
+        letterSpacing: 0.8,
       });
-      coffeeLabel.x = COFFEE_STATION_X - 90;
-      coffeeLabel.y = COFFEE_STATION_Y - 25;
-      floorLayer.addChild(coffeeLabel);
+      coffeeTitle.x = COFFEE_STATION_X - 100;
+      coffeeTitle.y = COFFEE_STATION_Y - 34;
+      floorLayer.addChild(coffeeTitle);
 
-      const subLabel = new PIXI.Text('Break & Token Refill Zone', {
-        fontFamily: 'Inter, system-ui, sans-serif',
+      const coffeeDesc = new PIXI.Text('Dual Animation Break Area', {
+        fontFamily: 'system-ui, -apple-system, sans-serif',
         fontSize: 9,
         fill: 0x94a3b8,
       });
-      subLabel.x = COFFEE_STATION_X - 90;
-      subLabel.y = COFFEE_STATION_Y - 8;
-      floorLayer.addChild(subLabel);
+      coffeeDesc.x = COFFEE_STATION_X - 100;
+      coffeeDesc.y = COFFEE_STATION_Y + 22;
+      floorLayer.addChild(coffeeDesc);
     };
 
     drawFloorPlan();
 
-    // 4. Create Fallback Textures (in case image is loading or custom drawn)
+    // 5. Fallback Textures Generator (High-Detail Vector Fallbacks)
     const createFallbackTextures = (agent: AgentMetadata): AgentTextures => {
       const createTexture = (label: string, color: number) => {
         const g = new PIXI.Graphics();
-        // Body / avatar
         g.beginFill(color);
         g.drawRoundedRect(0, 0, 48, 56, 8);
         g.endFill();
 
-        // Screen / face
         g.beginFill(0xffffff, 0.9);
         g.drawCircle(24, 18, 10);
         g.endFill();
 
-        // Pose indicator
-        g.beginFill(0x0f172a, 0.7);
+        g.beginFill(0x0f172a, 0.8);
         g.drawRoundedRect(8, 34, 32, 14, 4);
         g.endFill();
 
@@ -220,7 +242,7 @@ export default function OfficeCanvas({
       };
     };
 
-    // 5. Build Desk Station & Overlay UI
+    // 6. Build 12 Desk Stations & Non-Overlapping Overlay Badges
     const buildDeskStations = () => {
       AGENTS_LIST.forEach((agent) => {
         const posX = START_X + agent.gridCol * SPACING_X;
@@ -235,99 +257,92 @@ export default function OfficeCanvas({
           if (onAgentSelect) onAgentSelect(agent.id);
         });
 
-        // Glowing Pulse Ring (for token swap & active focus)
+        // Glowing Pulse Ring for Token Swap State
         const glowRing = new PIXI.Graphics();
-        glowRing.lineStyle(3, 0xeab308, 0.8);
-        glowRing.drawRoundedRect(-44, -30, 88, 80, 14);
+        glowRing.lineStyle(3, 0xeab308, 0.9);
+        glowRing.drawRoundedRect(-52, -36, 104, 96, 16);
         glowRing.visible = false;
         stationContainer.addChild(glowRing);
 
-        // Desk Graphics (Office Desk & Workstation)
+        // Desk Graphics & Shadow
         const deskGraphic = new PIXI.Graphics();
-        // Desk shadow
-        deskGraphic.beginFill(0x000000, 0.35);
-        deskGraphic.drawEllipse(0, 38, 48, 12);
+        deskGraphic.beginFill(0x000000, 0.4);
+        deskGraphic.drawEllipse(0, 42, 54, 14);
         deskGraphic.endFill();
 
-        // Wooden Desk Surface
-        deskGraphic.beginFill(0x334155);
-        deskGraphic.lineStyle(1.5, 0x475569);
-        deskGraphic.drawRoundedRect(-40, 10, 80, 32, 6);
+        // Workstation Table Surface
+        deskGraphic.beginFill(0x1e293b);
+        deskGraphic.lineStyle(1.5, 0x334155);
+        deskGraphic.drawRoundedRect(-46, 10, 92, 36, 6);
         deskGraphic.endFill();
 
-        // Computer Monitor & Keyboard
-        deskGraphic.beginFill(0x0f172a);
-        deskGraphic.lineStyle(1, 0x38bdf8, 0.6);
-        deskGraphic.drawRoundedRect(-18, 14, 36, 20, 3);
+        // Monitor Screen
+        deskGraphic.beginFill(0x0a0f1d);
+        deskGraphic.lineStyle(1, 0x38bdf8, 0.7);
+        deskGraphic.drawRoundedRect(-22, 14, 44, 22, 3);
         deskGraphic.endFill();
 
-        // Monitor Base
+        // Monitor Stand
         deskGraphic.beginFill(0x64748b);
-        deskGraphic.drawRect(-4, 34, 8, 3);
-        deskGraphic.drawRect(-8, 37, 16, 2);
-        deskGraphic.endFill();
-
-        // Coffee Mug on desk
-        deskGraphic.beginFill(0xf97316);
-        deskGraphic.drawCircle(26, 24, 4);
+        deskGraphic.drawRect(-4, 36, 8, 4);
+        deskGraphic.drawRect(-10, 39, 20, 2);
         deskGraphic.endFill();
 
         stationContainer.addChild(deskGraphic);
 
-        // Fallback default textures
         const fallbackTex = createFallbackTextures(agent);
 
-        // Agent Character Sprite
+        // 2.8x Scaled Agent Sprite
         const sprite = new PIXI.Sprite(fallbackTex.idle);
-        sprite.anchor.set(0.5, 0.8);
+        sprite.anchor.set(0.5, 0.85);
         sprite.x = 0;
-        sprite.y = 20;
-        sprite.width = 54;
-        sprite.height = 54;
+        sprite.y = 22;
+        sprite.scale.set(2.8); // 2.8x crisp pixel art scaling
         stationContainer.addChild(sprite);
 
-        // --- OVERLAY BADGE CONTAINER ---
+        // --- NON-OVERLAPPING HTML/CANVAS OVERLAY BADGE (yOffset = -72px) ---
         const badgeContainer = new PIXI.Container();
-        badgeContainer.y = -42;
+        badgeContainer.y = -72; // Generous clearance above character head
 
-        // Card Container Background
+        // Semi-transparent Dark Card Background (bg-slate-900/90)
         const badgeBg = new PIXI.Graphics();
-        badgeBg.beginFill(0x0b1329, 0.92);
-        badgeBg.lineStyle(1, 0x1e293b);
-        badgeBg.drawRoundedRect(-52, -18, 104, 34, 8);
+        badgeBg.beginFill(0x0b1329, 0.94);
+        badgeBg.lineStyle(1, 0x1e293b, 0.85);
+        badgeBg.drawRoundedRect(-54, -20, 108, 38, 8);
         badgeBg.endFill();
         badgeContainer.addChild(badgeBg);
 
         // Top Label: Agent ID (e.g. A01-PM)
-        const agentIdText = new PIXI.Text(agent.code, {
-          fontFamily: 'Inter, system-ui, sans-serif',
+        const badgeTitle = new PIXI.Text(agent.code, {
+          fontFamily: 'system-ui, -apple-system, sans-serif',
           fontSize: 10,
           fontWeight: 'bold',
           fill: 0x38bdf8,
-          letterSpacing: 0.5,
+          letterSpacing: 0.6,
         });
-        agentIdText.anchor.set(0.5, 0);
-        agentIdText.y = -14;
-        badgeContainer.addChild(agentIdText);
+        badgeTitle.anchor.set(0.5, 0);
+        badgeTitle.y = -15;
+        badgeContainer.addChild(badgeTitle);
 
-        // Bottom Pill: Status Indicator (WORKING / IDLE / TOKEN / ON BREAK)
-        const pillBg = new PIXI.Graphics();
-        pillBg.beginFill(0x334155);
-        pillBg.drawRoundedRect(-38, 0, 76, 12, 6);
-        pillBg.endFill();
-        badgeContainer.addChild(pillBg);
+        // Status Indicator Dot (🟢 Working, 🔴 On Break, 🟡 Token, ⚪ Idle)
+        const statusDot = new PIXI.Graphics();
+        statusDot.beginFill(0x64748b);
+        statusDot.drawCircle(-32, 8, 3.5);
+        statusDot.endFill();
+        badgeContainer.addChild(statusDot);
 
-        const pillText = new PIXI.Text('IDLE', {
-          fontFamily: 'Inter, system-ui, sans-serif',
+        // Status Pill Text
+        const statusText = new PIXI.Text('IDLE', {
+          fontFamily: 'system-ui, -apple-system, sans-serif',
           fontSize: 8,
           fontWeight: 'bold',
-          fill: 0xf8fafc,
+          fill: 0x94a3b8,
           letterSpacing: 0.5,
         });
-        pillText.anchor.set(0.5);
-        pillText.x = 0;
-        pillText.y = 6;
-        badgeContainer.addChild(pillText);
+        statusText.anchor.set(0, 0.5);
+        statusText.x = -24;
+        statusText.y = 8;
+        badgeContainer.addChild(statusText);
 
         stationContainer.addChild(badgeContainer);
         deskLayer.addChild(stationContainer);
@@ -339,157 +354,175 @@ export default function OfficeCanvas({
           glowRing,
           sprite,
           badgeContainer,
-          pillBg,
-          pillText,
+          badgeBg,
+          badgeTitle,
+          statusDot,
+          statusText,
           status: 'idle',
-          baseY: 20,
+          baseY: 22,
           bounceOffset: 0,
           textures: fallbackTex,
-          walkerSprite: null,
+          breakSprite: null,
+          isWalking: false,
         });
       });
     };
 
     buildDeskStations();
 
-    // 6. Sprite Sheet Slicing Matrix Engine (12 Cols x 4 Rows)
+    // 7. Dynamic Sprite Sheet Slicing Matrix (12 Cols x 4 Rows)
     const loadSpriteSheetAndSlice = async () => {
       try {
         const spritesheetPath = '/assets/agents-spritesheet.png';
         const texture = await PIXI.Assets.load(spritesheetPath);
         if (!texture || isDestroyed) return;
 
+        const baseTex = texture.baseTexture || (texture as any).source;
+        if (baseTex) {
+          baseTex.scaleMode = PIXI.SCALE_MODES.NEAREST;
+        }
+
         const sheetWidth = texture.width;
         const sheetHeight = texture.height;
         const frameWidth = sheetWidth / 12;
         const frameHeight = sheetHeight / 4;
 
-        console.log(`[OfficeCanvas] Slicing spritesheet (${sheetWidth}x${sheetHeight}) -> Frame: ${frameWidth}x${frameHeight}`);
-
-        const baseTex = texture.baseTexture || (texture as any).source;
+        console.log(`[OfficeCanvas] Loaded 12x4 Sprite Sheet (${sheetWidth}x${sheetHeight}) -> Frame: ${frameWidth}x${frameHeight}`);
 
         AGENTS_LIST.forEach((agent) => {
           const col = agent.colIndex;
           const getFrame = (row: number) => {
             const rect = new PIXI.Rectangle(col * frameWidth, row * frameHeight, frameWidth, frameHeight);
-            return new PIXI.Texture(baseTex, rect);
+            const tex = new PIXI.Texture(baseTex, rect);
+            return tex;
           };
 
           const slicedTextures: AgentTextures = {
-            idle: getFrame(0),      // Row 0: Idle
-            working: getFrame(1),   // Row 1: Working (typing)
-            tokenSwap: getFrame(2), // Row 2: Token swipe
-            sideWalk: getFrame(3),  // Row 3: Side walk
+            idle: getFrame(0),      // Row 0: Front Idle
+            working: getFrame(1),   // Row 1: Front Typing (Working)
+            tokenSwap: getFrame(2), // Row 2: Card/Token Swipe
+            sideWalk: getFrame(3),  // Row 3: Walking (Coffee/Profile)
           };
 
           const node = deskNodes.get(agent.id);
           if (node) {
             node.textures = slicedTextures;
-            // Update texture based on current status
             updateNodeAppearance(node, node.status);
           }
         });
       } catch (err) {
-        console.warn('[OfficeCanvas] Could not slice spritesheet, keeping vector fallback avatars:', err);
+        console.warn('[OfficeCanvas] Slicing spritesheet exception, fallback active:', err);
       }
     };
 
     loadSpriteSheetAndSlice();
 
-    // 7. Coffee Break Frame Sequence Loader (frame_001.png to frame_030.png)
-    let coffeeBreakTextures: PIXI.Texture[] = [];
-    const loadCoffeeBreakFrames = async () => {
+    // 8. Pre-load Coffee Drinking Animation Frames (frame_001.png to frame_030.png)
+    let coffeeDrinkingTextures: PIXI.Texture[] = [];
+    const loadCoffeeDrinkingFrames = async () => {
       try {
         const framePromises: Promise<PIXI.Texture>[] = [];
         for (let i = 1; i <= 30; i++) {
           const frameNum = String(i).padStart(3, '0');
-          framePromises.push(PIXI.Assets.load(`/assets/coffee_break/frame_${frameNum}.png`));
+          framePromises.push(PIXI.Assets.load(`/assets/coffee_drinking/frame_${frameNum}.png`));
         }
         const loaded = await Promise.all(framePromises);
         if (!isDestroyed) {
-          coffeeBreakTextures = loaded.filter(Boolean);
-          console.log(`[OfficeCanvas] Loaded ${coffeeBreakTextures.length} coffee break animation frames.`);
+          coffeeDrinkingTextures = loaded.filter(Boolean);
+          console.log(`[OfficeCanvas] Preloaded ${coffeeDrinkingTextures.length} coffee drinking frames.`);
         }
       } catch (err) {
-        console.warn('[OfficeCanvas] Using sideWalk sprites for coffee break walk:', err);
+        console.warn('[OfficeCanvas] Coffee drinking frame preload notice:', err);
       }
     };
 
-    loadCoffeeBreakFrames();
+    loadCoffeeDrinkingFrames();
 
-    // 8. Update Appearance & Badge based on Status
+    // 9. Update Agent Node State & Visual Appearance
     const updateNodeAppearance = (node: DeskNode, rawStatus: string) => {
       const status = rawStatus.toLowerCase() as AgentStatus;
       node.status = status;
 
-      // Status Pill colors & labels
-      let pillColor = 0x64748b; // Gray
-      let pillLabel = 'IDLE';
+      let dotColor = 0x64748b; // Slate
+      let textColor = 0x94a3b8;
+      let label = 'IDLE';
 
       switch (status) {
         case 'working':
         case 'debugging':
-          pillColor = 0x22c55e; // Green
-          pillLabel = status === 'debugging' ? 'DEBUGGING' : 'WORKING';
+          dotColor = 0x22c55e; // Green
+          textColor = 0x86efac;
+          label = status === 'debugging' ? 'DEBUGGING' : 'WORKING';
           node.sprite.visible = true;
           if (node.textures) node.sprite.texture = node.textures.working;
           node.glowRing.visible = false;
+          cleanupBreakAnimation(node);
           break;
 
         case 'token_swap':
         case 'token':
-          pillColor = 0xeab308; // Yellow
-          pillLabel = 'TOKEN';
+          dotColor = 0xeab308; // Yellow
+          textColor = 0xfde047;
+          label = 'TOKEN';
           node.sprite.visible = true;
           if (node.textures) node.sprite.texture = node.textures.tokenSwap;
           node.glowRing.visible = true;
+          cleanupBreakAnimation(node);
           break;
 
         case 'on_break':
         case 'cooldown':
-          pillColor = 0xef4444; // Red
-          pillLabel = 'ON BREAK';
-          // Hide stationary desk sprite and start walking sequence
+          dotColor = 0xef4444; // Red
+          textColor = 0xfca5a5;
+          label = 'ON BREAK';
           node.sprite.visible = false;
           node.glowRing.visible = false;
-          triggerCoffeeBreakWalk(node);
+          triggerDualBreakAnimation(node);
           break;
 
         case 'blocked':
-          pillColor = 0xb91c1c; // Dark Red
-          pillLabel = 'BLOCKED';
+          dotColor = 0xdc2626; // Red
+          textColor = 0xfca5a5;
+          label = 'BLOCKED';
           node.sprite.visible = true;
           if (node.textures) node.sprite.texture = node.textures.idle;
           node.glowRing.visible = false;
+          cleanupBreakAnimation(node);
           break;
 
         case 'done':
-          pillColor = 0x06b6d4; // Cyan
-          pillLabel = 'DONE';
+          dotColor = 0x06b6d4; // Cyan
+          textColor = 0x67e8f9;
+          label = 'DONE';
           node.sprite.visible = true;
           if (node.textures) node.sprite.texture = node.textures.idle;
           node.glowRing.visible = false;
+          cleanupBreakAnimation(node);
           break;
 
         case 'idle':
         default:
-          pillColor = 0x64748b; // Slate Gray
-          pillLabel = 'IDLE';
+          dotColor = 0x64748b;
+          textColor = 0x94a3b8;
+          label = 'IDLE';
           node.sprite.visible = true;
           if (node.textures) node.sprite.texture = node.textures.idle;
           node.glowRing.visible = false;
+          cleanupBreakAnimation(node);
           break;
       }
 
-      // Re-draw status pill
-      node.pillBg.clear();
-      node.pillBg.beginFill(pillColor);
-      node.pillBg.drawRoundedRect(-38, 0, 76, 12, 6);
-      node.pillBg.endFill();
+      // Update Status Indicator Dot
+      node.statusDot.clear();
+      node.statusDot.beginFill(dotColor);
+      node.statusDot.drawCircle(-32, 8, 3.5);
+      node.statusDot.endFill();
 
-      node.pillText.text = pillLabel;
+      // Update Status Text
+      node.statusText.text = label;
+      node.statusText.style.fill = textColor;
 
-      // Update counters for UI overview
+      // Update summary counter state
       let w = 0, b = 0, idl = 0;
       deskNodes.forEach((n) => {
         if (n.status === 'working' || n.status === 'debugging') w++;
@@ -499,29 +532,22 @@ export default function OfficeCanvas({
       setActiveCount({ working: w, onBreak: b, idle: idl });
     };
 
-    // 9. Coffee Break Walker Animation System
-    const triggerCoffeeBreakWalk = (node: DeskNode) => {
-      // Remove any existing walker
-      if (node.walkerSprite) {
-        walkerLayer.removeChild(node.walkerSprite);
-        node.walkerSprite.destroy();
-        node.walkerSprite = null;
-      }
+    // 10. Dual Break Animation Engine (Walk to Coffee Lounge -> Drink Coffee)
+    const triggerDualBreakAnimation = (node: DeskNode) => {
+      cleanupBreakAnimation(node);
+      node.isWalking = true;
 
       const startX = node.container.x;
       const startY = node.container.y;
-      const targetX = COFFEE_STATION_X - 40 + (Math.random() * 60 - 30);
-      const targetY = COFFEE_STATION_Y + 10 + (Math.random() * 20 - 10);
+      const targetX = COFFEE_STATION_X - 50 + (Math.random() * 40 - 20);
+      const targetY = COFFEE_STATION_Y + (Math.random() * 20 - 10);
 
-      let walker: PIXI.AnimatedSprite | PIXI.Sprite;
+      // Create walking sprite (Row 3 Side Walk Texture)
+      let walker: PIXI.Sprite | PIXI.AnimatedSprite;
 
-      if (coffeeBreakTextures.length > 0) {
-        const anim = new PIXI.AnimatedSprite(coffeeBreakTextures);
-        anim.animationSpeed = 0.2;
-        anim.play();
-        walker = anim;
-      } else if (node.textures) {
+      if (node.textures) {
         walker = new PIXI.Sprite(node.textures.sideWalk);
+        walker.scale.set(2.8);
       } else {
         const g = new PIXI.Graphics();
         g.beginFill(0xf97316);
@@ -530,74 +556,93 @@ export default function OfficeCanvas({
         walker = new PIXI.Sprite(app.renderer.generateTexture(g));
       }
 
-      walker.anchor.set(0.5);
+      walker.anchor.set(0.5, 0.85);
       walker.x = startX;
       walker.y = startY;
-      walker.width = 46;
-      walker.height = 46;
       walkerLayer.addChild(walker);
-      node.walkerSprite = walker;
+      node.breakSprite = walker;
 
-      // Walking Interpolation
       let progress = 0;
-      const walkSpeed = 0.008;
+      const walkSpeed = 0.009;
 
       const walkTicker = (delta: number) => {
-        if (isDestroyed || !node.walkerSprite || node.status !== 'on_break' && node.status !== 'cooldown') {
+        if (isDestroyed || !node.breakSprite || (node.status !== 'on_break' && node.status !== 'cooldown')) {
           app.ticker.remove(walkTicker);
-          if (node.walkerSprite) {
-            walkerLayer.removeChild(node.walkerSprite);
-            node.walkerSprite.destroy();
-            node.walkerSprite = null;
-            node.sprite.visible = true;
-          }
+          cleanupBreakAnimation(node);
+          node.sprite.visible = true;
           return;
         }
 
         if (progress < 1) {
           progress += walkSpeed * delta;
           walker.x = startX + (targetX - startX) * progress;
-          walker.y = startY + (targetY - startY) * progress + Math.sin(progress * 20) * 3;
+          walker.y = startY + (targetY - startY) * progress + Math.sin(progress * 24) * 2.5;
         } else {
-          // Stay at coffee station with a subtle idle breathing
-          walker.y = targetY + Math.sin(Date.now() * 0.004) * 2;
+          // Reached Coffee Station: Switch to Coffee Drinking Animation
+          app.ticker.remove(walkTicker);
+          node.isWalking = false;
+
+          if (coffeeDrinkingTextures.length > 0) {
+            walkerLayer.removeChild(walker);
+            walker.destroy();
+
+            const drinkingAnim = new PIXI.AnimatedSprite(coffeeDrinkingTextures);
+            drinkingAnim.animationSpeed = 0.22;
+            drinkingAnim.anchor.set(0.5, 0.85);
+            drinkingAnim.x = targetX;
+            drinkingAnim.y = targetY;
+            drinkingAnim.scale.set(2.4);
+            drinkingAnim.play();
+
+            walkerLayer.addChild(drinkingAnim);
+            node.breakSprite = drinkingAnim;
+          }
         }
       };
 
       app.ticker.add(walkTicker);
     };
 
-    // 10. Master Animation Ticker (Typing Bounce & Glowing Rings)
+    const cleanupBreakAnimation = (node: DeskNode) => {
+      if (node.breakSprite) {
+        walkerLayer.removeChild(node.breakSprite);
+        node.breakSprite.destroy();
+        node.breakSprite = null;
+      }
+      node.isWalking = false;
+    };
+
+    // 11. Master Animation Ticker (Typing Sine Bounce & Glowing Rings)
     let tickerTime = 0;
     app.ticker.add((delta) => {
       tickerTime += delta * 0.05;
 
       deskNodes.forEach((node) => {
-        // Working Typing Bounce
+        // Smooth Typing Bounce Animation (Row 1 Working)
         if (node.status === 'working' || node.status === 'debugging') {
-          node.bounceOffset = Math.sin(tickerTime * 8 + node.agent.colIndex) * 2.5;
+          node.bounceOffset = Math.sin(tickerTime * 8 + node.agent.colIndex) * 1.5;
           node.sprite.y = node.baseY + node.bounceOffset;
         } else {
           node.sprite.y = node.baseY;
         }
 
-        // Token Swipe Glowing Ring Animation
+        // Pulsing Golden Ring (Row 2 Token Swap)
         if (node.glowRing.visible) {
           const pulse = (Math.sin(tickerTime * 10) + 1) / 2;
-          node.glowRing.alpha = 0.4 + pulse * 0.6;
-          node.glowRing.scale.set(1 + pulse * 0.05);
+          node.glowRing.alpha = 0.45 + pulse * 0.55;
+          node.glowRing.scale.set(1 + pulse * 0.04);
         }
       });
     });
 
-    // 11. WebSocket Connection & Event Dispatcher
+    // 12. WebSocket Synchronizer Engine
     const connectWs = () => {
       try {
         ws = new WebSocket(wsUrl);
 
         ws.onopen = () => {
           if (isDestroyed) return;
-          console.log(`[OfficeCanvas] Connected to Orchestrator WebSocket: ${wsUrl}`);
+          console.log(`[OfficeCanvas] Connected to Orchestrator WS at ${wsUrl}`);
           setConnectionStatus('connected');
         };
 
@@ -606,7 +651,7 @@ export default function OfficeCanvas({
           try {
             const data = JSON.parse(event.data);
 
-            // Handle bulk initial states
+            // Handle bulk initial states from orchestrator
             if (data.type === 'initial_state' && Array.isArray(data.agents)) {
               data.agents.forEach((ag: any) => {
                 const node = deskNodes.get(ag.agentId || ag.id);
@@ -616,7 +661,7 @@ export default function OfficeCanvas({
               });
             }
 
-            // Handle single agent event: { agent_id / agentId, status }
+            // Handle single agent state update
             const agentId = data.agent_id || data.agentId;
             const status = data.status;
 
@@ -627,7 +672,7 @@ export default function OfficeCanvas({
               }
             }
           } catch (e) {
-            console.error('[OfficeCanvas] WS Message error:', e);
+            console.error('[OfficeCanvas] WS payload parse error:', e);
           }
         };
 
@@ -639,17 +684,17 @@ export default function OfficeCanvas({
 
         ws.onerror = (err) => {
           if (isDestroyed) return;
-          console.warn('[OfficeCanvas] WS Error:', err);
+          console.warn('[OfficeCanvas] WS connection notice:', err);
         };
       } catch (err) {
-        console.error('[OfficeCanvas] Could not connect WS:', err);
+        console.error('[OfficeCanvas] Connection failure:', err);
         setConnectionStatus('disconnected');
       }
     };
 
     connectWs();
 
-    // 12. Teardown & Garbage Collection on Unmount
+    // 13. Teardown on Component Unmount
     return () => {
       isDestroyed = true;
       if (ws) {
@@ -669,8 +714,8 @@ export default function OfficeCanvas({
   }, [wsUrl, onAgentSelect]);
 
   return (
-    <div style={{ position: 'relative', width: '100%', maxWidth: '1000px', margin: '0 auto' }}>
-      {/* Top Overlay Stats Bar */}
+    <div style={{ position: 'relative', width: '100%', maxWidth: '1080px', margin: '0 auto' }}>
+      {/* Top Floating Telemetry & Status Pill Bar */}
       <div
         style={{
           position: 'absolute',
@@ -678,16 +723,16 @@ export default function OfficeCanvas({
           left: '32px',
           zIndex: 10,
           display: 'flex',
-          gap: '12px',
+          gap: '14px',
           alignItems: 'center',
-          background: 'rgba(15, 23, 42, 0.85)',
-          backdropFilter: 'blur(8px)',
-          padding: '6px 14px',
-          borderRadius: '20px',
+          background: 'rgba(15, 23, 42, 0.9)',
+          backdropFilter: 'blur(10px)',
+          padding: '6px 16px',
+          borderRadius: '24px',
           border: '1px solid rgba(51, 65, 85, 0.8)',
           fontSize: '12px',
           color: '#f8fafc',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+          boxShadow: '0 6px 16px rgba(0,0,0,0.4)',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -702,7 +747,7 @@ export default function OfficeCanvas({
                   : connectionStatus === 'connecting'
                   ? '#eab308'
                   : '#ef4444',
-              boxShadow: connectionStatus === 'connected' ? '0 0 8px #22c55e' : 'none',
+              boxShadow: connectionStatus === 'connected' ? '0 0 10px #22c55e' : 'none',
             }}
           />
           <span style={{ fontWeight: 600, textTransform: 'capitalize' }}>{connectionStatus}</span>
@@ -710,7 +755,7 @@ export default function OfficeCanvas({
 
         <span style={{ color: '#475569' }}>|</span>
 
-        <div style={{ display: 'flex', gap: '10px' }}>
+        <div style={{ display: 'flex', gap: '12px' }}>
           <span style={{ color: '#22c55e', fontWeight: 600 }}>🟢 Working: {activeCount.working}</span>
           <span style={{ color: '#ef4444', fontWeight: 600 }}>☕ On Break: {activeCount.onBreak}</span>
           <span style={{ color: '#94a3b8' }}>⚪ Idle: {activeCount.idle}</span>
@@ -722,9 +767,9 @@ export default function OfficeCanvas({
         ref={containerRef}
         style={{
           width: '100%',
-          aspectRatio: '1000 / 700',
-          background: '#090d16',
-          borderRadius: '12px',
+          aspectRatio: '1080 / 760',
+          background: '#090e1a',
+          borderRadius: '14px',
           overflow: 'hidden',
         }}
       />
