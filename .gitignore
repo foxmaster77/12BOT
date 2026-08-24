@@ -1,0 +1,26 @@
+# Environment variables & secrets
+.env
+.env.local
+.env.*
+!.env.example
+credentials*.json
+
+# Dependencies
+node_modules/
+dashboard/node_modules/
+
+# Next.js build output
+dashboard/.next/
+dashboard/out/
+
+# Logs & temp
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+Thumbs.db
+
+# Generated Site output (preserve .gitkeep)
+generated-site/*
+!generated-site/.gitkeep

@@ -1,0 +1,26 @@
+{
+  "name": "ai-dev-team-builder",
+  "version": "1.0.0",
+  "description": "The Office - 12-Agent LLM-Powered Website Builder",
+  "type": "module",
+  "main": "orchestrator/index.js",
+  "scripts": {
+    "start": "node orchestrator/index.js",
+    "server": "node orchestrator/index.js",
+    "worker": "node orchestrator/worker.js",
+    "test:milestone1": "node orchestrator/testMilestone1.js",
+    "test:milestone2": "node orchestrator/testMilestone2.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.6.1",
+    "express": "^4.22.2",
+    "ws": "^8.21.3"
+  },
+  "keywords": [
+    "multi-agent",
+    "ai",
+    "website-builder"
+  ],
+  "author": "",
+  "license": "ISC"
+}
