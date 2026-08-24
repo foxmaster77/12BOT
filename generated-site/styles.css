@@ -1,0 +1,37 @@
+/* ==========================================================================
+   ROAST Artisanal Coffee — Stylesheet
+   Design System & Theme Settings
+   ========================================================================== */
+
+:root {
+  /* Color Palette */
+  --color-bg: #0F0C0A;
+  --color-surface: #1A1512;
+  --color-surface-hover: #26201C;
+  --color-surface-glass: rgba(26, 21, 18, 0.75);
+  --color-accent: #D97736;
+  --color-accent-hover: #E88847;
+  --color-accent-glow: rgba(217, 119, 54, 0.25);
+  --color-accent-subtle: rgba(217, 119, 54, 0.12);
+  --color-text: #F5EFE6;
+  --color-text-muted: #A39688;
+  --color-border: rgba(245, 239, 230, 0.08);
+  --color-border-active: rgba(217, 119, 54, 0.4);
+
+  /* Typography */
+  --font-family: 'Fraunces', Georgia, serif;
+  --font-size-xs: 0.8125rem;
+  --font-size-sm: 0.9375rem;
+  --font-size-base: 1.0625rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.75rem;
+  --font-size-2xl: 2.5rem;
+  --font-size-3xl: 3.5rem;
+  --font-size-hero: clamp(2.75rem, 6vw, 4.75rem);
+
+  /* Spacing */
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2.5rem;
+  --space-xl: 4rem;

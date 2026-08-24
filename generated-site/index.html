@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ROAST Artisanal Coffee — Precision Roasted. Ethically Sourced. Unapologetically Bold.</title>
+  <meta name="description" content="Direct-trade, single-origin beans meticulously roasted in small batches to unlock extraordinary flavor profiles.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+  <script src="animations.js" defer></script>
+</head>
+<body>
+
+  <!-- Skip Link -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- ===== NAVBAR ===== -->
+  <header class="site-header" role="banner">
+    <nav class="navbar" aria-label="Primary navigation">
+      <a href="#" class="navbar__brand" aria-label="ROAST Artisanal Coffee — Home">
+        <span class="navbar__logo" aria-hidden="true">☕</span>
+        <span class="navbar__name">ROAST</span>
+      </a>
+
+      <button class="navbar__toggle" aria-expanded="false" aria-controls="nav-menu" aria-label="Toggle navigation menu">
+        <span class="navbar__toggle-icon" aria-hidden="true"></span>
+      </button>
+
+      <ul id="nav-menu" class="navbar__menu" role="menubar">
+        <li role="none"><a href="#hero" role="menuitem" class="navbar__link">Home</a></li>
+        <li role="none"><a href="#process" role="menuitem" class="navbar__link">Our Process</a></li>
+        <li role="none"><a href="#roasts" role="menuitem" class="navbar__link">Featured Roasts</a></li>
+        <li role="none"><a href="#subscriptions" role="menuitem" class="navbar__link">Subscriptions</a></li>
+        <li role="none"><a href="#visit" role="menuitem" class="navbar__link">Visit Us</a></li>
+        <li role="none"><a href="#contact" role="menuitem" class="navbar__link navbar__link--cta">Order Now</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main id="main-content">
+
+    <!-- ===== HERO SECTION ===== -->
+    <section id="hero" class="hero" aria-labelledby="hero-heading">
+      <div class="hero__overlay" aria-hidden="true"></div>
+      <div class="hero__content">
+        <p class="hero__tagline" aria-hidden="true">Precision Roasted · Ethically Sourced · Unapologetically Bold</p>
+        <h1 id="hero-heading" class="hero__heading">Elevate Your Daily Ritual<br>With Small-Batch Excellence</h1>
+        <p class="hero__subheading">Direct-trade, single-origin beans meticulously roasted in small batches to unlock extraordinary flavor profiles.</p>
+        <div class="hero__actions">
+          <a href="#roasts" class="btn btn--primary">Explore Our Roasts</a>
+          <a href="#process" class="btn btn--outline">Our Story</a>
+        </div>
+      </div>
+      <div class="hero__scroll-indicator" aria-hidden="true">
+        <span class="hero__scroll-text">Scroll</span>
+        <span class="hero__scroll-line"></span>
+      </div>
+    </section>
+
+    <!-- ===== OUR PROCESS SECTION ===== -->
+    <section id="process" class="process section" aria-labelledby="process-heading">
+      <div class="container">
+        <header class="section-header">
+          <span class="section-label">Our Process</span>
+          <h2 id="process-heading" class="section-title">Crafted With Intention,<br>Roasted With Precision</h2>
+          <p class="section-description">At ROAST, coffee is more than a caffeine kick—it is a craft. We partner directly with sustainable micro-lot farms across the globe, bringing rare single-origin beans to our custom vintage roaster. Every batch is profiled with exacting temperature control to highlight natural sweetness, vibrant acidity, and complex aromatics.</p>
+        </header>
+
+        <div class="process__steps">
+          <!-- Step 1 -->
+          <article class="process__step" aria-label="Step 1: Source">
+            <span class="process__step-number" aria-hidden="true">01</span>
+            <h3 class="process__step-title">Source</h3>
+            <p class="process__step-text">We travel to origin countries, building lasting relationships with farmers who share our commitment to quality and sustainability. Every bean is hand-selected from micro-lot farms.</p>
+          </article>
+
+          <!-- Step 2 -->
+          <article class="process__step" aria-label="Step 2: Roast">
+            <span class="process__step-number" aria-hidden="true">02</span>
+            <h3 class="process__step-title">Roast</h3>
+            <p class="process__step-text">Our custom vintage roaster allows precise temperature control. Each origin receives a bespoke roast profile, carefully developed to bring out its unique character and complexity.</p>
+          </article>
+
+          <!-- Step 3 -->
+          <article class="process__step" aria-label="Step 3: Cup">
+            <span class="process__step-number" aria-hidden="true">03</span>
+            <h3 class="process__step-title">Cup</h3>
+            <p class="process__step-text">Every batch undergoes rigorous cupping and quality evaluation. Only coffees that meet our exacting standards for flavor, aroma, and body make it to your cup.</p>
+          </article>
+
+          <!-- Step 4 -->
+          <article class="process__step" aria-label="Step 4: Deliver">
+            <span class="process__step-number" aria-hidden="true">04</span>
+            <h3 class="process__step-title">Deliver</h3>
+            <p class="process__step-text">Freshly roasted, sealed at peak freshness, and shipped directly to your door. We roast to order so every bag is as vibrant and bright as the day it left the roaster.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== FEATURED ROASTS SECTION ===== -->
+    <section id="roasts" class="roasts section" aria-labelledby="roasts-heading">
+      <div class="container">
+        <header class="section-header section-header--center">
+          <span class="section-label">Featured Roasts</span>
+          <h2 id="roasts-heading" class="section-title">Current Selections</h2>
+          <p class="section-description">Rotating single-origin offerings, roasted to order and packed at peak freshness.</p>
+        </header>
+
+        <div class="roasts__grid">
+
+          <!-- Card 1 -->
+          <article class="roast-card" aria-label="Ethiopian Yirgacheffe">
+            <div class="roast-card__image" role="img" aria-label="Bag of Ethiopian Yirgacheffe coffee beans">
+              <span
