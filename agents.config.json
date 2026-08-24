@@ -5,7 +5,7 @@
       "name": "PM / Orchestrator Brain",
       "role": "Breaks user brief into subtasks and assigns dependency order",
       "api": "groq",
-      "model": "llama-3.3-70b-versatile",
+      "model": "qwen/qwen3.6-27b",
       "api_key_env": "GROQ_API_KEY_1",
       "system_prompt": "You are the project manager of a web dev team. Break the user's website brief into concrete subtasks for: idea, design, html, css, js, animation, backend, database, debug. Output strict JSON task list with role, description, dependsOn."
     },
@@ -14,106 +14,106 @@
       "name": "Idea Generator",
       "role": "Proposes site concept, content structure, copywriting",
       "api": "gemini",
-      "model": "gemini-2.0-flash",
+      "model": "gemini-3.6-flash",
       "api_key_env": "GEMINI_API_KEY_1",
-      "system_prompt": "You generate the concept, sitemap, and placeholder copy for the website brief. Be concrete: section names, headings, sample copy."
+      "system_prompt": "You generate the concept, sitemap, and placeholder copy for the website brief. Be concrete: section names, headings, sample copy. Output strict JSON with keys: title, tagline, sections (array), sampleCopy (object with heroHeading, heroSubheading, about)."
     },
     {
       "id": "designer",
       "name": "UI/UX Designer",
       "role": "Defines layout, color palette, typography, spacing system",
       "api": "gemini",
-      "model": "gemini-2.0-flash",
+      "model": "gemini-3.6-flash",
       "api_key_env": "GEMINI_API_KEY_2",
-      "system_prompt": "You are a UI/UX designer. Given the site concept, output a design spec: color palette (hex), font pairing, layout grid, spacing scale. Be specific enough for a dev to implement directly."
+      "system_prompt": "You are a UI/UX designer. Given the site concept, output a design spec as strict JSON: { colors: { bg, surface, accent, accentGlow, text, textMuted }, fontFamily }. Use dark-mode hex values."
     },
     {
       "id": "html_dev",
       "name": "HTML Developer",
       "role": "Writes semantic HTML structure per design spec",
-      "api": "openrouter",
-      "model": "qwen/qwen-2.5-coder-32b-instruct:free",
-      "api_key_env": "OPENROUTER_API_KEY_1",
-      "system_prompt": "You write clean, semantic, accessible HTML for the given page based on the design spec and copy. No inline styles. Class names should match what a CSS agent would expect (BEM-ish)."
+      "api": "groq",
+      "model": "qwen/qwen3.6-27b",
+      "api_key_env": "GROQ_API_KEY_1",
+      "system_prompt": "You write clean, semantic, accessible HTML for the given page based on the design spec and copy. Link styles.css, script.js, animations.js. Include navbar, hero, gallery/cards, contact form, and footer. Return ONLY raw HTML, no commentary."
     },
     {
       "id": "css_dev",
       "name": "CSS Developer",
       "role": "Implements the design spec as CSS/stylesheet",
-      "api": "groq",
-      "model": "llama-3.3-70b-versatile",
-      "api_key_env": "GROQ_API_KEY_2",
-      "system_prompt": "You write CSS implementing the given design spec against the given HTML. Use CSS variables for the color/spacing system. Mobile-first, responsive."
+      "api": "gemini",
+      "model": "gemini-3.6-flash",
+      "api_key_env": "GEMINI_API_KEY_3",
+      "system_prompt": "You write CSS implementing the given design spec against the given HTML. Use CSS variables in :root for all color/spacing tokens. Mobile-first, responsive with media queries. Return ONLY raw CSS, no commentary."
     },
     {
       "id": "js_dev",
       "name": "JS Developer",
       "role": "Implements interactivity, form logic, dynamic behavior",
-      "api": "gemini",
-      "model": "gemini-2.0-flash",
-      "api_key_env": "GEMINI_API_KEY_3",
-      "system_prompt": "You write vanilla JS (or minimal framework code if specified) implementing interactivity for the given HTML/CSS: nav toggles, form validation, dynamic content."
+      "api": "groq",
+      "model": "qwen/qwen3.6-27b",
+      "api_key_env": "GROQ_API_KEY_2",
+      "system_prompt": "You write vanilla JS implementing interactivity for the given HTML: nav toggles, filter buttons, form validation with DOM feedback. Wrap everything in DOMContentLoaded. Return ONLY raw JavaScript, no commentary."
     },
     {
       "id": "animation_dev",
       "name": "Animation Developer",
       "role": "Adds CSS/JS animations and micro-interactions",
-      "api": "openrouter",
-      "model": "qwen/qwen-2.5-coder-32b-instruct:free",
-      "api_key_env": "OPENROUTER_API_KEY_2",
-      "system_prompt": "You add tasteful animations (CSS transitions/keyframes or a lightweight JS animation lib) to the existing site: scroll reveals, hover states, page transitions. Don't break existing functionality."
+      "api": "gemini",
+      "model": "gemini-3.6-flash",
+      "api_key_env": "GEMINI_API_KEY_1",
+      "system_prompt": "You add tasteful animations using IntersectionObserver for scroll reveals, CSS transitions for hovers. Wrap in DOMContentLoaded. Return ONLY raw JavaScript, no commentary."
     },
     {
       "id": "backend_dev",
       "name": "Backend/API Developer",
       "role": "Builds any required backend endpoints (contact form, CMS, etc.)",
-      "api": "together",
-      "model": "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free",
-      "api_key_env": "TOGETHER_API_KEY_1",
-      "system_prompt": "You write minimal backend code (Node/Express or a serverless function) for the required endpoints, given the frontend's expected request/response shape."
+      "api": "groq",
+      "model": "qwen/qwen3.6-27b",
+      "api_key_env": "GROQ_API_KEY_1",
+      "system_prompt": "You write a minimal Node.js Express server with JSON body parser and the required API endpoints (e.g. POST /api/inquire). Return ONLY raw JavaScript, no commentary."
     },
     {
       "id": "db_dev",
       "name": "Database Setup",
       "role": "Designs schema and setup scripts if the site needs persistence",
-      "api": "cerebras",
-      "model": "llama-3.3-70b",
-      "api_key_env": "CEREBRAS_API_KEY_1",
-      "system_prompt": "You design the minimal database schema needed (SQLite/Postgres) and write setup/migration scripts, only if the brief requires persistence."
+      "api": "gemini",
+      "model": "gemini-3.6-flash",
+      "api_key_env": "GEMINI_API_KEY_2",
+      "system_prompt": "You design the minimal SQLite schema needed and write SQL setup scripts. Tables for inquiries/submissions with proper types, PKs, and timestamps. Return ONLY raw SQL, no commentary."
     },
     {
       "id": "debugger_1",
       "name": "Debugger — Frontend",
       "role": "Reviews HTML/CSS/JS output for bugs and broken markup",
-      "api": "deepseek",
-      "model": "deepseek-chat",
-      "api_key_env": "DEEPSEEK_API_KEY_1",
-      "system_prompt": "You review the given HTML/CSS/JS for bugs: broken tags, unclosed elements, undefined JS references, layout-breaking CSS. Output the corrected files."
+      "api": "groq",
+      "model": "qwen/qwen3.6-27b",
+      "api_key_env": "GROQ_API_KEY_2",
+      "system_prompt": "You review the given HTML/CSS/JS for bugs: broken tags, unclosed elements, undefined JS references, layout-breaking CSS. Output a concise QA pass summary listing any issues found."
     },
     {
       "id": "debugger_2",
       "name": "Debugger — QA/Review",
       "role": "Final pass: checks the whole site against the original brief",
-      "api": "huggingface",
-      "model": "Qwen/Qwen2.5-Coder-32B-Instruct",
-      "api_key_env": "HF_API_KEY_1",
-      "system_prompt": "You do a final QA pass comparing the generated site against the original brief and design spec. Flag anything missing, inconsistent, or unpolished. Output a fix list."
+      "api": "gemini",
+      "model": "gemini-3.6-flash",
+      "api_key_env": "GEMINI_API_KEY_3",
+      "system_prompt": "You do a final QA pass comparing the generated site against the original brief. Flag anything missing, inconsistent, or unpolished. Output a concise final QA summary."
     },
     {
       "id": "docs_writer",
       "name": "Docs / README Writer",
       "role": "Writes README and inline docs for the generated project",
-      "api": "github_models",
-      "model": "gpt-4o-mini",
-      "api_key_env": "GITHUB_MODELS_TOKEN",
-      "system_prompt": "You write a clear README for the generated website project: what it is, how to run it, file structure, credits."
+      "api": "groq",
+      "model": "qwen/qwen3.6-27b",
+      "api_key_env": "GROQ_API_KEY_1",
+      "system_prompt": "You write a clear, professional README.md for the generated website project: title, project overview, tech stack, generated file structure, how to run instructions. Return ONLY raw Markdown."
     }
   ],
   "fallback_pairs": {
     "pm": ["idea"],
     "idea": ["pm"],
     "designer": ["idea"],
-    "html_dev": ["css_dev"],
+    "html_dev": ["js_dev"],
     "css_dev": ["html_dev"],
     "js_dev": ["animation_dev"],
     "animation_dev": ["js_dev"],
@@ -122,14 +122,5 @@
     "debugger_1": ["debugger_2"],
     "debugger_2": ["debugger_1"],
     "docs_writer": ["pm"]
-  },
-  "status_enum": ["idle", "working", "debugging", "blocked", "on_break", "done"],
-  "on_break_cooldown_seconds": 60,
-  "local_fallback": {
-    "enabled": true,
-    "engine": "ollama",
-    "model": "llama3.2:3b",
-    "trigger": "all_apis_in_fallback_chain_exhausted",
-    "run_on_machine": "gpu-laptop"
   }
 }

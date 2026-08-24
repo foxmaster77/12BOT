@@ -5,10 +5,30 @@ import { agentLoader } from './agentLoader.js';
 import { stateMachine } from './stateMachine.js';
 import { fallbackManager } from './fallback.js';
 import { TaskQueue } from './queue.js';
+import { UniversalApiClient } from './universalApiClient.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const GENERATED_SITE_DIR = path.resolve(__dirname, '../generated-site');
+
+/**
+ * Helper to strip markdown code fences from LLM responses
+ */
+function cleanCodeFence(text, defaultLang = '') {
+  if (!text) return '';
+  let cleaned = text.trim();
+  // Remove markdown code blocks if present
+  const match = cleaned.match(/^```[a-zA-Z0-9_-]*\s*\n([\s\S]*?)\n```$/);
+  if (match) {
+    return match[1].trim();
+  }
+  // Try without strict end if truncated
+  const partialMatch = cleaned.match(/^```[a-zA-Z0-9_-]*\s*\n([\s\S]*?)(?:```)?$/);
+  if (partialMatch) {
+    return partialMatch[1].trim();
+  }
+  return cleaned;
+}
 
 export class PipelineManager {
   constructor(options = {}) {
@@ -74,7 +94,7 @@ export class PipelineManager {
       {
         id: 'task_js',
         role: 'js_dev',
-        title: 'Implement interactive features & contact modal logic',
+        title: 'Implement interactive features & form logic',
         dependsOn: ['task_html', 'task_css'],
       },
       {
@@ -92,7 +112,7 @@ export class PipelineManager {
       {
         id: 'task_db',
         role: 'db_dev',
-        title: 'Create database schema for portfolio inquiries & bookings',
+        title: 'Create database schema for persistence',
         dependsOn: ['task_backend'],
       },
       {
@@ -117,7 +137,136 @@ export class PipelineManager {
   }
 
   /**
-   * Execute task (Mock runner for Milestone 2 / live API caller for Milestone 3)
+   * Build role-specific prompt for real LLM execution
+   */
+  buildUserPrompt(role, context) {
+    const brief = context.brief || 'Build a modern responsive website';
+    const conceptStr = context.concept ? JSON.stringify(context.concept, null, 2) : 'None';
+    const designStr = context.design ? JSON.stringify(context.design, null, 2) : 'None';
+
+    switch (role) {
+      case 'pm':
+        return `Project Brief: "${brief}".
+Decompose this website brief into a clear development plan covering idea, UI design, semantic HTML structure, CSS styling, client-side JS interactivity, micro-animations, Express backend endpoint, SQLite DB schema, and QA requirements. Output strict JSON with keys: { "summary": "...", "subtasks": [...] }`;
+
+      case 'idea':
+        return `User Website Brief: "${brief}".
+Generate the core concept, catchy title, tagline, sitemap sections, and realistic placeholder copywriting.
+Output strict JSON with keys:
+{
+  "title": "Site Name / Brand",
+  "tagline": "Short memorable tagline",
+  "sections": ["Hero", "Section 1", "Section 2", "Section 3", "Contact"],
+  "sampleCopy": {
+    "heroHeading": "...",
+    "heroSubheading": "...",
+    "about": "..."
+  }
+}`;
+
+      case 'designer':
+        return `User Brief: "${brief}".
+Site Concept: ${conceptStr}.
+Define a complete design spec: primary background, surface color, accent color, text colors (in hex), and font pairing.
+Output strict JSON with format:
+{
+  "colors": {
+    "bg": "#...",
+    "surface": "#...",
+    "accent": "#...",
+    "accentGlow": "rgba(...)",
+    "text": "#...",
+    "textMuted": "#..."
+  },
+  "fontFamily": "..."
+}`;
+
+      case 'html_dev':
+        return `User Brief: "${brief}".
+Site Concept: ${conceptStr}.
+Design Spec: ${designStr}.
+Write a complete, single-file semantic HTML5 page (\`index.html\`).
+Requirements:
+- Must link to \`styles.css\`, \`script.js\`, and \`animations.js\`.
+- Use semantic tags (<header>, <nav>, <main>, <section>, <form>, <footer>).
+- Include navbar, hero section, feature/content gallery or cards, inquiry form, and footer.
+- Return ONLY the clean HTML5 code.`;
+
+      case 'css_dev':
+        return `User Brief: "${brief}".
+Design Spec: ${designStr}.
+Generated HTML:
+${context.html ? context.html.slice(0, 1500) : 'Standard semantic HTML structure with .navbar, .hero, .container, .section, .btn-cta, .contact-form'}
+Write a complete, modern, responsive CSS stylesheet (\`styles.css\`).
+Requirements:
+- Use CSS custom properties (:root) for color tokens and typography.
+- Modern flexbox and grid layouts.
+- Mobile-first, responsive media queries.
+- Clean button hover states, form styles, and dark-mode glassmorphic aesthetics.
+- Return ONLY the raw CSS code.`;
+
+      case 'js_dev':
+        return `User Brief: "${brief}".
+Generated HTML:
+${context.html ? context.html.slice(0, 1500) : 'Standard HTML layout with buttons, filters, and forms'}
+Write the vanilla JavaScript code (\`script.js\`) implementing client-side interactivity:
+- Filter buttons / tabs logic.
+- Contact / inquiry form submission handling with real-time DOM feedback.
+- Mobile nav toggle or interactive elements.
+- Wrap in DOMContentLoaded.
+- Return ONLY the raw JavaScript code.`;
+
+      case 'animation_dev':
+        return `User Brief: "${brief}".
+Write tasteful micro-interactions and scroll reveal animations (\`animations.js\`):
+- Use IntersectionObserver to animate cards, headers, and sections into view on scroll.
+- Smooth transitions on interactive elements.
+- Wrap in DOMContentLoaded.
+- Return ONLY the raw JavaScript code.`;
+
+      case 'backend_dev':
+        return `User Brief: "${brief}".
+Write a minimal Node.js Express server (\`server.js\`) to handle website API requests:
+- Express app with JSON body parser.
+- POST /api/inquire or relevant API endpoints.
+- Proper JSON responses and status codes.
+- Return ONLY the raw JavaScript code.`;
+
+      case 'db_dev':
+        return `User Brief: "${brief}".
+Write a minimal SQLite/SQL database schema (\`schema.sql\`) for the website:
+- Tables for inquiries/submissions, users/catalog if applicable.
+- Clean column types, primary keys, timestamps.
+- Return ONLY the raw SQL schema code.`;
+
+      case 'debugger_1':
+        return `Review the generated website code:
+HTML: ${(context.html || '').slice(0, 500)}...
+CSS: ${(context.css || '').slice(0, 500)}...
+JS: ${(context.js || '').slice(0, 500)}...
+Inspect for broken tags, undefined variables, and layout bugs. Provide a concise QA pass summary.`;
+
+      case 'debugger_2':
+        return `Final QA Review comparing the generated website against the original brief: "${brief}".
+Check if all requested sections, interactive elements, and requirements are satisfied. Provide a concise final QA summary.`;
+
+      case 'docs_writer':
+        return `User Brief: "${brief}".
+Site Concept: ${conceptStr}.
+Write a complete, professional \`README.md\` for the generated project:
+- Title and project overview.
+- Tech stack and features.
+- Generated file structure.
+- How to run instructions.
+- Return ONLY the Markdown text.`;
+
+      default:
+        return `Execute development task "${role}" for brief: "${brief}".`;
+    }
+  }
+
+  /**
+   * Execute task (Mock runner or Real API caller)
    */
   async executeAgentTask(task, context, isMock = true) {
     const agentId = task.role;
@@ -144,8 +293,145 @@ export class PipelineManager {
       return result;
     }
 
-    // Real API client execution will plug in here for Milestone 3
-    throw new Error('Real API execution mode not enabled in mock pipeline');
+    // --- REAL API EXECUTION BRANCH ---
+    const agent = agentLoader.getAgent(agentId);
+    if (!agent) {
+      throw new Error(`Agent definition not found for role: ${agentId}`);
+    }
+
+    const userPrompt = this.buildUserPrompt(agentId, context);
+    console.log(`\x1b[36m[Real API Call] Sending task "${task.id}" to Agent "${agent.name}" (${agent.api}/${agent.model})...\x1b[0m`);
+
+    const response = await UniversalApiClient.executeAgentCall(agent, userPrompt);
+    const rawText = response.text || '';
+    const tokensUsed = response.tokensUsed || 500;
+
+    console.log(`\x1b[32m[Real API Success] ${agent.id} (${agent.api}) responded with ${tokensUsed} tokens.\x1b[0m`);
+    console.log(`\x1b[90m  Raw preview (first 100 chars): "${rawText.slice(0, 100).replace(/\n/g, ' ')}..."\x1b[0m`);
+
+    const result = {
+      status: 'success',
+      tokensUsed,
+      files: {},
+    };
+
+    // Parse role-specific output into context and generated files
+    switch (agentId) {
+      case 'pm':
+        try {
+          const cleaned = cleanCodeFence(rawText, 'json');
+          context.plan = JSON.parse(cleaned);
+        } catch {
+          context.plan = { summary: rawText.slice(0, 200) };
+        }
+        result.summary = rawText.slice(0, 200);
+        break;
+
+      case 'idea':
+        try {
+          const cleaned = cleanCodeFence(rawText, 'json');
+          context.concept = JSON.parse(cleaned);
+        } catch {
+          context.concept = {
+            title: context.brief || 'Generated Site',
+            tagline: rawText.slice(0, 100),
+            sections: ['Hero', 'About', 'Gallery', 'Contact'],
+          };
+        }
+        result.concept = context.concept;
+        break;
+
+      case 'designer':
+        try {
+          const cleaned = cleanCodeFence(rawText, 'json');
+          context.design = JSON.parse(cleaned);
+        } catch {
+          context.design = {
+            colors: {
+              bg: '#0f172a',
+              surface: '#1e293b',
+              accent: '#38bdf8',
+              accentGlow: 'rgba(56, 189, 248, 0.25)',
+              text: '#f8fafc',
+              textMuted: '#94a3b8',
+            },
+            fontFamily: "'Inter', system-ui, sans-serif",
+          };
+        }
+        result.design = context.design;
+        break;
+
+      case 'html_dev': {
+        const html = cleanCodeFence(rawText, 'html');
+        context.html = html;
+        result.files['index.html'] = html;
+        this.saveFile('index.html', html);
+        break;
+      }
+
+      case 'css_dev': {
+        const css = cleanCodeFence(rawText, 'css');
+        context.css = css;
+        result.files['styles.css'] = css;
+        this.saveFile('styles.css', css);
+        break;
+      }
+
+      case 'js_dev': {
+        const js = cleanCodeFence(rawText, 'js');
+        context.js = js;
+        result.files['script.js'] = js;
+        this.saveFile('script.js', js);
+        break;
+      }
+
+      case 'animation_dev': {
+        const anim = cleanCodeFence(rawText, 'js');
+        context.animations = anim;
+        result.files['animations.js'] = anim;
+        this.saveFile('animations.js', anim);
+        break;
+      }
+
+      case 'backend_dev': {
+        const server = cleanCodeFence(rawText, 'js');
+        context.server = server;
+        result.files['server.js'] = server;
+        this.saveFile('server.js', server);
+        break;
+      }
+
+      case 'db_dev': {
+        const sql = cleanCodeFence(rawText, 'sql');
+        context.db = sql;
+        result.files['schema.sql'] = sql;
+        this.saveFile('schema.sql', sql);
+        break;
+      }
+
+      case 'debugger_1':
+      case 'debugger_2':
+        result.summary = rawText.slice(0, 300);
+        break;
+
+      case 'docs_writer': {
+        const readme = cleanCodeFence(rawText, 'markdown');
+        context.readme = readme;
+        result.files['README.md'] = readme;
+        this.saveFile('README.md', readme);
+        break;
+      }
+
+      default:
+        break;
+    }
+
+    stateMachine.transition(agentId, 'done', {
+      currentTask: `Finished: ${task.title}`,
+      tokensUsed,
+    });
+
+    return result;
   }
 
   /**
@@ -580,7 +866,6 @@ document.addEventListener('DOMContentLoaded', () => {
       case 'animation_dev': {
         const animJs = `// LUMEN Animation & Scroll Reveals - Generated by Animation Agent
 document.addEventListener('DOMContentLoaded', () => {
-  // Subtle fade-in observer for gallery items
   const observerOptions = {
     threshold: 0.15,
     rootMargin: '0px 0px -50px 0px'
@@ -720,8 +1005,8 @@ npx serve .
     this.queue.clear();
 
     console.log(`\n\x1b[35m===============================================================\x1b[0m`);
-    console.log(`\x1b[35m       STARTING PIPELINE EXECUTION FOR BRIEF:                  \x1b[0m`);
-    console.log(`\x1b[36m       "${userBrief}"\x1b[0m`);
+    console.log(`\x1b[35m       STARTING PIPELINE EXECUTION (Mode: ${isMock ? 'MOCK' : 'REAL API'})   \x1b[0m`);
+    console.log(`\x1b[36m       Brief: "${userBrief}"\x1b[0m`);
     console.log(`\x1b[35m===============================================================\x1b[0m\n`);
 
     const subtasks = this.createTaskPlan(userBrief);
@@ -744,9 +1029,20 @@ npx serve .
             const result = await this.executeAgentTask(task, context, isMock);
             this.queue.completeTask(task.id, result);
           } catch (err) {
-            console.error(`Error on task ${task.id}:`, err);
-            fallbackManager.handleAgentFailure(task.role, task, err);
-            this.queue.failTask(task.id, err);
+            console.error(`\x1b[31m[Pipeline Error] Task ${task.id} failed on ${task.role}:\x1b[0m`, err.message || err);
+            const fallback = fallbackManager.handleAgentFailure(task.role, task, err);
+            if (fallback && fallback.success) {
+              try {
+                console.log(`\x1b[33m[Fallback Retry] Retrying task ${task.id} with fallback agent: ${fallback.assignedAgentId}...\x1b[0m`);
+                const retryResult = await this.executeAgentTask({ ...task, role: fallback.assignedAgentId }, context, isMock);
+                this.queue.completeTask(task.id, retryResult);
+              } catch (retryErr) {
+                console.error(`\x1b[31m[Fallback Error] Fallback agent ${fallback.assignedAgentId} also failed for task ${task.id}:\x1b[0m`, retryErr.message || retryErr);
+                this.queue.failTask(task.id, retryErr);
+              }
+            } else {
+              this.queue.failTask(task.id, err);
+            }
           }
         })
       );
@@ -754,13 +1050,14 @@ npx serve .
 
     this.isRunning = false;
     console.log(`\n\x1b[32m===============================================================\x1b[0m`);
-    console.log(`\x1b[32m       PIPELINE EXECUTION COMPLETED SUCCESSFULLY!              \x1b[0m`);
+    console.log(`\x1b[32m       PIPELINE EXECUTION COMPLETED! (${isMock ? 'MOCK' : 'REAL API'})          \x1b[0m`);
     console.log(`\x1b[32m       Generated files saved in: /generated-site/              \x1b[0m`);
     console.log(`\x1b[32m===============================================================\x1b[0m\n`);
 
     return {
       status: 'completed',
       brief: userBrief,
+      isMock,
       filesGenerated: Array.from(this.siteFiles.keys()),
     };
   }

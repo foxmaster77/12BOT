@@ -2,6 +2,15 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 /**
+ * Strip chain-of-thought <think>...</think> blocks that Qwen models emit
+ */
+function stripThinkTags(text) {
+  if (!text) return '';
+  // Remove <think>...</think> blocks (including multiline)
+  return text.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+}
+
+/**
  * Universal LLM Client supporting OpenAI-compatible APIs, Google Gemini, and Ollama.
  */
 export class UniversalApiClient {
@@ -114,9 +123,9 @@ export class UniversalApiClient {
     }
 
     const data = await res.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
     const tokensUsed = data.usageMetadata?.totalTokenCount || 500;
-    return { text, tokensUsed };
+    return { text: stripThinkTags(rawText), tokensUsed };
   }
 
   /**
@@ -146,9 +155,9 @@ export class UniversalApiClient {
     }
 
     const data = await res.json();
-    const text = data.message?.content || '';
+    const rawText = data.message?.content || '';
     const tokensUsed = data.eval_count || 350;
-    return { text, tokensUsed };
+    return { text: stripThinkTags(rawText), tokensUsed };
   }
 
   /**
@@ -181,9 +190,9 @@ export class UniversalApiClient {
     }
 
     const data = await res.json();
-    const text = data.choices?.[0]?.message?.content || '';
+    const rawText = data.choices?.[0]?.message?.content || '';
     const tokensUsed = data.usage?.total_tokens || 450;
-    return { text, tokensUsed };
+    return { text: stripThinkTags(rawText), tokensUsed };
   }
 
   /**

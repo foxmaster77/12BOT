@@ -10,6 +10,7 @@ export default function Dashboard() {
   const [connected, setConnected] = useState(false);
   const [brief, setBrief] = useState('Build a high-end dark-themed portfolio site for a wildlife photographer named LUMEN.');
   const [isBuilding, setIsBuilding] = useState(false);
+  const [useMock, setUseMock] = useState(false); // Defaulting UNCHECKED (real API execution)
   const [refreshPreview, setRefreshPreview] = useState(0);
   const [agentLogs, setAgentLogs] = useState<AgentEvent[]>([]);
   const [agentStates, setAgentStates] = useState<Record<string, { status: AgentStatus; currentTask?: string }>>({});
@@ -50,7 +51,7 @@ export default function Dashboard() {
       await fetch('http://localhost:4000/api/build', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ brief, isMock: true }),
+        body: JSON.stringify({ brief, isMock: useMock }),
       });
     } catch (err) {
       console.error('Failed to trigger build:', err);
@@ -93,41 +94,62 @@ export default function Dashboard() {
       </header>
 
       {/* Control Prompt Bar */}
-      <div style={{ padding: '1rem 2rem', background: '#131c31', borderBottom: '1px solid #1e293b', display: 'flex', gap: '12px' }}>
-        <input
-          type="text"
-          value={brief}
-          onChange={(e) => setBrief(e.target.value)}
-          placeholder="Enter website brief (e.g. Build a portfolio for a photographer...)"
-          style={{
-            flex: 1,
-            padding: '10px 16px',
-            background: '#0a0f1d',
-            border: '1px solid #334155',
-            borderRadius: '8px',
-            color: '#ffffff',
-            fontSize: '14px',
-          }}
-        />
-        <button
-          onClick={handleStartBuild}
-          disabled={isBuilding}
-          style={{
-            background: isBuilding ? '#475569' : '#38bdf8',
-            color: '#04101e',
-            fontWeight: 700,
-            padding: '10px 24px',
-            border: 'none',
-            borderRadius: '8px',
-            cursor: isBuilding ? 'not-allowed' : 'pointer',
-          }}
-        >
-          {isBuilding ? 'Building Site...' : '🚀 Build Website'}
-        </button>
+      <div style={{ padding: '1rem 2rem', background: '#131c31', borderBottom: '1px solid #1e293b', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <input
+            type="text"
+            value={brief}
+            onChange={(e) => setBrief(e.target.value)}
+            placeholder="Enter website brief (e.g. Build a portfolio for a photographer...)"
+            style={{
+              flex: 1,
+              padding: '10px 16px',
+              background: '#0a0f1d',
+              border: '1px solid #334155',
+              borderRadius: '8px',
+              color: '#ffffff',
+              fontSize: '14px',
+            }}
+          />
+          <button
+            onClick={handleStartBuild}
+            disabled={isBuilding}
+            style={{
+              background: isBuilding ? '#475569' : '#38bdf8',
+              color: '#04101e',
+              fontWeight: 700,
+              padding: '10px 24px',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: isBuilding ? 'not-allowed' : 'pointer',
+            }}
+          >
+            {isBuilding ? 'Building Site...' : '🚀 Build Website'}
+          </button>
+        </div>
+
+        {/* Real API vs Mock Mode Selector */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px', color: '#94a3b8' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', userSelect: 'none' }}>
+            <input
+              type="checkbox"
+              checked={useMock}
+              onChange={(e) => setUseMock(e.target.checked)}
+              style={{ cursor: 'pointer', width: '16px', height: '16px', accentColor: '#38bdf8' }}
+            />
+            <span style={{ color: useMock ? '#eab308' : '#38bdf8', fontWeight: 600 }}>
+              Use mock data (no real API calls)
+            </span>
+          </label>
+          <span style={{ color: '#475569' }}>|</span>
+          <span style={{ color: useMock ? '#94a3b8' : '#4ade80' }}>
+            {useMock ? '⚠️ Fast offline simulated run with dummy responses' : '⚡ LIVE Mode: Calling real LLM APIs (Groq, Gemini, OpenRouter, etc.)'}
+          </span>
+        </div>
       </div>
 
       {/* Main Dual-Panel Workspace */}
-      <main style={{ display: 'grid', gridTemplateColumns: '920px 1fr', gap: '20px', padding: '20px', height: 'calc(100vh - 150px)' }}>
+      <main style={{ display: 'grid', gridTemplateColumns: '920px 1fr', gap: '20px', padding: '20px', height: 'calc(100vh - 180px)' }}>
         {/* Left Panel: 2D Office Canvas + Status Feed */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div style={{ background: '#0f172a', padding: '12px', borderRadius: '12px', border: '1px solid #1e293b', boxShadow: '0 8px 30px rgba(0,0,0,0.5)' }}>
