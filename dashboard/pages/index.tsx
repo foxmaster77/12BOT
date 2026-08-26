@@ -5,6 +5,7 @@ import TokenPanel from '../components/TokenPanel';
 import OverridePanel from '../components/OverridePanel';
 import EconomyPanel from '../components/EconomyPanel';
 import OrchestraInterface from '../components/OrchestraInterface';
+import PixelOffice from '../components/PixelOffice';
 import { createOfficeWs, AgentEvent, AgentStatus } from '../lib/wsClient';
 
 // Dynamically import PixiJS canvas to prevent SSR errors
@@ -37,7 +38,7 @@ export default function Dashboard() {
   const [refreshPreview, setRefreshPreview] = useState(0);
   const [agentLogs, setAgentLogs] = useState<AgentEvent[]>([]);
   const [agentStates, setAgentStates] = useState<Record<string, { status: AgentStatus; currentTask?: string }>>({});
-  const [viewMode, setViewMode] = useState<'dev' | 'orchestra'>('dev');
+  const [viewMode, setViewMode] = useState<'dev' | 'orchestra' | 'pixel'>('dev');
 
   // Feature 1: Token Usage State
   const [agentTokens, setAgentTokens] = useState<Record<string, AgentTokenData>>({});
@@ -261,6 +262,21 @@ export default function Dashboard() {
             >
               🕹️ Orchestra2D
             </button>
+            <button
+              onClick={() => setViewMode('pixel')}
+              style={{
+                padding: '4px 12px',
+                borderRadius: '6px',
+                border: 'none',
+                background: viewMode === 'pixel' ? '#22c55e' : 'transparent',
+                color: viewMode === 'pixel' ? '#04101e' : '#94a3b8',
+                fontWeight: 700,
+                fontSize: '11px',
+                cursor: 'pointer',
+              }}
+            >
+              👾 16-Bit Office
+            </button>
           </div>
         </div>
 
@@ -368,6 +384,10 @@ export default function Dashboard() {
               handleStartBuild(`[${n}] ${p}`);
             }}
           />
+        </div>
+      ) : viewMode === 'pixel' ? (
+        <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
+          <PixelOffice />
         </div>
       ) : (
         <main style={{ display: 'grid', gridTemplateColumns: '960px 1fr', gap: '20px', padding: '20px' }}>
