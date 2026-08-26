@@ -1,18 +1,27 @@
 /* Base Resets and Fonts */
-.orchestra-app {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  min-height: 600px;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
   width: 100%;
-  overflow: hidden;
+  height: 100%;
+  margin: 0;
+  padding: 0;
   font-family: 'Courier New', Courier, monospace;
   background-color: #1a1a24;
   color: #e0e0e0;
-  border-radius: 12px;
-  border: 1px solid #334155;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7);
-  position: relative;
+  overflow: hidden;
+}
+
+.orchestra-app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
 }
 
 /* Header Styling */
@@ -28,57 +37,50 @@
 .logo-icon {
   background-color: #3b3b55;
   border-radius: 50%;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   display: flex;
   justify-content: center;
   align-items: center;
   margin-right: 15px;
   font-weight: bold;
   color: #7b9cff;
-  font-size: 14px;
 }
 
 .app-header h1 {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   letter-spacing: 1px;
   flex-grow: 1;
   margin: 0;
-  font-family: inherit;
-  font-weight: 700;
 }
 
 .theme-toggle {
-  background-color: #3b3b55;
-  color: #7b9cff;
-  border: 1px solid #555577;
+  background-color: #444;
+  color: white;
+  border: 1px solid #666;
   padding: 6px 12px;
-  border-radius: 6px;
+  border-radius: 4px;
   cursor: pointer;
   font-family: inherit;
-  font-size: 12px;
-  font-weight: bold;
-  transition: all 0.2s;
+  font-size: 0.85rem;
 }
 
 .theme-toggle:hover {
-  background-color: #4a4a6e;
-  color: #fff;
+  background-color: #555;
 }
 
 /* Main Viewport (Image Area) */
 .viewport {
   flex-grow: 1;
-  min-height: 440px;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   position: relative;
-  transition: background-image 0.5s ease-in-out;
+  transition: background-image 0.3s ease-in-out;
 }
 
 .day-bg {
-  background-image: url('/office-day.jpg');
+  background-image: url('/office-day.jpg'); 
   background-color: #4a4a5a; /* Fallback */
 }
 
@@ -89,43 +91,41 @@
 
 /* Bottom Control Panel */
 .control-panel {
-  height: 160px;
-  background: linear-gradient(180deg, rgba(43, 43, 61, 0.95) 0%, rgba(28, 28, 40, 0.98) 100%);
+  height: 180px;
+  background: linear-gradient(180deg, #2b2b3d 0%, #1c1c28 100%);
   border-top: 2px solid #445;
   display: flex;
-  padding: 12px 16px;
-  gap: 12px;
-  backdrop-filter: blur(8px);
+  padding: 15px;
+  gap: 15px;
 }
 
 .panel-section {
   border: 1px solid #445;
   border-radius: 8px;
-  background-color: rgba(0, 0, 0, 0.35);
-  padding: 10px 12px;
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 10px;
   display: flex;
   flex-direction: column;
 }
 
 .panel-section h2 {
-  font-size: 0.85rem;
-  margin-bottom: 8px;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
   color: #fff;
-  font-weight: bold;
-  letter-spacing: 0.5px;
+  font-weight: normal;
+  margin-top: 0;
 }
 
 /* Individual Panel Layouts */
 .info-section {
-  flex: 1.1;
-  min-width: 170px;
+  flex: 1;
 }
 
 .info-box {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  font-size: 0.85rem;
+  gap: 8px;
+  font-size: 0.9rem;
 }
 
 .info-box p {
@@ -134,23 +134,27 @@
 
 .info-box .label {
   display: inline-block;
-  width: 65px;
+  width: 70px;
   color: #aaa;
 }
 
 .prompt-section {
-  flex: 2.2;
+  flex: 2;
 }
 
 .prompt-input {
   flex-grow: 1;
   background-color: transparent;
   border: none;
-  color: #ccc;
+  color: #fff;
   resize: none;
   font-family: inherit;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   line-height: 1.4;
+}
+
+.prompt-input::placeholder {
+  color: #666;
 }
 
 .prompt-input:focus {
@@ -160,39 +164,31 @@
 
 .niche-section {
   flex: 1;
-  min-width: 130px;
 }
 
 .niche-list {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  height: 100%;
   gap: 2px;
 }
 
 .niche-item {
-  padding: 3px 8px;
+  padding: 4px 8px;
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   border-radius: 4px;
-  transition: background 0.15s;
-  color: #bbb;
-}
-
-.niche-item:hover {
-  background-color: #3b3b55;
-  color: #fff;
 }
 
 .niche-item.active {
   background-color: #4a4a6a;
-  color: #fff;
-  font-weight: bold;
+  border-radius: 4px;
+  color: white;
 }
 
 .action-section {
-  flex: 0.9;
-  min-width: 120px;
+  flex: 0.8;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -204,16 +200,8 @@
 .processing-text {
   color: #4ade80;
   font-size: 0.8rem;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   text-align: center;
-  font-weight: bold;
-  letter-spacing: 0.5px;
-  animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
 }
 
 .generate-btn {
@@ -222,18 +210,17 @@
   border-radius: 6px;
   color: white;
   font-family: inherit;
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: bold;
-  padding: 10px 18px;
+  padding: 12px 24px;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
   transition: all 0.2s;
   width: 100%;
 }
 
 .generate-btn:hover:not(:disabled) {
-  filter: brightness(1.15);
-  box-shadow: 0 0 12px rgba(107, 165, 255, 0.5);
+  filter: brightness(1.1);
 }
 
 .generate-btn.processing {
