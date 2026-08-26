@@ -1,0 +1,17 @@
+{
+  "name": "agent-escrow-contracts",
+  "version": "1.0.0",
+  "description": "AgentEscrow Solidity contract for 12BOT 2.0 Agent Economy Layer",
+  "private": true,
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:baseSepolia": "hardhat run scripts/deploy.js --network baseSepolia",
+    "deploy:local": "hardhat run scripts/deploy.js --network localhost",
+    "node": "hardhat node"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "hardhat": "^2.22.0"
+  }
+}

@@ -84,6 +84,27 @@ export class StateMachine extends EventEmitter {
   getAllStates() {
     return Array.from(this.states.values());
   }
+
+  /**
+   * Record token usage for a completed task.
+   * Updates the agent's cumulative tokensUsed stat and emits `agent:tokens`
+   * so index.js can broadcast a live update to the dashboard.
+   * @param {string} agentId
+   * @param {number} tokens
+   * @param {string} taskId
+   */
+  recordTokens(agentId, tokens = 0, taskId = '') {
+    const state = this.states.get(agentId);
+    if (!state) return;
+    state.stats.tokensUsed += tokens;
+    this.emit('agent:tokens', {
+      agentId,
+      delta: tokens,
+      cumulative: state.stats.tokensUsed,
+      taskId,
+      timestamp: new Date().toISOString(),
+    });
+  }
 }
 
 export const stateMachine = new StateMachine();

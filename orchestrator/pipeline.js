@@ -6,10 +6,14 @@ import { stateMachine } from './stateMachine.js';
 import { fallbackManager } from './fallback.js';
 import { TaskQueue } from './queue.js';
 import { UniversalApiClient } from './universalApiClient.js';
+import { tokenTracker } from './tokenTracker.js';
+import { depositEscrow, releasePayment, reroutePayment } from './chainClient.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const GENERATED_SITE_DIR = path.resolve(__dirname, '../generated-site');
+const TASK_ESCROW_WEI = process.env.TASK_ESCROW_WEI || '1000';
+
 
 /**
  * Helper to strip markdown code fences from LLM responses
@@ -285,12 +289,21 @@ Write a complete, professional \`README.md\` for the generated project:
         }
       }
 
+      const tokensForTask = result.tokensUsed || 450;
       stateMachine.transition(agentId, 'done', {
         currentTask: `Finished: ${task.title}`,
-        tokensUsed: result.tokensUsed || 450,
+        tokensUsed: tokensForTask,
       });
 
+      // Feature 1: Record token usage in tracker
+      tokenTracker.record(agentId, task.id, tokensForTask, 'mock');
+      stateMachine.recordTokens(agentId, tokensForTask, task.id);
+
+      // Feature 4: Release chain escrow on success (no-op if CHAIN_ENABLED=false)
+      await releasePayment(agentId);
+
       return result;
+
     }
 
     // --- REAL API EXECUTION BRANCH ---
@@ -430,6 +443,13 @@ Write a complete, professional \`README.md\` for the generated project:
       currentTask: `Finished: ${task.title}`,
       tokensUsed,
     });
+
+    // Feature 1: Record token usage in tracker
+    tokenTracker.record(agentId, task.id, tokensUsed, agent.model || agent.api || 'unknown');
+    stateMachine.recordTokens(agentId, tokensUsed, task.id);
+
+    // Feature 4: Release chain escrow on success (no-op if CHAIN_ENABLED=false)
+    await releasePayment(agentId);
 
     return result;
   }
@@ -1003,6 +1023,10 @@ npx serve .
     if (this.isRunning) throw new Error('Pipeline is already running');
     this.isRunning = true;
     this.queue.clear();
+    // Track active tasks for human override: taskId -> { task, agentId, context, isMock }
+    this._activeTasks = new Map();
+    this._pipelineContext = null;
+    this._isMock = isMock;
 
     console.log(`\n\x1b[35m===============================================================\x1b[0m`);
     console.log(`\x1b[35m       STARTING PIPELINE EXECUTION (Mode: ${isMock ? 'MOCK' : 'REAL API'})   \x1b[0m`);
@@ -1013,6 +1037,7 @@ npx serve .
     subtasks.forEach((st) => this.queue.enqueue(st));
 
     const context = { brief: userBrief };
+    this._pipelineContext = context;
 
     while (!this.queue.isPipelineComplete()) {
       const readyTasks = this.queue.getReadyTasks();
@@ -1025,15 +1050,26 @@ npx serve .
       await Promise.all(
         readyTasks.map(async (task) => {
           this.queue.claimTask(task.id, task.role);
+
+          // Feature 4: Deposit escrow when task is assigned (no-op if CHAIN_ENABLED=false)
+          await depositEscrow(task.role, TASK_ESCROW_WEI);
+
+          // Track active tasks for human override
+          this._activeTasks.set(task.id, { task, agentId: task.role });
+
           try {
             const result = await this.executeAgentTask(task, context, isMock);
+            this._activeTasks.delete(task.id);
             this.queue.completeTask(task.id, result);
           } catch (err) {
+            this._activeTasks.delete(task.id);
             console.error(`\x1b[31m[Pipeline Error] Task ${task.id} failed on ${task.role}:\x1b[0m`, err.message || err);
             const fallback = fallbackManager.handleAgentFailure(task.role, task, err);
             if (fallback && fallback.success) {
               try {
                 console.log(`\x1b[33m[Fallback Retry] Retrying task ${task.id} with fallback agent: ${fallback.assignedAgentId}...\x1b[0m`);
+                // Feature 4: Reroute chain escrow from failed agent to replacement
+                await reroutePayment(task.role, fallback.assignedAgentId);
                 const retryResult = await this.executeAgentTask({ ...task, role: fallback.assignedAgentId }, context, isMock);
                 this.queue.completeTask(task.id, retryResult);
               } catch (retryErr) {
@@ -1049,6 +1085,7 @@ npx serve .
     }
 
     this.isRunning = false;
+    this._activeTasks = new Map();
     console.log(`\n\x1b[32m===============================================================\x1b[0m`);
     console.log(`\x1b[32m       PIPELINE EXECUTION COMPLETED! (${isMock ? 'MOCK' : 'REAL API'})          \x1b[0m`);
     console.log(`\x1b[32m       Generated files saved in: /generated-site/              \x1b[0m`);
@@ -1061,6 +1098,71 @@ npx serve .
       filesGenerated: Array.from(this.siteFiles.keys()),
     };
   }
+
+  /**
+   * Feature 2: Human Override — reroute an in-progress task to a different agent.
+   * Reuses the same fallback path as quota-exhaustion.
+   * @param {string} fromAgentId - agent currently assigned the task
+   * @param {string} toAgentId   - agent to take over
+   * @returns {Promise<{ taskId: string, fromAgentId: string, toAgentId: string }>}
+   */
+  async rerouteTask(fromAgentId, toAgentId) {
+    if (!this.isRunning) {
+      throw new Error('No pipeline is currently running.');
+    }
+
+    // Find the active task for fromAgentId
+    let targetTaskEntry = null;
+    for (const [taskId, entry] of (this._activeTasks || new Map()).entries()) {
+      if (entry.agentId === fromAgentId) {
+        targetTaskEntry = { taskId, ...entry };
+        break;
+      }
+    }
+
+    // Also check the queue for claimed tasks
+    const claimedTask = this.queue ? this.queue.getClaimedTask(fromAgentId) : null;
+
+    const task = targetTaskEntry?.task || claimedTask;
+    if (!task) {
+      throw new Error(`No active task found for agent "${fromAgentId}". It may have already completed.`);
+    }
+
+    const context = this._pipelineContext || {};
+    const isMock = this._isMock !== undefined ? this._isMock : true;
+
+    console.log(`\x1b[33m[Human Override] Reassigning task "${task.id}" (${task.title}) from ${fromAgentId} → ${toAgentId}\x1b[0m`);
+
+    // Apply fallback logic (marks fromAgent as on_break)
+    fallbackManager.handleAgentFailure(
+      fromAgentId,
+      task,
+      new Error(`Human override: task reassigned to ${toAgentId}`)
+    );
+
+    // Feature 4: Reroute chain escrow
+    await reroutePayment(fromAgentId, toAgentId);
+
+    // Execute the task under the new agent
+    const result = await this.executeAgentTask({ ...task, role: toAgentId }, context, isMock);
+    this.queue.completeTask(task.id, result);
+
+    return { taskId: task.id, fromAgentId, toAgentId };
+  }
+
+  /**
+   * Feature 2: Get the currently active task for a given agent.
+   * @param {string} agentId
+   * @returns {{ taskId: string, task: object } | null}
+   */
+  getActiveTask(agentId) {
+    if (!this._activeTasks) return null;
+    for (const [taskId, entry] of this._activeTasks.entries()) {
+      if (entry.agentId === agentId) return { taskId, task: entry.task };
+    }
+    return null;
+  }
 }
 
 export const pipelineManager = new PipelineManager();
+

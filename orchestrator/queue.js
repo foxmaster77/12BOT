@@ -134,6 +134,18 @@ export class TaskQueue extends EventEmitter {
   getAllTasks() {
     return Array.from(this.tasks.values());
   }
+
+  /**
+   * Get currently claimed/running task for a specific agent
+   */
+  getClaimedTask(agentId) {
+    for (const task of this.tasks.values()) {
+      if (task.status === 'running' && (task.assignedAgentId === agentId || task.role === agentId)) {
+        return task;
+      }
+    }
+    return null;
+  }
 }
 
 export const taskQueue = new TaskQueue();

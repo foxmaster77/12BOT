@@ -8,12 +8,18 @@
     "start": "node orchestrator/index.js",
     "server": "node orchestrator/index.js",
     "worker": "node orchestrator/worker.js",
+    "generate:wallets": "node scripts/generateWallets.js",
+    "contracts:compile": "cd contracts && npm run compile",
+    "contracts:test": "cd contracts && npm test",
+    "contracts:deploy": "cd contracts && npm run deploy:baseSepolia",
     "test:milestone1": "node orchestrator/testMilestone1.js",
     "test:milestone2": "node orchestrator/testMilestone2.js"
   },
   "dependencies": {
     "dotenv": "^16.6.1",
+    "ethers": "^6.17.0",
     "express": "^4.22.2",
+    "node-fetch": "^3.3.2",
     "ws": "^8.21.3"
   },
   "keywords": [

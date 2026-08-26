@@ -8,10 +8,16 @@ credentials*.json
 # Dependencies
 node_modules/
 dashboard/node_modules/
+contracts/node_modules/
 
 # Next.js build output
 dashboard/.next/
 dashboard/out/
+
+# Hardhat build output
+contracts/artifacts/
+contracts/cache/
+contracts/typechain-types/
 
 # Logs & temp
 *.log
