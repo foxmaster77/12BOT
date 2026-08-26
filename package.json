@@ -1,12 +1,13 @@
 {
   "name": "ai-dev-team-builder",
   "version": "1.0.0",
-  "description": "The Office - 12-Agent LLM-Powered Website Builder",
+  "description": "12BOT Pixel-Art Office Dashboard & Multi-Agent Execution Engine",
   "type": "module",
-  "main": "orchestrator/index.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node orchestrator/index.js",
-    "server": "node orchestrator/index.js",
+    "start": "node server.js",
+    "server": "node server.js",
+    "orchestrator": "node orchestrator/index.js",
     "worker": "node orchestrator/worker.js",
     "generate:wallets": "node scripts/generateWallets.js",
     "contracts:compile": "cd contracts && npm run compile",
@@ -16,15 +17,23 @@
     "test:milestone2": "node orchestrator/testMilestone2.js"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "dotenv": "^16.6.1",
     "ethers": "^6.17.0",
     "express": "^4.22.2",
     "node-fetch": "^3.3.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
     "ws": "^8.21.3"
   },
   "keywords": [
     "multi-agent",
     "ai",
+    "12bot",
+    "pixel-art",
+    "socketio",
     "website-builder"
   ],
   "author": "",

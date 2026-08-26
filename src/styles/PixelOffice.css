@@ -1,0 +1,706 @@
+/* ==========================================================================
+   PixelOffice.css — Retro 16-Bit Glassmorphic Pixel Art Dashboard Styles
+   ========================================================================== */
+
+/* Resets & Monospace Font Base */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Courier New', Courier, monospace;
+  background-color: #0d0d16;
+  color: #f1f5f9;
+  overflow-x: hidden;
+}
+
+.orchestra-app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100vw;
+  background-color: #0b0b14;
+  transition: background-color 0.4s ease;
+}
+
+/* Day Mode Lighting Override */
+.orchestra-app-container.day-mode {
+  background-color: #1a1e2e;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   1. HEADER STYLING
+   ────────────────────────────────────────────────────────────────────────── */
+
+.app-top-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(22, 22, 36, 0.95);
+  border-bottom: 2px solid #2d2d48;
+  padding: 10px 24px;
+  backdrop-filter: blur(12px);
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.retro-logo-icon {
+  background: linear-gradient(135deg, #4338ca 0%, #312e81 100%);
+  border: 1px solid #6366f1;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 900;
+  color: #a5b4fc;
+  font-size: 13px;
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
+}
+
+.retro-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #ffffff;
+  margin: 0;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+}
+
+.retro-title span {
+  color: #38bdf8;
+  font-size: 0.8rem;
+  font-weight: normal;
+  margin-left: 8px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* Token Budget Meter */
+.token-meter-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid #334155;
+  font-size: 12px;
+  font-weight: bold;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
+}
+
+.token-meter-badge.normal {
+  border-color: #0284c7;
+  color: #38bdf8;
+}
+
+.token-meter-badge.warning {
+  border-color: #ef4444;
+  color: #f87171;
+  background: rgba(50, 10, 10, 0.9);
+  animation: tokenWarningPulse 0.8s infinite alternate;
+}
+
+@keyframes tokenWarningPulse {
+  0% { box-shadow: 0 0 4px #ef4444; }
+  100% { box-shadow: 0 0 16px #ef4444; }
+}
+
+.recharge-btn {
+  background: linear-gradient(180deg, #10b981 0%, #047857 100%);
+  border: 1px solid #34d399;
+  color: white;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  transition: all 0.2s;
+}
+
+.recharge-btn:hover {
+  filter: brightness(1.2);
+  transform: translateY(-1px);
+}
+
+.theme-toggle-btn {
+  background: #252538;
+  color: #e2e8f0;
+  border: 1px solid #474768;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.theme-toggle-btn:hover {
+  background: #383852;
+  color: #fff;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   2. PIXEL ART CANVAS VIEWPORT (Top-Down Isometric 6-Desk Layout)
+   ────────────────────────────────────────────────────────────────────────── */
+
+.viewport-canvas {
+  position: relative;
+  flex: 1;
+  min-height: 520px;
+  background: radial-gradient(circle at 50% 40%, #1c1c2e 0%, #0d0d16 100%);
+  overflow: hidden;
+  image-rendering: pixelated;
+  transition: background 0.4s ease;
+}
+
+.viewport-canvas.day {
+  background: radial-gradient(circle at 50% 40%, #2a2a44 0%, #151524 100%);
+}
+
+.viewport-canvas.night {
+  background: radial-gradient(circle at 50% 40%, #141422 0%, #07070d 100%);
+}
+
+/* Floor Tile Grid */
+.floor-grid {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 44px 44px;
+  pointer-events: none;
+}
+
+/* Coffee Bar Target Station (Top-Right) */
+.coffee-station-widget {
+  position: absolute;
+  right: 5%;
+  top: 10%;
+  padding: 14px 22px;
+  border: 2px dashed #f59e0b;
+  border-radius: 10px;
+  background: rgba(245, 158, 11, 0.1);
+  color: #fbbf24;
+  font-weight: bold;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.2);
+  z-index: 10;
+  user-select: none;
+}
+
+.coffee-station-widget .steam-particle {
+  font-size: 16px;
+  animation: steamRise 2s infinite ease-in-out;
+}
+
+@keyframes steamRise {
+  0% { transform: translateY(0) scale(0.9); opacity: 0.2; }
+  50% { transform: translateY(-5px) scale(1.1); opacity: 0.9; }
+  100% { transform: translateY(-10px) scale(1); opacity: 0.1; }
+}
+
+/* Workstation Desks */
+.workstation-desk {
+  position: absolute;
+  width: 64px;
+  height: 40px;
+  background: #1e293b;
+  border: 2px solid #334155;
+  border-radius: 6px;
+  transform: translate(-50%, 16px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+
+.workstation-desk .crt-monitor {
+  width: 26px;
+  height: 16px;
+  background: #090d16;
+  border: 1.5px solid #38bdf8;
+  border-radius: 3px;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.4);
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   3. ANIMATED PIXEL AGENT SPRITES
+   ────────────────────────────────────────────────────────────────────────── */
+
+.agent-sprite-wrapper {
+  position: absolute;
+  /* Smooth coordinate interpolation over 2s */
+  transition: left 2s cubic-bezier(0.4, 0, 0.2, 1), top 2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  z-index: 20;
+  user-select: none;
+}
+
+.agent-sprite-wrapper:hover .pixel-avatar {
+  filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.8));
+}
+
+/* Pixel Character Construction */
+.pixel-avatar {
+  width: 34px;
+  height: 48px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pixel-avatar .avatar-head {
+  width: 20px;
+  height: 20px;
+  background: #fed7aa;
+  border: 1.5px solid #000;
+  border-radius: 4px;
+  position: relative;
+}
+
+.pixel-avatar .avatar-head::before {
+  /* Pixel Eyes */
+  content: '';
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: #000;
+  left: 3px;
+  top: 7px;
+  box-shadow: 8px 0 0 #000;
+}
+
+.pixel-avatar .avatar-body {
+  width: 26px;
+  height: 22px;
+  border: 1.5px solid #000;
+  border-radius: 3px;
+  margin-top: 1px;
+  position: relative;
+}
+
+/* Floating Status Bubbles */
+.floating-status-bubble {
+  position: absolute;
+  top: -30px;
+  background: rgba(11, 15, 26, 0.95);
+  border: 1px solid #475569;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: bold;
+  border-radius: 4px;
+  white-space: nowrap;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+}
+
+.floating-status-bubble.typing {
+  border-color: #22c55e;
+  color: #86efac;
+  background: rgba(5, 46, 22, 0.95);
+}
+
+.floating-status-bubble.walking {
+  border-color: #38bdf8;
+  color: #7dd3fc;
+  background: rgba(8, 47, 73, 0.95);
+}
+
+.floating-status-bubble.drinking_coffee {
+  border-color: #f59e0b;
+  color: #fde68a;
+  background: rgba(69, 26, 3, 0.95);
+}
+
+.floating-status-bubble.out_of_tokens {
+  border-color: #ef4444;
+  color: #fca5a5;
+  background: rgba(69, 10, 10, 0.95);
+  animation: outOfTokensPulse 0.6s infinite alternate;
+}
+
+@keyframes outOfTokensPulse {
+  0% { transform: scale(0.95); }
+  100% { transform: scale(1.05); }
+}
+
+.agent-label-name {
+  font-size: 10px;
+  font-weight: bold;
+  color: #f1f5f9;
+  margin-top: 4px;
+  text-shadow: 1px 1px 2px #000;
+}
+
+/* --- ANIMATION KEYFRAMES --- */
+
+/* TYPING: Intense vibration & hands bobbing */
+.agent-sprite-wrapper.typing .pixel-avatar .avatar-body {
+  animation: typingBodyShake 0.12s infinite alternate;
+}
+.agent-sprite-wrapper.typing .pixel-avatar .avatar-head {
+  animation: typingHeadNod 0.24s infinite alternate;
+}
+
+@keyframes typingBodyShake {
+  0% { transform: translateY(0) rotate(0deg); }
+  100% { transform: translateY(-2px) rotate(1.5deg); }
+}
+@keyframes typingHeadNod {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(1.5px); }
+}
+
+/* WALKING: Smooth position interpolation + vertical bounce */
+.agent-sprite-wrapper.walking .pixel-avatar {
+  animation: walkGaitBounce 0.35s infinite alternate ease-in-out;
+}
+
+@keyframes walkGaitBounce {
+  0% { transform: translateY(0) skewX(-4deg); }
+  100% { transform: translateY(-8px) skewX(4deg); }
+}
+
+/* DRINKING_COFFEE: Head-tilt sip animation */
+.agent-sprite-wrapper.drinking_coffee .pixel-avatar .avatar-head {
+  animation: coffeeSipMotion 1.6s infinite ease-in-out;
+}
+.agent-sprite-wrapper.drinking_coffee .pixel-avatar .avatar-body::after {
+  content: '☕';
+  position: absolute;
+  right: -8px;
+  top: 1px;
+  font-size: 11px;
+}
+
+@keyframes coffeeSipMotion {
+  0%, 100% { transform: rotate(0deg); }
+  40%, 60% { transform: rotate(-20deg) translateY(3px); }
+}
+
+/* OUT_OF_TOKENS: Head slump + floating Zzz */
+.agent-sprite-wrapper.out_of_tokens {
+  opacity: 0.75;
+}
+.agent-sprite-wrapper.out_of_tokens .pixel-avatar .avatar-head {
+  animation: headSlumpSnooze 2s infinite alternate ease-in-out;
+}
+.agent-sprite-wrapper.out_of_tokens .pixel-avatar::before {
+  content: '💤';
+  position: absolute;
+  top: -18px;
+  right: -10px;
+  font-size: 12px;
+  animation: zzzParticleFloat 2s infinite ease-in-out;
+}
+
+@keyframes headSlumpSnooze {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(6px) rotate(15deg); }
+}
+@keyframes zzzParticleFloat {
+  0% { opacity: 0.2; transform: translate(0, 0) scale(0.8); }
+  50% { opacity: 1; transform: translate(4px, -6px) scale(1); }
+  100% { opacity: 0; transform: translate(8px, -12px) scale(1.2); }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   4. BOTTOM CONTROL PANEL (Generator UI)
+   ────────────────────────────────────────────────────────────────────────── */
+
+.generator-bottom-panel {
+  min-height: 165px;
+  background: linear-gradient(180deg, rgba(30, 30, 48, 0.95) 0%, rgba(15, 15, 26, 0.98) 100%);
+  border-top: 2px solid #2d2d48;
+  display: flex;
+  padding: 14px 20px;
+  gap: 14px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.5);
+  flex-wrap: wrap;
+}
+
+.generator-section {
+  border: 1px solid #33334d;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+.generator-section h3 {
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+  color: #94a3b8;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* Project Info */
+.info-col {
+  flex: 1.1;
+  min-width: 170px;
+}
+.info-row {
+  display: flex;
+  gap: 8px;
+  font-size: 0.85rem;
+  margin-bottom: 6px;
+}
+.info-row .info-label {
+  color: #64748b;
+  width: 65px;
+}
+.info-row .info-val {
+  color: #38bdf8;
+  font-weight: bold;
+}
+
+/* Prompt Input */
+.prompt-col {
+  flex: 2.5;
+  min-width: 280px;
+}
+.prompt-textarea {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  resize: none;
+  font-family: inherit;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  outline: none;
+}
+.prompt-textarea::placeholder {
+  color: #64748b;
+}
+
+/* Niche Selector */
+.niche-col {
+  flex: 1;
+  min-width: 130px;
+}
+.niche-picker-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.niche-option {
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  border-radius: 4px;
+  color: #94a3b8;
+  transition: all 0.15s;
+}
+.niche-option:hover {
+  background: #2d2d48;
+  color: #fff;
+}
+.niche-option.active {
+  background: #4338ca;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+/* Action Button */
+.action-col {
+  flex: 0.9;
+  min-width: 130px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  background: transparent;
+}
+
+.processing-badge-pulse {
+  color: #4ade80;
+  font-size: 0.8rem;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  animation: processingPulse 1.2s infinite ease-in-out;
+}
+
+@keyframes processingPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.96); }
+}
+
+.generate-action-button {
+  background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
+  border: 1px solid #60a5fa;
+  border-radius: 6px;
+  color: white;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: bold;
+  padding: 12px 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+  transition: all 0.2s;
+  width: 100%;
+}
+.generate-action-button:hover:not(:disabled) {
+  filter: brightness(1.2);
+  box-shadow: 0 0 16px rgba(96, 165, 250, 0.6);
+}
+.generate-action-button:disabled {
+  filter: brightness(0.65);
+  cursor: not-allowed;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   5. INTERACTIVE AGENT MODAL DRAWER (Retro Side Panel)
+   ────────────────────────────────────────────────────────────────────────── */
+
+.agent-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  display: flex;
+  justify-content: flex-end;
+  animation: fadeInBackdrop 0.2s ease;
+}
+
+@keyframes fadeInBackdrop {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.agent-modal-drawer {
+  width: 380px;
+  max-width: 90vw;
+  height: 100%;
+  background: #131322;
+  border-left: 2px solid #2d2d48;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.8);
+  animation: slideInDrawer 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow-y: auto;
+}
+
+@keyframes slideInDrawer {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #2d2d48;
+  padding-bottom: 12px;
+}
+
+.drawer-header h2 {
+  font-size: 1.1rem;
+  color: #38bdf8;
+  margin: 0;
+}
+
+.close-drawer-btn {
+  background: #252538;
+  border: 1px solid #474768;
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+.close-drawer-btn:hover {
+  background: #383852;
+}
+
+.agent-profile-card {
+  background: #1a1a2e;
+  border: 1px solid #2d2d48;
+  border-radius: 8px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.85rem;
+}
+
+.profile-field {
+  display: flex;
+  justify-content: space-between;
+}
+.profile-field .field-key {
+  color: #64748b;
+}
+.profile-field .field-val {
+  font-weight: bold;
+}
+
+.logs-section-title {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+.agent-terminal-logs {
+  flex: 1;
+  background: #090910;
+  border: 1px solid #1f1f33;
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: #4ade80;
+  overflow-y: auto;
+  max-height: 240px;
+  font-family: 'Courier New', monospace;
+}
+
+.terminal-log-entry {
+  margin-bottom: 4px;
+  word-break: break-word;
+}
+.terminal-log-entry.error {
+  color: #f87171;
+}
