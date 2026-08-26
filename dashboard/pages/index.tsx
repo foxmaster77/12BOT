@@ -96,13 +96,16 @@ export default function OrchestraInterface() {
       { id: 'docs_writer',   stage: 'Writing docs…',            msg: 'README.md 📚' },
     ];
 
-    // Try calling backend if available (non-blocking)
-    fetch('http://localhost:4000/api/build', {
+    // Call backend to generate the real HTML site
+    const buildPromise = fetch('http://localhost:4000/api/build', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ brief: `[${selectedNiche}] ${prompt}` }),
-    }).catch(() => {/* backend not running, that's OK */});
+    })
+      .then((r) => r.json())
+      .catch(() => null);
 
+    // Run animated agent sequence in parallel
     for (const { id, stage, msg } of stages) {
       setProcessingStage(stage);
       setAgents((prev) =>
@@ -131,7 +134,11 @@ export default function OrchestraInterface() {
     setAgents((prev) => prev.map((a) => ({ ...a, status: 'idle', message: 'Ready for next task' })));
     setIsProcessing(false);
     setProcessingStage('');
-    setDeployUrl('http://localhost:4000/preview');
+
+    // Get result from backend call
+    const result = await buildPromise;
+    const previewUrl = result?.previewUrl || 'http://localhost:4000/preview';
+    setDeployUrl(previewUrl);
     setShowBanner(true);
   };
 
