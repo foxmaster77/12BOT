@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Orchestra.css — Ultra HD Reactive 16-Bit Pixel-Art Office & HUD
+   Orchestra.css — Pixel-Perfect Retro 16-Bit Glassmorphic Office Dashboard
    ========================================================================== */
 
 * {
@@ -14,7 +14,7 @@ html, body {
   margin: 0;
   padding: 0;
   font-family: 'Courier New', Courier, monospace;
-  background-color: #090910;
+  background-color: #07070d;
   color: #f1f5f9;
   overflow: hidden;
   user-select: none;
@@ -26,22 +26,24 @@ html, body {
   height: 100vh;
   width: 100vw;
   position: relative;
-  background-color: #0b0b14;
+  background-color: #07070d;
+  overflow: hidden;
 }
 
-/* ── 1. RETRO HEADER ──────────────────────────────────────────────────────── */
+/* ── 1. UNIFIED SINGLE RETRO TOP HEADER ──────────────────────────────────── */
 
 .app-header {
+  height: 48px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #181828;
-  padding: 8px 20px;
+  padding: 0 20px;
+  background: linear-gradient(180deg, #141428 0%, #0c0c18 100%);
   border-bottom: 2px solid #000;
   color: white;
   z-index: 50;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.7);
-  flex-shrink: 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
 }
 
 .header-left-cluster {
@@ -51,27 +53,27 @@ html, body {
 }
 
 .logo-icon {
-  background: #2b2b44;
-  border: 1px solid #4a4a70;
+  background: radial-gradient(circle, #3b3b60 0%, #202035 100%);
+  border: 1.5px solid #6366f1;
   border-radius: 50%;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-weight: bold;
-  color: #7b9cff;
-  font-size: 13px;
-  box-shadow: 0 0 10px rgba(123, 156, 255, 0.4);
+  font-weight: 900;
+  color: #818cf8;
+  font-size: 12px;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
 }
 
 .app-header h1 {
   font-size: 1.15rem;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
   margin: 0;
-  font-weight: 800;
+  font-weight: 900;
   color: #ffffff;
-  text-shadow: 0 0 6px rgba(255, 255, 255, 0.2);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
 }
 
 .header-right-cluster {
@@ -80,67 +82,70 @@ html, body {
   gap: 14px;
 }
 
-/* Live Token Meter */
+/* Live Token Budget Pill */
 .token-counter-pill {
   display: flex;
   align-items: center;
   gap: 6px;
-  background: #0f172a;
+  background: rgba(15, 23, 42, 0.95);
   border: 1px solid #0284c7;
   padding: 4px 12px;
   border-radius: 20px;
-  font-size: 12px;
+  font-size: 11px;
   color: #38bdf8;
   font-weight: bold;
-  box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+  letter-spacing: 0.5px;
 }
 
 .token-counter-pill.low {
   border-color: #ef4444;
   color: #f87171;
-  background: #2b0c0c;
+  background: rgba(45, 10, 10, 0.95);
   animation: pulseLowTokens 0.8s infinite alternate;
 }
 
 @keyframes pulseLowTokens {
   0% { box-shadow: 0 0 4px #ef4444; }
-  100% { box-shadow: 0 0 14px #ef4444; }
+  100% { box-shadow: 0 0 16px #ef4444; }
 }
 
 .recharge-quick-btn {
-  background: #10b981;
-  color: #022c22;
-  border: none;
+  background: linear-gradient(180deg, #10b981 0%, #047857 100%);
+  color: #ffffff;
+  border: 1px solid #34d399;
   border-radius: 4px;
-  padding: 2px 6px;
+  padding: 2px 7px;
   font-size: 10px;
-  font-weight: 900;
+  font-weight: bold;
   cursor: pointer;
   margin-left: 4px;
-  transition: transform 0.15s;
+  transition: all 0.15s;
 }
 .recharge-quick-btn:hover {
-  transform: scale(1.08);
+  filter: brightness(1.2);
+  transform: scale(1.06);
 }
 
 /* Day/Night Mode Switcher */
 .theme-toggle {
-  background-color: #2b2b40;
-  color: #7b9cff;
-  border: 1px solid #4a4a70;
+  background: linear-gradient(180deg, #2d2d44 0%, #1c1c2e 100%);
+  color: #a5b4fc;
+  border: 1px solid #4f46e5;
   padding: 5px 12px;
   border-radius: 6px;
   cursor: pointer;
   font-family: inherit;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: bold;
   transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .theme-toggle:hover {
-  background-color: #3b3b55;
+  background: #3b3b5c;
   color: #fff;
-  box-shadow: 0 0 8px rgba(123, 156, 255, 0.5);
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.6);
 }
 
 /* ── 2. HD INTERACTIVE PIXEL ART VIEWPORT ─────────────────────────────────── */
@@ -150,9 +155,7 @@ html, body {
   position: relative;
   overflow: hidden;
   background-color: #0b0b14;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  min-height: 0;
 }
 
 .pixel-room-canvas {
@@ -176,7 +179,7 @@ html, body {
 /* Ambient Day Sunlight Ray Effect */
 .sunlight-beam {
   position: absolute;
-  top: 10%;
+  top: 6%;
   left: 21%;
   width: 140px;
   height: 280px;
@@ -188,15 +191,15 @@ html, body {
 }
 
 @keyframes sunBeamPulse {
-  0% { opacity: 0.6; transform: rotate(-10deg) scale(0.98); }
+  0% { opacity: 0.5; transform: rotate(-10deg) scale(0.98); }
   100% { opacity: 1; transform: rotate(-10deg) scale(1.04); }
 }
 
-/* Animated Coffee Machine Steam (Top-Right) */
+/* Steaming Coffee Machine Particles (Top-Right) */
 .coffee-steam-emitter {
   position: absolute;
   right: 9.5%;
-  top: 14%;
+  top: 10%;
   pointer-events: none;
   z-index: 15;
 }
@@ -214,18 +217,18 @@ html, body {
 @keyframes steamRiseParticle {
   0% { transform: translateY(0) scale(0.8); opacity: 0.1; }
   50% { transform: translateY(-8px) scale(1.2); opacity: 0.8; }
-  100% { transform: translateY(-16px) scale(1.5); opacity: 0; }
+  100% { transform: translateY(-18px) scale(1.5); opacity: 0; }
 }
 
-/* ── 3. INTERACTIVE 12 AGENT OVERLAYS ─────────────────────────────────────── */
+/* ── 3. CLEAN 12 AGENT INTERACTION HOTSPOTS (NO CLUTTERED TAGS) ───────────── */
 
 .agent-interactive-hotspot {
   position: absolute;
   transform: translate(-50%, -50%);
-  width: 58px;
-  height: 72px;
+  width: 52px;
+  height: 64px;
   cursor: pointer;
-  z-index: 20;
+  z-index: 25;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -233,26 +236,25 @@ html, body {
 }
 
 .agent-interactive-hotspot:hover {
-  transform: translate(-50%, -54%) scale(1.06);
+  transform: translate(-50%, -54%) scale(1.08);
 }
 
 /* Glowing CRT Monitor overlay during active coding */
 .monitor-coding-glow {
   position: absolute;
-  top: 4px;
-  width: 24px;
+  top: 6px;
+  width: 22px;
   height: 14px;
   border-radius: 2px;
-  background: rgba(56, 189, 248, 0.3);
-  box-shadow: 0 0 12px rgba(56, 189, 248, 0.7);
+  background: rgba(56, 189, 248, 0.35);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.8);
   pointer-events: none;
   animation: crtCodeFlicker 0.2s infinite alternate;
   opacity: 0;
   transition: opacity 0.3s;
 }
 
-.agent-interactive-hotspot.working .monitor-coding-glow,
-.agent-interactive-hotspot.typing .monitor-coding-glow {
+.agent-interactive-hotspot.working .monitor-coding-glow {
   opacity: 1;
 }
 
@@ -265,45 +267,45 @@ html, body {
 .agent-speech-bubble {
   position: absolute;
   top: -26px;
-  padding: 2px 7px;
-  font-size: 9px;
+  padding: 3px 8px;
+  font-size: 10px;
   font-weight: 800;
-  border-radius: 4px;
+  border-radius: 5px;
   white-space: nowrap;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.8);
   pointer-events: none;
-  z-index: 30;
-  letter-spacing: 0.3px;
+  z-index: 35;
+  letter-spacing: 0.4px;
   animation: popInBubble 0.25s ease-out;
 }
 
 @keyframes popInBubble {
-  from { transform: scale(0.6) translateY(6px); opacity: 0; }
+  from { transform: scale(0.7) translateY(6px); opacity: 0; }
   to { transform: scale(1) translateY(0); opacity: 1; }
 }
 
 .agent-speech-bubble.typing {
-  background: rgba(5, 46, 22, 0.95);
-  border: 1px solid #22c55e;
+  background: rgba(5, 46, 22, 0.96);
+  border: 1.5px solid #22c55e;
   color: #86efac;
 }
 
 .agent-speech-bubble.coffee {
-  background: rgba(69, 26, 3, 0.95);
-  border: 1px solid #f59e0b;
+  background: rgba(69, 26, 3, 0.96);
+  border: 1.5px solid #f59e0b;
   color: #fde68a;
 }
 
 .agent-speech-bubble.out_of_tokens {
-  background: rgba(69, 10, 10, 0.95);
-  border: 1px solid #ef4444;
+  background: rgba(69, 10, 10, 0.96);
+  border: 1.5px solid #ef4444;
   color: #fca5a5;
   animation: pulseOutOfTokens 0.6s infinite alternate;
 }
 
 .agent-speech-bubble.done {
-  background: rgba(8, 47, 73, 0.95);
-  border: 1px solid #38bdf8;
+  background: rgba(8, 47, 73, 0.96);
+  border: 1.5px solid #38bdf8;
   color: #7dd3fc;
 }
 
@@ -312,62 +314,35 @@ html, body {
   100% { transform: scale(1.06); }
 }
 
-/* Subtle Animated Typing Hands / Body Vibration */
-.agent-interactive-hotspot.working .agent-sprite-character,
-.agent-interactive-hotspot.typing .agent-sprite-character {
-  animation: typingGiggle 0.12s infinite alternate;
-}
-
-@keyframes typingGiggle {
-  0% { transform: translateY(0) rotate(0deg); }
-  100% { transform: translateY(-1.5px) rotate(1deg); }
-}
-
-/* Agent Name Tag Badge */
-.agent-tag-badge {
-  position: absolute;
-  bottom: 0;
-  background: rgba(11, 15, 26, 0.9);
-  border: 1px solid rgba(56, 189, 248, 0.5);
-  color: #38bdf8;
-  font-size: 8px;
-  font-weight: bold;
-  padding: 1px 4px;
-  border-radius: 3px;
-  pointer-events: none;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.6);
-}
-
-/* ── 4. REACTIVE BOTTOM CONTROL PANEL (HUD OVERLAY) ─────────────────────────── */
+/* ── 4. REACTIVE BOTTOM HUD CONTROL PANEL ─────────────────────────────────── */
 
 .control-panel {
   height: 175px;
-  background: linear-gradient(180deg, rgba(35, 35, 52, 0.96) 0%, rgba(20, 20, 32, 0.98) 100%);
-  border-top: 2px solid #3d3d5c;
+  flex-shrink: 0;
+  background: linear-gradient(180deg, rgba(30, 30, 48, 0.97) 0%, rgba(14, 14, 24, 0.99) 100%);
+  border-top: 2px solid #3a3a5a;
   display: flex;
   padding: 12px 18px;
-  gap: 12px;
-  backdrop-filter: blur(14px);
-  box-shadow: 0 -6px 28px rgba(0, 0, 0, 0.7);
-  z-index: 40;
-  flex-shrink: 0;
+  gap: 14px;
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.85);
+  z-index: 50;
 }
 
 .panel-section {
   border: 1px solid #3b3b55;
   border-radius: 8px;
-  background-color: rgba(10, 10, 18, 0.55);
-  padding: 10px 12px;
+  background-color: rgba(10, 10, 18, 0.6);
+  padding: 10px 14px;
   display: flex;
   flex-direction: column;
-  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5);
 }
 
 .panel-section h2 {
   font-size: 0.85rem;
   margin-bottom: 8px;
   color: #94a3b8;
-  font-weight: bold;
+  font-weight: 800;
   margin-top: 0;
   letter-spacing: 0.5px;
 }
@@ -402,7 +377,7 @@ html, body {
 
 /* Section 2: Prompt Input */
 .prompt-section {
-  flex: 2.5;
+  flex: 2.6;
   min-width: 280px;
 }
 
@@ -415,15 +390,11 @@ html, body {
   font-family: inherit;
   font-size: 0.85rem;
   line-height: 1.4;
+  outline: none;
 }
 
 .prompt-input::placeholder {
   color: #555577;
-}
-
-.prompt-input:focus {
-  outline: none;
-  color: #fff;
 }
 
 /* Section 3: Niche Selector */
@@ -440,7 +411,7 @@ html, body {
 }
 
 .niche-item {
-  padding: 3px 8px;
+  padding: 4px 8px;
   cursor: pointer;
   font-size: 0.85rem;
   border-radius: 4px;
@@ -449,12 +420,13 @@ html, body {
 }
 
 .niche-item:hover {
-  background-color: #2b2b40;
+  background-color: #2b2b42;
   color: #fff;
 }
 
 .niche-item.active {
-  background-color: #4338ca;
+  background: linear-gradient(90deg, #4338ca 0%, #3730a3 100%);
+  border: 1px solid #6366f1;
   border-radius: 4px;
   color: white;
   font-weight: bold;
@@ -462,8 +434,8 @@ html, body {
 
 /* Section 4: Generate Action */
 .action-section {
-  flex: 0.9;
-  min-width: 130px;
+  flex: 0.95;
+  min-width: 135px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -484,7 +456,7 @@ html, body {
 }
 
 @keyframes pulseProcessingGlow {
-  0%, 100% { opacity: 1; transform: scale(1); text-shadow: 0 0 6px #4ade80; }
+  0%, 100% { opacity: 1; transform: scale(1); text-shadow: 0 0 8px #4ade80; }
   50% { opacity: 0.4; transform: scale(0.96); text-shadow: none; }
 }
 
@@ -620,10 +592,10 @@ html, body {
 
 .live-deploy-banner {
   position: absolute;
-  top: 70px;
+  top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(6, 78, 59, 0.92);
+  background: rgba(6, 78, 59, 0.94);
   border: 1.5px solid #10b981;
   border-radius: 24px;
   padding: 8px 20px;
@@ -635,7 +607,7 @@ html, body {
   font-weight: bold;
   z-index: 60;
   backdrop-filter: blur(8px);
-  box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
   animation: bannerSlideDown 0.3s ease-out;
 }
 
