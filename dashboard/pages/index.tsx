@@ -4,6 +4,7 @@ import SitePreview from '../components/SitePreview';
 import TokenPanel from '../components/TokenPanel';
 import OverridePanel from '../components/OverridePanel';
 import EconomyPanel from '../components/EconomyPanel';
+import OrchestraInterface from '../components/OrchestraInterface';
 import { createOfficeWs, AgentEvent, AgentStatus } from '../lib/wsClient';
 
 // Dynamically import PixiJS canvas to prevent SSR errors
@@ -36,6 +37,7 @@ export default function Dashboard() {
   const [refreshPreview, setRefreshPreview] = useState(0);
   const [agentLogs, setAgentLogs] = useState<AgentEvent[]>([]);
   const [agentStates, setAgentStates] = useState<Record<string, { status: AgentStatus; currentTask?: string }>>({});
+  const [viewMode, setViewMode] = useState<'dev' | 'orchestra'>('dev');
 
   // Feature 1: Token Usage State
   const [agentTokens, setAgentTokens] = useState<Record<string, AgentTokenData>>({});
@@ -185,14 +187,15 @@ export default function Dashboard() {
     return () => ws.close();
   }, []);
 
-  const handleStartBuild = async () => {
-    if (!brief.trim()) return;
+  const handleStartBuild = async (customBrief?: string) => {
+    const text = customBrief || brief;
+    if (!text.trim()) return;
     setIsBuilding(true);
     try {
       await fetch('http://localhost:4000/api/build', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ brief, isMock: useMock }),
+        body: JSON.stringify({ brief: text, isMock: useMock }),
       });
     } catch (err) {
       console.error('Failed to trigger build:', err);
@@ -221,10 +224,44 @@ export default function Dashboard() {
     <div style={{ background: '#090d16', minHeight: '100vh', color: '#f8fafc', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       {/* Header */}
       <header style={{ padding: '0.8rem 2rem', background: '#0f172a', borderBottom: '1px solid #1e293b', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <h1 style={{ margin: 0, fontSize: '1.3rem', fontWeight: 800, letterSpacing: '1px' }}>
             🏢 THE OFFICE <span style={{ fontSize: '0.8rem', color: '#38bdf8', fontWeight: 400, marginLeft: '6px' }}>12-Agent AI Dev Team</span>
           </h1>
+
+          {/* View Mode Switcher */}
+          <div style={{ display: 'flex', background: '#1e293b', borderRadius: '8px', padding: '2px' }}>
+            <button
+              onClick={() => setViewMode('dev')}
+              style={{
+                padding: '4px 12px',
+                borderRadius: '6px',
+                border: 'none',
+                background: viewMode === 'dev' ? '#38bdf8' : 'transparent',
+                color: viewMode === 'dev' ? '#04101e' : '#94a3b8',
+                fontWeight: 700,
+                fontSize: '11px',
+                cursor: 'pointer',
+              }}
+            >
+              📊 Dev Studio
+            </button>
+            <button
+              onClick={() => setViewMode('orchestra')}
+              style={{
+                padding: '4px 12px',
+                borderRadius: '6px',
+                border: 'none',
+                background: viewMode === 'orchestra' ? '#7b9cff' : 'transparent',
+                color: viewMode === 'orchestra' ? '#04101e' : '#94a3b8',
+                fontWeight: 700,
+                fontSize: '11px',
+                cursor: 'pointer',
+              }}
+            >
+              🕹️ Orchestra2D
+            </button>
+          </div>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
@@ -282,7 +319,7 @@ export default function Dashboard() {
             }}
           />
           <button
-            onClick={handleStartBuild}
+            onClick={() => handleStartBuild()}
             disabled={isBuilding}
             style={{
               background: isBuilding ? '#475569' : '#38bdf8',
@@ -320,78 +357,91 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Main Dual-Panel Workspace */}
-      <main style={{ display: 'grid', gridTemplateColumns: '960px 1fr', gap: '20px', padding: '20px' }}>
-        {/* Left Column: 2D Office Canvas + Panels */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          {/* 2D Office Canvas */}
-          <div style={{ background: '#0f172a', padding: '12px', borderRadius: '12px', border: '1px solid #1e293b', boxShadow: '0 8px 30px rgba(0,0,0,0.5)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-              <span style={{ fontSize: '12px', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.5px' }}>
-                LIVE 2D OFFICE FLOOR (12 AGENT DESKS)
-              </span>
-            </div>
-            <OfficeCanvas wsUrl="ws://localhost:4001" />
-          </div>
-
-          {/* Interactive Controls & Real-Time Metrics Grid (Features 1 & 2) */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-            {/* Feature 1: Token / Cost Tracker Panel */}
-            <TokenPanel agentTokens={agentTokens} grandTotal={grandTotalTokens} />
-
-            {/* Feature 2: Human Override Control Panel */}
-            <OverridePanel agentStates={agentStates} />
-          </div>
-
-          {/* Feature 4: Agent Economy & On-Chain Reputation Panel */}
-          <EconomyPanel agentEconomy={agentEconomy} chainEnabled={chainEnabled} />
-
-          {/* Activity Stream */}
-          <div style={{ background: '#0f172a', borderRadius: '12px', padding: '12px 16px', border: '1px solid #1e293b', overflowY: 'auto', maxHeight: '180px' }}>
-            <div style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.5px', marginBottom: '8px' }}>
-              ORCHESTRATOR REAL-TIME EVENT STREAM
-            </div>
-            {agentLogs.length === 0 ? (
-              <div style={{ color: '#475569', fontSize: '12px' }}>Waiting for agent events...</div>
-            ) : (
-              agentLogs.map((log, i) => (
-                <div key={i} style={{ fontSize: '11px', marginBottom: '4px', display: 'flex', gap: '8px', alignItems: 'center' }}>
-                  <span style={{ color: '#64748b', fontFamily: 'monospace' }}>
-                    {log.timestamp ? new Date(log.timestamp).toLocaleTimeString() : ''}
-                  </span>
-                  <span style={{ fontWeight: 700, color: '#f1f5f9' }}>[{log.agentId}]</span>
-                  <span style={{ background: getStatusColor(log.status), color: '#000', padding: '1px 5px', borderRadius: '4px', fontSize: '10px', fontWeight: 700 }}>
-                    {log.status}
-                  </span>
-                  <span style={{ color: '#94a3b8' }}>{log.currentTask}</span>
-                </div>
-              ))
-            )}
-          </div>
+      {/* Main Workspace */}
+      {viewMode === 'orchestra' ? (
+        <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
+          <OrchestraInterface
+            initialPrompt={brief}
+            isBuilding={isBuilding}
+            onGenerate={(p, n) => {
+              setBrief(p);
+              handleStartBuild(`[${n}] ${p}`);
+            }}
+          />
         </div>
-
-        {/* Right Column: Live Output / Preview */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div style={{ background: '#0f172a', borderRadius: '12px', padding: '12px', border: '1px solid #1e293b', height: '100%', minHeight: '750px', display: 'flex', flexDirection: 'column' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-              <span style={{ fontSize: '12px', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.5px' }}>
-                LIVE GENERATED WEBSITE PREVIEW
-              </span>
-              {deployUrl && (
-                <span style={{ fontSize: '11px', color: '#38bdf8' }}>
-                  Streaming from {deployProvider === 'vercel' ? 'Vercel CDN' : 'Local Preview Server'}
+      ) : (
+        <main style={{ display: 'grid', gridTemplateColumns: '960px 1fr', gap: '20px', padding: '20px' }}>
+          {/* Left Column: 2D Office Canvas + Panels */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {/* 2D Office Canvas */}
+            <div style={{ background: '#0f172a', padding: '12px', borderRadius: '12px', border: '1px solid #1e293b', boxShadow: '0 8px 30px rgba(0,0,0,0.5)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <span style={{ fontSize: '12px', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.5px' }}>
+                  LIVE 2D OFFICE FLOOR (12 AGENT DESKS)
                 </span>
+              </div>
+              <OfficeCanvas wsUrl="ws://localhost:4001" />
+            </div>
+
+            {/* Interactive Controls & Real-Time Metrics Grid (Features 1 & 2) */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              {/* Feature 1: Token / Cost Tracker Panel */}
+              <TokenPanel agentTokens={agentTokens} grandTotal={grandTotalTokens} />
+
+              {/* Feature 2: Human Override Control Panel */}
+              <OverridePanel agentStates={agentStates} />
+            </div>
+
+            {/* Feature 4: Agent Economy & On-Chain Reputation Panel */}
+            <EconomyPanel agentEconomy={agentEconomy} chainEnabled={chainEnabled} />
+
+            {/* Activity Stream */}
+            <div style={{ background: '#0f172a', borderRadius: '12px', padding: '12px 16px', border: '1px solid #1e293b', overflowY: 'auto', maxHeight: '180px' }}>
+              <div style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.5px', marginBottom: '8px' }}>
+                ORCHESTRATOR REAL-TIME EVENT STREAM
+              </div>
+              {agentLogs.length === 0 ? (
+                <div style={{ color: '#475569', fontSize: '12px' }}>Waiting for agent events...</div>
+              ) : (
+                agentLogs.map((log, i) => (
+                  <div key={i} style={{ fontSize: '11px', marginBottom: '4px', display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <span style={{ color: '#64748b', fontFamily: 'monospace' }}>
+                      {log.timestamp ? new Date(log.timestamp).toLocaleTimeString() : ''}
+                    </span>
+                    <span style={{ fontWeight: 700, color: '#f1f5f9' }}>[{log.agentId}]</span>
+                    <span style={{ background: getStatusColor(log.status), color: '#000', padding: '1px 5px', borderRadius: '4px', fontSize: '10px', fontWeight: 700 }}>
+                      {log.status}
+                    </span>
+                    <span style={{ color: '#94a3b8' }}>{log.currentTask}</span>
+                  </div>
+                ))
               )}
             </div>
-            <div style={{ flex: 1 }}>
-              <SitePreview
-                previewUrl={deployUrl || 'http://localhost:4000/preview/index.html'}
-                refreshTrigger={refreshPreview}
-              />
+          </div>
+
+          {/* Right Column: Live Output / Preview */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ background: '#0f172a', borderRadius: '12px', padding: '12px', border: '1px solid #1e293b', height: '100%', minHeight: '750px', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                <span style={{ fontSize: '12px', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.5px' }}>
+                  LIVE GENERATED WEBSITE PREVIEW
+                </span>
+                {deployUrl && (
+                  <span style={{ fontSize: '11px', color: '#38bdf8' }}>
+                    Streaming from {deployProvider === 'vercel' ? 'Vercel CDN' : 'Local Preview Server'}
+                  </span>
+                )}
+              </div>
+              <div style={{ flex: 1 }}>
+                <SitePreview
+                  previewUrl={deployUrl || 'http://localhost:4000/preview/index.html'}
+                  refreshTrigger={refreshPreview}
+                />
+              </div>
             </div>
           </div>
-        </div>
-      </main>
+        </main>
+      )}
     </div>
   );
 }
