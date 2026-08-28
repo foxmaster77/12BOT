@@ -480,32 +480,111 @@ html, body {
   cursor: wait;
 }
 
-/* Live Deploy Banner */
+/* Live Deploy Floating Action HUD */
 .live-deploy-banner {
   position: absolute;
   top: 14px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(2, 44, 22, 0.95);
-  border: 1.5px solid var(--neon-green);
-  border-radius: 4px;
-  padding: 6px 18px;
+  right: 24px;
+  background: rgba(8, 14, 30, 0.95);
+  border: 2px solid var(--neon-blue);
+  border-radius: 8px;
+  padding: 8px 16px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  color: var(--neon-green);
+  gap: 14px;
+  color: #fff;
   font-size: 11px;
   font-weight: bold;
-  z-index: 60;
-  box-shadow: 0 0 24px rgba(57, 255, 20, 0.5);
-  animation: bannerDrop 0.3s ease-out;
+  z-index: 80;
+  box-shadow: 0 8px 32px rgba(0, 212, 255, 0.35), 0 0 12px rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(10px);
+  animation: bannerSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
-@keyframes bannerDrop {
-  from { transform: translate(-50%, -16px); opacity: 0; }
-  to { transform: translate(-50%, 0); opacity: 1; }
+
+@keyframes bannerSlideIn {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
-.live-deploy-banner a { color: #ffffff; text-decoration: underline; }
-.banner-close-btn { background: none; border: none; color: var(--neon-green); cursor: pointer; }
+
+.deploy-badge-tag {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.42rem;
+  color: var(--neon-green);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.deploy-badge-tag::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--neon-green);
+  box-shadow: 0 0 8px var(--neon-green);
+  animation: procGlow 0.8s infinite alternate;
+}
+
+.deploy-action-btn-preview {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  border: 1px solid var(--neon-blue);
+  padding: 6px 14px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: 'Press Start 2P', monospace;
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+  transition: all 0.2s;
+}
+.deploy-action-btn-preview:hover {
+  filter: brightness(1.2);
+  transform: translateY(-1px);
+  box-shadow: 0 0 16px rgba(0, 212, 255, 0.6);
+}
+
+.deploy-action-btn-zip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  color: #ffffff;
+  border: 1px solid var(--neon-green);
+  padding: 6px 14px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: 'Press Start 2P', monospace;
+  box-shadow: 0 0 10px rgba(57, 255, 20, 0.3);
+  transition: all 0.2s;
+}
+.deploy-action-btn-zip:hover {
+  filter: brightness(1.2);
+  transform: translateY(-1px);
+  box-shadow: 0 0 16px rgba(57, 255, 20, 0.6);
+}
+
+.banner-close-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #94a3b8;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+}
+.banner-close-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.2);
+}
 
 /* Agent Drawer */
 .agent-drawer-backdrop {

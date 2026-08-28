@@ -287,31 +287,34 @@ export default function OrchestraInterface() {
             );
           })}
 
-          {/* Live Deployment Success Banner */}
+          {/* Dedicated Live Deployment & Download Floating Action HUD */}
           {deployUrl && (
             <div className="live-deploy-banner">
-              <span>🚀 SITE LIVE & DEPLOYED:</span>
-              <a href={deployUrl} target="_blank" rel="noopener noreferrer">
-                Preview ↗
+              <div className="deploy-badge-tag">BUILD DEPLOYED</div>
+              <a
+                href={deployUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="deploy-action-btn-preview"
+                title="Open live responsive preview in new tab"
+              >
+                🌐 LIVE PREVIEW ↗
               </a>
               <a
                 href="http://localhost:4000/api/download"
                 download="12bot-generated-project.zip"
-                style={{
-                  background: '#22c55e',
-                  color: '#000',
-                  padding: '2px 8px',
-                  borderRadius: '3px',
-                  fontWeight: 'bold',
-                  textDecoration: 'none',
-                  fontSize: '10px',
-                  fontFamily: "'Press Start 2P', monospace",
-                  marginLeft: '4px',
-                }}
+                className="deploy-action-btn-zip"
+                title="Download full source code ZIP archive"
               >
-                📦 ZIP
+                📦 DOWNLOAD .ZIP
               </a>
-              <button className="banner-close-btn" onClick={() => setDeployUrl(null)}>✕</button>
+              <button
+                className="banner-close-btn"
+                onClick={() => setDeployUrl(null)}
+                title="Close"
+              >
+                ✕
+              </button>
             </div>
           )}
         </main>
