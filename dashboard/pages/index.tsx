@@ -208,31 +208,25 @@ export default function OrchestraInterface() {
         {/* ── 1. RETRO TOP COMMAND BAR ─────────────────────────── */}
         <header className="app-header">
           <div className="header-left-cluster">
-            <div className="logo-icon">(†!†)</div>
-            <div className="header-title-group">
-              <h1>Orchestra2D Generator Interface</h1>
-              <span>12-Agent Autonomous Dev Team</span>
+            <div className="logo-icon">
+              <span>(†!†)</span>
             </div>
+            <h1>Orchestra2D Generator Interface</h1>
           </div>
 
           <div className="header-right-cluster">
-            {/* Sound FX Toggle */}
-            <button className="sound-toggle-btn" onClick={toggleSound} title="Toggle 8-bit Sound FX">
-              {isMuted ? '🔇' : '🔊'} SFX
-            </button>
-
             {/* Token Budget Meter */}
             <div className={`token-counter-pill ${tokensRemaining < 100 ? 'low' : ''}`}>
               <span className="tok-label">TOKENS:</span>
               <span className="tok-num">{tokensRemaining}</span>
               <button className="recharge-quick-btn" onClick={handleRechargeTokens} title="Recharge +500">
-                ⚡ +500
+                +500
               </button>
             </div>
 
             {/* Day / Night Mode Toggle */}
             <button className="theme-toggle" onClick={() => { sound.playClick(); setIsDayMode(!isDayMode); }}>
-              {isDayMode ? '🌙 Night' : '☀️ Day'}
+              Toggle {isDayMode ? 'Night' : 'Day'} Mode
             </button>
           </div>
         </header>
