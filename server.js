@@ -11,6 +11,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
+import archiver from 'archiver';
 
 dotenv.config();
 
@@ -343,6 +344,24 @@ app.post('/api/build', (req, res) => {
 
 // Serve the generated website at /preview
 app.use('/preview', express.static(GENERATED_SITE_DIR, { index: 'index.html' }));
+
+// Download the complete generated site as a .ZIP archive
+app.get('/api/download', (req, res) => {
+  if (!fs.existsSync(GENERATED_SITE_DIR)) {
+    return res.status(404).json({ error: 'No site generated yet' });
+  }
+
+  res.attachment('12bot-generated-project.zip');
+  const archive = archiver('zip', { zlib: { level: 9 } });
+
+  archive.on('error', (err) => {
+    res.status(500).send({ error: err.message });
+  });
+
+  archive.pipe(res);
+  archive.directory(GENERATED_SITE_DIR, false);
+  archive.finalize();
+});
 
 // Top-up tokens back to 500
 app.post('/api/recharge', (req, res) => {

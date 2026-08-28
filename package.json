@@ -17,6 +17,7 @@
     "test:milestone2": "node orchestrator/testMilestone2.js"
   },
   "dependencies": {
+    "archiver": "^8.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
     "ethers": "^6.17.0",

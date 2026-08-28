@@ -1,0 +1,69 @@
+---
+layout: base.njk
+title: The Munder Difflin Blog
+description: "Guides, deep dives, and comparisons on running multi-agent Claude Code: orchestration, agent memory, automation, and the tooling landscape."
+seoTitle: "Multi-agent & Claude Code blog — Munder Difflin"
+permalink: /index.html
+---
+{% block head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Blog",
+  "name": "{{ site.blogName }}",
+  "description": {{ site.description | dump | safe }},
+  "url": "{{ site.baseUrl }}",
+  "publisher": { "@type": "Organization", "name": "Munder Difflin", "logo": { "@type": "ImageObject", "url": "{{ site.origin }}/logo.png" } }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "{{ site.origin }}/" },
+    { "@type": "ListItem", "position": 2, "name": "Blog", "item": "{{ site.baseUrl }}" }
+  ]
+}
+</script>
+{% endblock %}
+{% block content %}
+{%- set posts = collections.posts -%}
+<header class="page-head wrap">
+  <p class="eyebrow">Notes from the office floor</p>
+  <h1>The Munder Difflin <span class="hl">Blog.</span></h1>
+  <p class="lead">Guides, deep dives, and comparisons on running <strong>multi-agent Claude
+  Code</strong> — orchestration, agent memory, automation, and the tooling landscape. From the team
+  building a self-coordinating hive of agents with a GOD orchestrator you talk to.</p>
+
+  <div class="filters" role="navigation" aria-label="Topics">
+    <a class="chip" aria-current="page">All<span class="ct">{{ posts.length }}</span></a>
+    {% for c in collections.categories %}
+    <a class="chip" href="{{ ('/topics/' + c.slug + '/') | u }}">{{ c.name }}<span class="ct">{{ c.posts.length }}</span></a>
+    {% endfor %}
+  </div>
+</header>
+
+{% if posts.length %}
+<div class="wrap featured">
+  {%- set p = posts[0] -%}
+  {% include "card.njk" %}
+</div>
+
+{% if posts.length > 1 %}
+<section class="wrap">
+  <div class="post-grid">
+    {% for p in posts %}{% if not loop.first %}{% include "card.njk" %}{% endif %}{% endfor %}
+  </div>
+</section>
+{% endif %}
+{% else %}
+<div class="center-stage wrap">
+  <div>
+    <p class="eyebrow">Coming soon</p>
+    <h1 style="font-size:clamp(28px,5vw,44px)">The first dispatch is in the oven.</h1>
+    <p>New posts land here. Subscribe via <a href="{{ site.baseUrl }}feed.xml">RSS</a>.</p>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

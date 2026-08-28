@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Command Center: Kanban, Fleet, and Budgets in One Place — Munder Difflin Blog</title>
+<meta name="description" content="A guide to Munder Difflin&#39;s Command Center — the task kanban, live fleet monitoring, per-agent budgets and cost telemetry — and when to watch the board instead of the floor." />
+<link rel="canonical" href="https://munderdiffl.in/blog/command-center-guide/" />
+
+<link rel="icon" type="image/png" href="https://munderdiffl.in/logo.png" />
+<link rel="apple-touch-icon" href="https://munderdiffl.in/logo.png" />
+<meta name="theme-color" content="#F5F2E8" />
+
+<!-- Open Graph -->
+<meta property="og:site_name" content="Munder Difflin Blog" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="The Command Center: Kanban, Fleet, and Budgets in One Place — Munder Difflin Blog" />
+<meta property="og:description" content="A guide to Munder Difflin&#39;s Command Center — the task kanban, live fleet monitoring, per-agent budgets and cost telemetry — and when to watch the board instead of the floor." />
+<meta property="og:url" content="https://munderdiffl.in/blog/command-center-guide/" />
+<meta property="og:image" content="https://munderdiffl.in/media/og.png" />
+<meta property="og:locale" content="en_US" />
+<meta property="article:published_time" content="2026-07-03T00:00:00.000Z" />
+<meta property="article:author" content="Chaitanya Giri" />
+<meta property="article:tag" content="Guides" />
+<meta property="article:tag" content="Command Center" />
+<meta property="article:tag" content="Kanban" />
+<meta property="article:tag" content="Cost" />
+<meta property="article:tag" content="Observability" />
+
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="The Command Center: Kanban, Fleet, and Budgets in One Place — Munder Difflin Blog" />
+<meta name="twitter:description" content="A guide to Munder Difflin&#39;s Command Center — the task kanban, live fleet monitoring, per-agent budgets and cost telemetry — and when to watch the board instead of the floor." />
+<meta name="twitter:image" content="https://munderdiffl.in/media/og.png" />
+
+<link rel="alternate" type="application/atom+xml" title="Munder Difflin Blog" href="https://munderdiffl.in/blog/feed.xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&amp;family=Space+Grotesk:wght@500;600;700&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/blog/assets/blog-press.css" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "The Command Center: Kanban, Fleet, and Budgets in One Place",
+  "description": "A guide to Munder Difflin's Command Center — the task kanban, live fleet monitoring, per-agent budgets and cost telemetry — and when to watch the board instead of the floor.",
+  "image": ["https://munderdiffl.in/media/og.png"],
+  "datePublished": "2026-07-03T00:00:00.000Z",
+  "dateModified": "2026-07-03T00:00:00.000Z",
+  "author": { "@type": "Person", "name": "Chaitanya Giri" },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Munder Difflin",
+    "logo": { "@type": "ImageObject", "url": "https://munderdiffl.in/logo.png" }
+  },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": "https://munderdiffl.in/blog/command-center-guide/" },
+  "keywords": "ai agent command center, agent task kanban, monitor ai agent fleet, per-agent token budgets, ai agent cost tracking, multi-agent dashboard",
+  "articleSection": "Guides",
+  "inLanguage": "en-US",
+  "url": "https://munderdiffl.in/blog/command-center-guide/"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://munderdiffl.in/" },
+    { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://munderdiffl.in/blog/" },
+    { "@type": "ListItem", "position": 3, "name": "The Command Center: Kanban, Fleet, and Budgets in One Place", "item": "https://munderdiffl.in/blog/command-center-guide/" }
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "What is the Command Center in Munder Difflin?", "acceptedAnswer": { "@type": "Answer", "text": "It's Michael's control surface — the management view of the whole hive. It has tabs for the orchestrator Terminal, the Floor (roster, dispatch, per-agent model selector, live fleet monitoring), Memory (semantic search plus a memory graph), Activity (event log, board, real token telemetry, observability, and a CI watcher), Tasks (a dependency-aware kanban board), and Triggers (everything that starts work without you — schedules with last/next-fired times, context, webhooks, and organization)." } },
+    { "@type": "Question", "name": "How does the task kanban work?", "acceptedAnswer": { "@type": "Answer", "text": "The Tasks tab is a dependency-aware kanban board. You assign tasks to agents and track them across todo, doing, blocked, and done. Because tasks can declare dependencies, downstream work waits until its prerequisites finish, so a chain of related tasks starts in the right order without you babysitting the handoffs." } },
+    { "@type": "Question", "name": "How do per-agent budgets and cost tracking work?", "acceptedAnswer": { "@type": "Answer", "text": "You set a token budget per agent, and live fleet monitoring tracks consumption across the roster. Cost numbers are real, not estimates from vibes: the Activity tab reads the JSONL transcripts Claude Code writes and surfaces actual token counts plus estimated USD cost per agent per session, backed by a durable cost ledger that survives restarts. The budget pairs with a circuit breaker that steers, then constrains, then stops an agent that loops or blows its cap." } },
+    { "@type": "Question", "name": "When should I watch the office floor versus the Command Center?", "acceptedAnswer": { "@type": "Answer", "text": "The floor is for ambient awareness and single-agent moments — seeing who's working, watching envelopes fly, dropping into one terminal. The Command Center is for management questions: what's queued and blocked, what each agent has spent, whether CI is green, and what fires next on the schedule. Roughly: floor for one agent right now, board for the whole fleet over time." } },
+    { "@type": "Question", "name": "Does the Command Center include observability?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The Activity tab includes a live OpenTelemetry collector with per-model cost attribution, a fleet grid, and a per-agent tool-span waterfall, so you can see exactly what every agent is doing and what it costs in real time. Each agent card also carries a context-window gauge showing how much of the model's context that agent has consumed." } },
+    { "@type": "Question", "name": "Can the Command Center pull in work from GitHub?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. You can ingest open issues from any registered repo via the gh CLI and assign them to agents with one click, and a CI status watcher shows live pass/fail/in-progress state for GitHub Actions runs in the Activity tab. Work flows in from GitHub, gets tracked on the kanban, and its CI result lands back in the same view." } }
+    
+  ]
+}
+</script>
+
+
+<script>
+  // Anonymous blog analytics (PostHog) — same posture as the main site and the
+  // app's TELEMETRY.md: public write-only token ('' = inert), anonymous-only
+  // (person_profiles 'never'), no autocapture/recording, DNT respected.
+  (function () {
+    var PH_KEY = 'phc_qJzsokwcbtTGHemnvywR3nSqivNNgMjHeNVEWkZNydFB';
+    if (!PH_KEY || navigator.doNotTrack === '1') return;
+    var s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://us-assets.i.posthog.com/static/array.js';
+    s.onload = function () {
+      if (!window.posthog) return;
+      window.posthog.init(PH_KEY, {
+        api_host: 'https://us.i.posthog.com',
+        person_profiles: 'never',
+        autocapture: false,
+        before_send: function (event) {
+          // PostHog fills $ip from the connection unless the event carries one.
+          // Null it here and disable the GeoIP lookup so no IP, city, postal
+          // code or lat/long is ever derived or stored for this page view.
+          if (event && event.properties) {
+            event.properties.$ip = null;
+            event.properties.$geoip_disable = true;
+          }
+          return event;
+        },
+        disable_session_recording: true,
+        respect_dnt: true
+      });
+    };
+    document.head.appendChild(s);
+  })();
+</script>
+</head>
+<body class="theme-press">
+<a class="skip-link" href="#main">Skip to content</a>
+<nav id="nav">
+  <a class="brand" href="https://munderdiffl.in" aria-label="Munder Difflin home">
+    <img class="brand-logo" src="https://munderdiffl.in/logo.png" width="1318" height="840" alt="Munder Difflin, Inc. — Multi-Agent Harness" />
+  </a>
+  <span class="spacer"></span>
+  <div class="links">
+    <a href="/blog/">Latest</a>
+    <a href="/blog/topics/">Topics</a>
+    <a href="/blog/about/">About</a>
+    <a href="https://munderdiffl.in">↗ Product</a>
+  </div>
+  <div class="nav-actions">
+    <a class="btn sm" href="https://munderdiffl.in/blog/feed.xml" aria-label="RSS feed">⤵ RSS</a>
+    <a class="btn sm primary" href="https://munderdiffl.in/#install">⤓ Download</a>
+  </div>
+</nav>
+
+<main id="main">
+
+<article class="t-guides">
+  <header class="post-head wrap">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="/blog/">Blog</a>
+      <span>/</span>
+      <a href="/blog/topics/guides/">Guides</a>
+    </nav>
+    <h1>The Command Center: Kanban, Fleet, and Budgets in One Place</h1>
+    <p class="dek">A guide to Munder Difflin&#39;s Command Center — the task kanban, live fleet monitoring, per-agent budgets and cost telemetry — and when to watch the board instead of the floor.</p>
+    <div class="byline">
+      <span class="av" aria-hidden="true">CG</span>
+      <strong>Chaitanya Giri</strong>
+      <span class="dot" aria-hidden="true">·</span>
+      <time datetime="2026-07-03">Jul 3, 2026</time>
+      <span class="dot" aria-hidden="true">·</span>
+      <span>5 min read</span>
+      <span class="tag kind">Guides</span>
+    </div>
+  </header>
+
+  <div class="hero-wrap wrap"><figure class="fig fig-hero"><img src="/blog/assets/media/command-center-guide/hero.png" alt="Illustration: The Command Center: Kanban, Fleet, and Budgets in One Place" loading="lazy" decoding="async" /></figure></div>
+
+  <div class="post-wrap wrap">
+    <div class="prose">
+      <div class="callout tldr"><span class="ic">TL;DR</span><p>The office floor is fun to watch, but you don't manage a team by staring at desks. Munder Difflin's <strong>Command Center</strong> is the management view: a <strong>dependency-aware task kanban</strong>, <strong>live fleet monitoring with per-agent token budgets</strong>, <strong>real cost telemetry</strong> backed by a durable ledger, <strong>OpenTelemetry observability</strong> with a per-agent tool-span waterfall, plus GitHub issue ingestion, a CI watcher, and a Triggers tab. Rule of thumb: <strong>watch the floor for one agent right now, watch the board for the whole fleet over time</strong>.</p></div>
+<video controls preload="none" playsinline poster="/media/demo/features-poster.jpg" style="width:100%; border-radius:12px; margin:12px 0 24px;">
+  <source src="/media/demo/features.mp4" type="video/mp4" />
+</video>
+<p>Munder Difflin has two ways of looking at the same hive. The <strong>office floor</strong> is the ambient view: avatars at desks, envelopes flying between them, speech bubbles when a tool fires. The <strong>Command Center</strong> is the management view — Michael’s control surface, the place you go when the question stops being “what is Dwight doing?” and becomes “what is <em>everyone</em> doing, what has it cost, and what’s next?”</p>
+<p>This guide walks through what’s in it and how the pieces fit together.</p>
+<h2 id="whats-in-the-command-center" tabindex="-1">What’s in the Command Center <a class="anchor" href="#whats-in-the-command-center" aria-hidden="true">#</a></h2>
+<p>Six tabs, one control surface:</p>
+<ul>
+<li><strong>Terminal</strong> — Michael’s own terminal, the <a href="/blog/how-the-god-orchestrator-works/">GOD orchestrator</a> you talk to directly.</li>
+<li><strong>Floor</strong> — the roster and dispatch controls: hire, dispatch work, pick a model per agent, and watch live fleet monitoring across everyone at once.</li>
+<li><strong>Memory</strong> — semantic search over the shared memory palace, plain text search, and a memory graph.</li>
+<li><strong>Activity</strong> — the append-only event log, the blackboard, real token telemetry, the observability view, and a CI watcher.</li>
+<li><strong>Tasks</strong> — the kanban board.</li>
+<li><strong>Triggers</strong> — everything that starts work without you, grouped by kind: schedules (recurring missions and the adaptive heartbeat, with last/next-fired times), context, webhooks, and organization.</li>
+</ul>
+<p>You could run the hive from the floor alone. But once you have more than two or three agents, the Command Center is where the actual decisions happen.</p>
+<h2 id="the-task-kanban-work-as-a-board-not-a-chat-log" tabindex="-1">The task kanban: work as a board, not a chat log <a class="anchor" href="#the-task-kanban-work-as-a-board-not-a-chat-log" aria-hidden="true">#</a></h2>
+<p>The Tasks tab is a <strong>dependency-aware kanban board</strong>. Tasks move across four columns — todo, doing, blocked, done — and each task is assigned to a specific agent.</p>
+<p>The load-bearing word is <em>dependency-aware</em>. Real work has ordering: the refactor has to land before the tests get updated; the schema migration comes before the endpoint. On the board you wire those dependencies explicitly, and downstream tasks wait until their prerequisites finish. You’re not the sequencer anymore — the board is.</p>
+<p>Work gets onto the board a few ways: you create tasks yourself, Michael creates and assigns them as he routes requests, and you can <strong>pull open GitHub issues from any registered repo</strong> (via the <code>gh</code> CLI) and assign them to agents with one click. Issue in, task tracked, agent dispatched — and when the work ships, the <strong>CI status watcher</strong> in the Activity tab shows live pass/fail/in-progress for the repo’s GitHub Actions runs. The loop closes in the same window it opened in.</p>
+<figure class="fig fig-inline"><img src="/blog/assets/media/command-center-guide/note-1.png" alt="Hand-drawn sketch from “The Command Center: Kanban, Fleet, and Budgets in One Place”" loading="lazy" decoding="async" /></figure>
+<h2 id="fleet-status-the-roster-at-a-glance" tabindex="-1">Fleet status: the roster at a glance <a class="anchor" href="#fleet-status-the-roster-at-a-glance" aria-hidden="true">#</a></h2>
+<p>The Floor tab is where the fleet stops being a set of individual terminals and becomes a roster. Each agent card shows what that agent is up to, and the card’s progress bar doubles as a <strong>context-window gauge</strong> — a glanceable read on how much of the model’s context each agent has burned. An agent near the top of its gauge is an agent about to compact or slow down; you can see it coming instead of discovering it.</p>
+<p>Dispatch also lives here: pick an agent, pick a model (the <strong>per-agent model selector</strong> means your cheap-tier worker and your frontier-tier reviewer are one dropdown apart), and send work. Routine tasks go to the cheap tier; the frontier tier is reserved for the reasoning that needs it.</p>
+<h2 id="budgets-and-cost-real-numbers-not-vibes" tabindex="-1">Budgets and cost: real numbers, not vibes <a class="anchor" href="#budgets-and-cost-real-numbers-not-vibes" aria-hidden="true">#</a></h2>
+<p>This is the part that makes a 24/7 fleet safe to leave running.</p>
+<p><strong>Per-agent token budgets.</strong> You set a budget per agent, and live fleet monitoring tracks consumption across the whole roster against it. Budgets pair with the <strong>circuit breaker</strong>, which handles the runaway case on a ladder: <em>steer</em> (nudge the agent), then <em>constrain</em>, then <em>stop</em>. An agent that loops, storms errors, or blows through its cap gets caught by machinery, not by you noticing the bill.</p>
+<p><strong>Real telemetry.</strong> The Activity tab doesn’t estimate from message counts — it reads the JSONL transcripts Claude Code writes to <code>~/.claude/projects/</code> and surfaces <strong>actual token counts and estimated USD cost per agent, per session</strong>, backed by a <strong>durable cost ledger</strong> that survives app restarts. Yesterday’s spend is still there this morning, attributed to the agent that spent it.</p>
+<p><strong>Observability.</strong> Also in Activity: a live <strong>OpenTelemetry collector</strong> with per-model cost attribution, a fleet grid, and a <strong>per-agent tool-span waterfall</strong> — the “what exactly is this agent doing, step by step, and what does each step cost” view. It’s the same discipline we covered in <a href="/blog/observability-for-agent-fleets/">observability for agent fleets</a>, built into the harness instead of bolted on.</p>
+<figure class="fig fig-inline"><img src="/blog/assets/media/command-center-guide/note-2.png" alt="Hand-drawn sketch from “The Command Center: Kanban, Fleet, and Budgets in One Place”" loading="lazy" decoding="async" /></figure>
+<h2 id="triggers-the-boards-fourth-dimension" tabindex="-1">Triggers: the board’s fourth dimension <a class="anchor" href="#triggers-the-boards-fourth-dimension" aria-hidden="true">#</a></h2>
+<p>The kanban answers “what’s in flight.” The <strong>Triggers tab</strong> answers “what happens next without me” — every way the hive wakes up when you aren’t typing. <strong>Schedules</strong> are the first and oldest of them: recurring missions carry a label, an interval, a target agent, and a body, and the tab shows last-fired and next-fired times, so drift is visible. A scheduler <strong>heartbeat</strong> re-engages the floor when it goes quiet. Together with the board, it turns the hive from something you drive into something you supervise — the full pattern is in <a href="/blog/scheduling-autonomous-agent-missions/">scheduling autonomous agent missions</a>.</p>
+<h2 id="floor-or-board-a-simple-rule" tabindex="-1">Floor or board? A simple rule <a class="anchor" href="#floor-or-board-a-simple-rule" aria-hidden="true">#</a></h2>
+<p>Both views are the same hive, so this is about attention, not data:</p>
+<ul>
+<li><strong>Watch the floor</strong> when you care about <em>one agent right now</em> — you just dispatched something, you want to type into a session, or you want ambient awareness while doing other work. (Also: it’s charming.)</li>
+<li><strong>Watch the board</strong> when you care about <em>the fleet over time</em> — what’s queued, what’s blocked on what, who’s near budget, whether CI is green, what fires tonight.</li>
+</ul>
+<p>In practice: floor open while you work, Command Center when you check in. Morning check-in is the board — done column, spend per agent, blocked tasks, next scheduled missions. That’s a two-minute read that would take twenty minutes of terminal-scrolling without it. And when something needs a human decision, escalations land in the <a href="/blog/human-in-the-loop-approving-ai-agents/">approvals queue</a> rather than hiding in a scrollback buffer.</p>
+<h2 id="try-it" tabindex="-1">Try it <a class="anchor" href="#try-it" aria-hidden="true">#</a></h2>
+<p>The Command Center ships in the current release, free and open source. <a href="https://github.com/chaitanyagiri/munder-difflin/releases/latest">Download Munder Difflin</a> — and if the board earns its place in your morning routine, a <a href="https://github.com/chaitanyagiri/munder-difflin">star on GitHub</a> helps more people find it.</p>
+
+
+      
+      <section class="faq" aria-label="Frequently asked questions">
+        <h2 id="faq">FAQ</h2>
+        
+        <div class="qa">
+          <p class="q">What is the Command Center in Munder Difflin?</p>
+          <p class="a">It&#39;s Michael&#39;s control surface — the management view of the whole hive. It has tabs for the orchestrator Terminal, the Floor (roster, dispatch, per-agent model selector, live fleet monitoring), Memory (semantic search plus a memory graph), Activity (event log, board, real token telemetry, observability, and a CI watcher), Tasks (a dependency-aware kanban board), and Triggers (everything that starts work without you — schedules with last/next-fired times, context, webhooks, and organization).</p>
+        </div>
+        
+        <div class="qa">
+          <p class="q">How does the task kanban work?</p>
+          <p class="a">The Tasks tab is a dependency-aware kanban board. You assign tasks to agents and track them across todo, doing, blocked, and done. Because tasks can declare dependencies, downstream work waits until its prerequisites finish, so a chain of related tasks starts in the right order without you babysitting the handoffs.</p>
+        </div>
+        
+        <div class="qa">
+          <p class="q">How do per-agent budgets and cost tracking work?</p>
+          <p class="a">You set a token budget per agent, and live fleet monitoring tracks consumption across the roster. Cost numbers are real, not estimates from vibes: the Activity tab reads the JSONL transcripts Claude Code writes and surfaces actual token counts plus estimated USD cost per agent per session, backed by a durable cost ledger that survives restarts. The budget pairs with a circuit breaker that steers, then constrains, then stops an agent that loops or blows its cap.</p>
+        </div>
+        
+        <div class="qa">
+          <p class="q">When should I watch the office floor versus the Command Center?</p>
+          <p class="a">The floor is for ambient awareness and single-agent moments — seeing who&#39;s working, watching envelopes fly, dropping into one terminal. The Command Center is for management questions: what&#39;s queued and blocked, what each agent has spent, whether CI is green, and what fires next on the schedule. Roughly: floor for one agent right now, board for the whole fleet over time.</p>
+        </div>
+        
+        <div class="qa">
+          <p class="q">Does the Command Center include observability?</p>
+          <p class="a">Yes. The Activity tab includes a live OpenTelemetry collector with per-model cost attribution, a fleet grid, and a per-agent tool-span waterfall, so you can see exactly what every agent is doing and what it costs in real time. Each agent card also carries a context-window gauge showing how much of the model&#39;s context that agent has consumed.</p>
+        </div>
+        
+        <div class="qa">
+          <p class="q">Can the Command Center pull in work from GitHub?</p>
+          <p class="a">Yes. You can ingest open issues from any registered repo via the gh CLI and assign them to agents with one click, and a CI status watcher shows live pass/fail/in-progress state for GitHub Actions runs in the Activity tab. Work flows in from GitHub, gets tracked on the kanban, and its CI result lands back in the same view.</p>
+        </div>
+        
+      </section>
+      
+
+      
+      <hr />
+      <div class="share">
+        <span class="lbl">Tags</span>
+        <a class="tag" href="/blog/tags/guides/">Guides</a><a class="tag" href="/blog/tags/command-center/">Command Center</a><a class="tag" href="/blog/tags/kanban/">Kanban</a><a class="tag" href="/blog/tags/cost/">Cost</a><a class="tag" href="/blog/tags/observability/">Observability</a>
+      </div>
+      
+    </div>
+
+    
+    <aside class="toc-rail" aria-label="Table of contents">
+      <div class="tt">On this page</div>
+      <ol>
+        <li class="lvl-2"><a href="#whats-in-the-command-center">What’s in the Command Center</a></li><li class="lvl-2"><a href="#the-task-kanban-work-as-a-board-not-a-chat-log">The task kanban: work as a board, not a chat log</a></li><li class="lvl-2"><a href="#fleet-status-the-roster-at-a-glance">Fleet status: the roster at a glance</a></li><li class="lvl-2"><a href="#budgets-and-cost-real-numbers-not-vibes">Budgets and cost: real numbers, not vibes</a></li><li class="lvl-2"><a href="#triggers-the-boards-fourth-dimension">Triggers: the board’s fourth dimension</a></li><li class="lvl-2"><a href="#floor-or-board-a-simple-rule">Floor or board? A simple rule</a></li><li class="lvl-2"><a href="#try-it">Try it</a></li>
+      </ol>
+    </aside>
+    
+  </div>
+
+  <footer class="post-foot wrap"><div class="prevnext">
+      <a class="pn prev" href="/blog/crewai-autogen-vs-a-local-agent-harness/"><span class="k">← Older</span><span class="t">CrewAI and AutoGen vs a Local Agent Harness: Framework or App?</span></a>
+      <a class="pn next" href="/blog/qm-vs-munder-difflin/"><span class="k">Newer →</span><span class="t">qm vs Munder Difflin: YC&#39;s Multiplayer Harness or a Local-First Agent Office?</span></a>
+    </div>
+    <section class="related">
+      <h2>Related in Guides</h2>
+      <div class="post-grid">
+        <article class="card t-guides">
+  <a class="thumb t-guides" href="/blog/how-to-add-a-github-copilot-cli-agent/" aria-hidden="true" tabindex="-1"><img src="/blog/assets/media/how-to-add-a-github-copilot-cli-agent/hero.png" alt="" loading="lazy" decoding="async" /></a>
+  <div class="body">
+    <div class="meta">
+      <time datetime="2026-07-03">Jul 3, 2026</time>
+      <span class="dot" aria-hidden="true"></span>
+      <span>4 min</span>
+    </div>
+    <h3><a href="/blog/how-to-add-a-github-copilot-cli-agent/">How to Add a GitHub Copilot CLI Agent to Your Floor</a></h3>
+    <p class="dek">A step-by-step v0.3.3 walkthrough: install GitHub Copilot CLI (or let the harness install it for you), hire a Copilot worker, pick a model, and know exactly what print mode can and can&#39;t do.</p>
+    <div class="foot">
+      <span class="tag kind">Guides</span>
+      <a class="more" href="/blog/how-to-add-a-github-copilot-cli-agent/" aria-label="Read: How to Add a GitHub Copilot CLI Agent to Your Floor">Read →</a>
+    </div>
+  </div>
+</article>
+<article class="card t-guides">
+  <a class="thumb t-guides" href="/blog/how-to-hire-from-the-agent-gallery/" aria-hidden="true" tabindex="-1"><img src="/blog/assets/media/how-to-hire-from-the-agent-gallery/hero.png" alt="" loading="lazy" decoding="async" /></a>
+  <div class="body">
+    <div class="meta">
+      <time datetime="2026-07-03">Jul 3, 2026</time>
+      <span class="dot" aria-hidden="true"></span>
+      <span>5 min</span>
+    </div>
+    <h3><a href="/blog/how-to-hire-from-the-agent-gallery/">How to Hire From the Agent Gallery</a></h3>
+    <p class="dek">A practical guide to Munder Difflin&#39;s Agent Gallery: browse six off-the-shelf hires, import one from a link or file, review the pre-filled manifest, customize identity, workspace, engine, and briefing — then spawn it yourself.</p>
+    <div class="foot">
+      <span class="tag kind">Guides</span>
+      <a class="more" href="/blog/how-to-hire-from-the-agent-gallery/" aria-label="Read: How to Hire From the Agent Gallery">Read →</a>
+    </div>
+  </div>
+</article>
+<article class="card t-guides">
+  <a class="thumb t-guides" href="/blog/how-to-talk-to-your-orchestrator/" aria-hidden="true" tabindex="-1"><img src="/blog/assets/media/how-to-talk-to-your-orchestrator/hero.png" alt="" loading="lazy" decoding="async" /></a>
+  <div class="body">
+    <div class="meta">
+      <time datetime="2026-07-03">Jul 3, 2026</time>
+      <span class="dot" aria-hidden="true"></span>
+      <span>5 min</span>
+    </div>
+    <h3><a href="/blog/how-to-talk-to-your-orchestrator/">How to Brief Your Orchestrator (So the Floor Actually Ships)</a></h3>
+    <p class="dek">A practical guide to briefing Munder Difflin&#39;s GOD orchestrator: state the goal not the steps, set constraints and budgets, name the deliverable, and let Michael staff the floor. With bad-vs-good brief examples, mid-run steering, and Talk mode.</p>
+    <div class="foot">
+      <span class="tag kind">Guides</span>
+      <a class="more" href="/blog/how-to-talk-to-your-orchestrator/" aria-label="Read: How to Brief Your Orchestrator (So the Floor Actually Ships)">Read →</a>
+    </div>
+  </div>
+</article>
+
+      </div>
+    </section>
+    
+  </footer>
+</article>
+
+</main>
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-top">
+      <a class="foot-brand brand" href="https://munderdiffl.in" aria-label="Munder Difflin home">
+        <img class="brand-logo" src="https://munderdiffl.in/logo.png" width="1318" height="840" alt="Munder Difflin, Inc. — Multi-Agent Harness" />
+      </a>
+      <div class="foot-links">
+        <a href="/blog/">Latest</a>
+        <a href="/blog/topics/">Topics</a>
+        <a href="/blog/about/">About</a>
+        <a href="https://munderdiffl.in/blog/feed.xml">RSS</a>
+        <a href="https://github.com/chaitanyagiri/munder-difflin">GitHub</a>
+        <a href="https://munderdiffl.in">munderdiffl.in ↗</a>
+      </div>
+    </div>
+    <div class="foot-meta">
+      © 2026 Munder Difflin · Local-first · MIT-licensed ·
+      Built on <a href="https://munderdiffl.in">Electron, React, Pixi.js, xterm.js &amp; node-pty</a>.
+      Run an office of agents while you sleep.
+    </div>
+  </div>
+</footer>
+
+<script>
+  // sticky-nav border on scroll
+  (function () {
+    var nav = document.getElementById('nav');
+    if (!nav) return;
+    var onScroll = function () { nav.classList.toggle('scrolled', window.scrollY > 8); };
+    onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
+  })();
+  // YouTube click-to-load: thumbnail button → youtube-nocookie iframe
+  (function () {
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest('.yt-load');
+      if (!btn) return;
+      var box = btn.closest('.yt');
+      var id = box && box.getAttribute('data-yt');
+      if (!id) return;
+      var frame = document.createElement('iframe');
+      frame.src = 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1';
+      frame.title = box.getAttribute('data-title') || 'YouTube video';
+      frame.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+      frame.setAttribute('allowfullscreen', '');
+      box.replaceChildren(frame);
+    });
+  })();
+</script>
+
+</body>
+</html>

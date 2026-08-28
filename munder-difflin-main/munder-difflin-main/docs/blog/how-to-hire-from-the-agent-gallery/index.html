@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>How to Hire From the Agent Gallery — Munder Difflin Blog</title>
+<meta name="description" content="A practical guide to Munder Difflin&#39;s Agent Gallery: browse six off-the-shelf hires, import one from a link or file, review the pre-filled manifest, customize identity, workspace, engine, and briefing — then spawn it yourself." />
+<link rel="canonical" href="https://munderdiffl.in/blog/how-to-hire-from-the-agent-gallery/" />
+
+<link rel="icon" type="image/png" href="https://munderdiffl.in/logo.png" />
+<link rel="apple-touch-icon" href="https://munderdiffl.in/logo.png" />
+<meta name="theme-color" content="#F5F2E8" />
+
+<!-- Open Graph -->
+<meta property="og:site_name" content="Munder Difflin Blog" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="How to Hire From the Agent Gallery — Munder Difflin Blog" />
+<meta property="og:description" content="A practical guide to Munder Difflin&#39;s Agent Gallery: browse six off-the-shelf hires, import one from a link or file, review the pre-filled manifest, customize identity, workspace, engine, and briefing — then spawn it yourself." />
+<meta property="og:url" content="https://munderdiffl.in/blog/how-to-hire-from-the-agent-gallery/" />
+<meta property="og:image" content="https://munderdiffl.in/media/og.png" />
+<meta property="og:locale" content="en_US" />
+<meta property="article:published_time" content="2026-07-03T00:00:00.000Z" />
+<meta property="article:author" content="Chaitanya Giri" />
+<meta property="article:tag" content="Guides" />
+<meta property="article:tag" content="Multi-Agent" />
+<meta property="article:tag" content="Agent Design" />
+<meta property="article:tag" content="Getting Started" />
+<meta property="article:tag" content="Security" />
+
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="How to Hire From the Agent Gallery — Munder Difflin Blog" />
+<meta name="twitter:description" content="A practical guide to Munder Difflin&#39;s Agent Gallery: browse six off-the-shelf hires, import one from a link or file, review the pre-filled manifest, customize identity, workspace, engine, and briefing — then spawn it yourself." />
+<meta name="twitter:image" content="https://munderdiffl.in/media/og.png" />
+
+<link rel="alternate" type="application/atom+xml" title="Munder Difflin Blog" href="https://munderdiffl.in/blog/feed.xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&amp;family=Space+Grotesk:wght@500;600;700&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/blog/assets/blog-press.css" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "How to Hire From the Agent Gallery",
+  "description": "A practical guide to Munder Difflin's Agent Gallery: browse six off-the-shelf hires, import one from a link or file, review the pre-filled manifest, customize identity, workspace, engine, and briefing — then spawn it yourself.",
+  "image": ["https://munderdiffl.in/media/og.png"],
+  "datePublished": "2026-07-03T00:00:00.000Z",
+  "dateModified": "2026-07-03T00:00:00.000Z",
+  "author": { "@type": "Person", "name": "Chaitanya Giri" },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Munder Difflin",
+    "logo": { "@type": "ImageObject", "url": "https://munderdiffl.in/logo.png" }
+  },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": "https://munderdiffl.in/blog/how-to-hire-from-the-agent-gallery/" },
+  "keywords": "agent gallery, hire an ai agent, off-the-shelf agent roles, import agent manifest, munder difflin hires, ready-made ai coworkers",
+  "articleSection": "Guides",
+  "inLanguage": "en-US",
+  "url": "https://munderdiffl.in/blog/how-to-hire-from-the-agent-gallery/"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://munderdiffl.in/" },
+    { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://munderdiffl.in/blog/" },
+    { "@type": "ListItem", "position": 3, "name": "How to Hire From the Agent Gallery", "item": "https://munderdiffl.in/blog/how-to-hire-from-the-agent-gallery/" }
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "What is the Agent Gallery?", "acceptedAnswer": { "@type": "Answer", "text": "It's a free gallery of ready-made agent roles for Munder Difflin at munderdiffl.in/hires — no login, no trackers. Each role, called a hire, is a small JSON manifest that packages a configured agent: name, avatar, provider, model, flags, a goal, capability tags, and a token budget. It ships with six off-the-shelf hires you can import in one click and adapt to your project." } },
+    { "@type": "Question", "name": "Does importing a hire from the gallery start an agent automatically?", "acceptedAnswer": { "@type": "Answer", "text": "No. Import only pre-fills the Add-Agent modal behind an explicit imported banner. You review every field, change anything you like, and the agent spawns only when you click spawn. There is no code path that runs an agent on import — the human is always the spawn gate." } },
+    { "@type": "Question", "name": "Is it safe to import a hire manifest someone sent me?", "acceptedAnswer": { "@type": "Answer", "text": "The import pipeline is built on the assumption that it isn't — every manifest is validated as untrusted input. There is no executable field, so a manifest can never name a program to run; command flags pass a default-deny allowlist; and deep-link fetches are https-only and bounded. Even after all that, you still review the pre-filled form before anything spawns. Treat the goal text with the same skepticism you'd give any file from the internet." } },
+    { "@type": "Question", "name": "Can I change the engine or model a gallery hire uses?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The manifest is a starting point, not a lock. In the Add-Agent modal you can switch the hire onto any engine you have — Claude Code, Antigravity, Codex, OpenCode, Crush, pi.dev, or GitHub Copilot CLI — pick a different model, and on local-capable engines use the OSS-model quick-picks to run it on open models via Ollama or a BYOK provider." } },
+    { "@type": "Question", "name": "What should I customize before spawning a hire?", "acceptedAnswer": { "@type": "Answer", "text": "Four things. Identity: the name and avatar you'll recognize on the floor. Workspace: the working directory it operates in, ideally with the git-isolation toggle on so it gets its own worktree. Engine: the CLI and model that match the job's difficulty and your budget. Briefing: rewrite the goal so it names your repo, your conventions, and what done means — a generic goal produces generic work." } },
+    { "@type": "Question", "name": "How much does hiring from the gallery cost?", "acceptedAnswer": { "@type": "Answer", "text": "The gallery and the app are free and open source (MIT-licensed code). You pay only for the model usage of whatever CLI or key the agent runs on. Every hire carries a token budget field, and the harness pairs per-agent budgets with live fleet monitoring and a circuit breaker, so an imported role can't quietly outspend the ceiling you gave it." } }
+    
+  ]
+}
+</script>
+
+
+<script>
+  // Anonymous blog analytics (PostHog) — same posture as the main site and the
+  // app's TELEMETRY.md: public write-only token ('' = inert), anonymous-only
+  // (person_profiles 'never'), no autocapture/recording, DNT respected.
+  (function () {
+    var PH_KEY = 'phc_qJzsokwcbtTGHemnvywR3nSqivNNgMjHeNVEWkZNydFB';
+    if (!PH_KEY || navigator.doNotTrack === '1') return;
+    var s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://us-assets.i.posthog.com/static/array.js';
+    s.onload = function () {
+      if (!window.posthog) return;
+      window.posthog.init(PH_KEY, {
+        api_host: 'https://us.i.posthog.com',
+        person_profiles: 'never',
+        autocapture: false,
+        before_send: function (event) {
+          // PostHog fills $ip from the connection unless the event carries one.
+          // Null it here and disable the GeoIP lookup so no IP, city, postal
+          // code or lat/long is ever derived or stored for this page view.
+          if (event && event.properties) {
+            event.properties.$ip = null;
+            event.properties.$geoip_disable = true;
+          }
+          return event;
+        },
+        disable_session_recording: true,
+        respect_dnt: true
+      });
+    };
+    document.head.appendChild(s);
+  })();
+</script>
+</head>
+<body class="theme-press">
+<a class="skip-link" href="#main">Skip to content</a>
+<nav id="nav">
+  <a class="brand" href="https://munderdiffl.in" aria-label="Munder Difflin home">
+    <img class="brand-logo" src="https://munderdiffl.in/logo.png" width="1318" height="840" alt="Munder Difflin, Inc. — Multi-Agent Harness" />
+  </a>
+  <span class="spacer"></span>
+  <div class="links">
+    <a href="/blog/">Latest</a>
+    <a href="/blog/topics/">Topics</a>
+    <a href="/blog/about/">About</a>
+    <a href="https://munderdiffl.in">↗ Product</a>
+  </div>
+  <div class="nav-actions">
+    <a class="btn sm" href="https://munderdiffl.in/blog/feed.xml" aria-label="RSS feed">⤵ RSS</a>
+    <a class="btn sm primary" href="https://munderdiffl.in/#install">⤓ Download</a>
+  </div>
+</nav>
+
+<main id="main">
+
+<article class="t-guides">
+  <header class="post-head wrap">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="/blog/">Blog</a>
+      <span>/</span>
+      <a href="/blog/topics/guides/">Guides</a>
+    </nav>
+    <h1>How to Hire From the Agent Gallery</h1>
+    <p class="dek">A practical guide to Munder Difflin&#39;s Agent Gallery: browse six off-the-shelf hires, import one from a link or file, review the pre-filled manifest, customize identity, workspace, engine, and briefing — then spawn it yourself.</p>
+    <div class="byline">
+      <span class="av" aria-hidden="true">CG</span>
+      <strong>Chaitanya Giri</strong>
+      <span class="dot" aria-hidden="true">·</span>
+      <time datetime="2026-07-03">Jul 3, 2026</time>
+      <span class="dot" aria-hidden="true">·</span>
+      <span>5 min read</span>
+      <span class="tag kind">Guides</span>
+    </div>
+  </header>
+
+  <div class="hero-wrap wrap"><figure class="fig fig-hero"><img src="/blog/assets/media/how-to-hire-from-the-agent-gallery/hero.png" alt="Illustration: How to Hire From the Agent Gallery" loading="lazy" decoding="async" /></figure></div>
+
+  <div class="post-wrap wrap">
+    <div class="prose">
+      <div class="callout tldr"><span class="ic">TL;DR</span><p>The <strong>Agent Gallery</strong> (<a href="https://munderdiffl.in/hires/">munderdiffl.in/hires</a>) is where you hire ready-made AI coworkers for Munder Difflin — it ships with <strong>six off-the-shelf hires</strong>. A hire is a small JSON manifest: provider, model, flags, goal, capabilities, token budget. Importing one — by <code>munderdifflin://hire</code> link or a local file — <strong>never runs anything</strong>: it only pre-fills the Add-Agent modal behind an "imported" banner, and the manifest is <strong>validated as untrusted input</strong> along the way. You review, customize the <strong>identity, workspace, engine, and briefing</strong>, and <em>you</em> click spawn. Five minutes from browsing to a working agent on your floor.</p></div>
+<p>The slowest part of running a multi-agent office isn’t running the agents. It’s the blank Add-Agent form: which engine, which model, which flags, and — the one that actually stalls people — what is this thing’s <em>job</em>? The Agent Gallery exists so you never start from that blank box. You start from a role somebody already got right, and you edit.</p>
+<p>This is the practical walkthrough: browse, import, review, customize, spawn. (If you haven’t installed the app yet, do <a href="/blog/how-to-install-and-use-munder-difflin/">that first</a> — the gallery assumes you have a floor to hire onto.)</p>
+<h2 id="step-1-browse-the-gallery" tabindex="-1">Step 1: Browse the gallery <a class="anchor" href="#step-1-browse-the-gallery" aria-hidden="true">#</a></h2>
+<p>The gallery lives at <a href="https://munderdiffl.in/hires/">munderdiffl.in/hires</a> — a static page, no login, no trackers. It’s stocked with <strong>six off-the-shelf hires</strong>, each a complete role: a PR reviewer, a docs writer, a QA enforcer, a security auditor, a token-spend auditor, and a migrations grinder, each fronted by a pixel avatar from the app’s affectionate Office parody cast.</p>
+<p>Every card tells you what you’re getting before you click anything: the role’s goal, its capability tags, and which provider it’s written for. Don’t overthink the choice — you’re picking a starting point, not signing a contract. Everything on the card is editable after import.</p>
+<figure class="fig fig-inline"><img src="/blog/assets/media/how-to-hire-from-the-agent-gallery/note-1.png" alt="Hand-drawn sketch from “How to Hire From the Agent Gallery”" loading="lazy" decoding="async" /></figure>
+<h2 id="step-2-import-the-hire" tabindex="-1">Step 2: Import the hire <a class="anchor" href="#step-2-import-the-hire" aria-hidden="true">#</a></h2>
+<p>Two ways in, both landing in the same place:</p>
+<ul>
+<li><strong>Deep link.</strong> Click the hire button on a card and the <code>munderdifflin://hire</code> link opens the app directly.</li>
+<li><strong>Local file.</strong> Save the manifest JSON (or receive one from a teammate) and import it from disk.</li>
+</ul>
+<p>Either way, one thing is worth being precise about: <strong>import never spawns anything.</strong> What opens is the app’s ordinary Add-Agent modal, pre-filled with the manifest’s values and marked with an explicit <strong>“imported” banner</strong> so you know these fields came from outside. The agent starts only when you click spawn. A hire you got from the internet is inert data until a human acts on it.</p>
+<p>That’s not an accident of UI — it’s a security posture. A manifest arrives by clicked link or downloaded file, which makes it attacker-controlled bytes, and the import pipeline treats it that way: there’s <strong>no executable field</strong> (the binary always comes from your own locally configured provider presets), command flags pass a <strong>default-deny allowlist</strong>, and the deep-link fetch is <strong>https-only and bounded</strong>. The full threat model is its own post: <a href="/blog/hire-manifest-untrusted-input/">treating a hire manifest as untrusted input</a>.</p>
+<h2 id="step-3-actually-read-the-manifest" tabindex="-1">Step 3: Actually read the manifest <a class="anchor" href="#step-3-actually-read-the-manifest" aria-hidden="true">#</a></h2>
+<p>The imported banner is your cue to slow down for thirty seconds. A hire manifest encodes the whole role — name, avatar, provider, model, command flags, goal, capability tags, and a token budget — and every one of those is now sitting in front of you as a form field. Read them like you’d read a job description before forwarding it to HR:</p>
+<ul>
+<li><strong>Goal text</strong> is the prompt this agent will work from. It’s free text from someone else, which makes it the one field validation can’t vouch for. If anything in it looks off, rewrite it.</li>
+<li><strong>Model and flags</strong> tell you what it costs to run and how it behaves. The allowlist keeps flags safe; it doesn’t make them right for you.</li>
+<li><strong>Token budget</strong> is the spend ceiling the author suggested. Set it to what <em>you</em> are comfortable with — the harness enforces per-agent budgets with live fleet monitoring and a circuit breaker behind it.</li>
+</ul>
+<figure class="fig fig-inline"><img src="/blog/assets/media/how-to-hire-from-the-agent-gallery/note-2.png" alt="Hand-drawn sketch from “How to Hire From the Agent Gallery”" loading="lazy" decoding="async" /></figure>
+<h2 id="step-4-customize-the-four-things-that-matter" tabindex="-1">Step 4: Customize the four things that matter <a class="anchor" href="#step-4-customize-the-four-things-that-matter" aria-hidden="true">#</a></h2>
+<p>A gallery hire is deliberately generic. Four edits turn it into <em>your</em> hire:</p>
+<p><strong>Identity.</strong> Rename it and pick the avatar you want to see walking the floor. This sounds cosmetic; it isn’t. When six agents are working at once, you triage by face and name.</p>
+<p><strong>Workspace.</strong> Point the hire at the repo it should work in, and flip on the <strong>git isolation</strong> toggle so it auto-provisions its own worktree on spawn — agents that share a checkout collide on branches; agents with worktrees don’t (<a href="/blog/claude-code-git-worktrees-vs-hive/">why worktrees, in depth</a>).</p>
+<p><strong>Engine.</strong> The manifest names a provider, but the modal’s picker is yours: run the role on Claude Code, Antigravity, Codex, OpenCode, Crush, pi.dev, or GitHub Copilot CLI. Match the engine to the job — and if the role is routine enough, the local-capable engines surface <strong>OSS-model quick-picks</strong> so it can run on open models for pennies.</p>
+<p><strong>Briefing.</strong> Rewrite the goal until it names your project, your conventions, and what “done” looks like. This is the highest-leverage sixty seconds of the whole flow: a hire that arrives with “review pull requests” leaves with “review PRs on repo X, enforce the lint config, never approve without a green typecheck.”</p>
+<p>One more gate you’ll meet after spawning: hires carry a manifest of allowed <strong>skills and MCP servers</strong>, default-deny over a shared catalog. Anything the hire wants to use surfaces in a consent UI for you to grant — imported input is reviewed, never auto-granted.</p>
+<h2 id="step-5-spawn-and-put-it-to-work" tabindex="-1">Step 5: Spawn, and put it to work <a class="anchor" href="#step-5-spawn-and-put-it-to-work" aria-hidden="true">#</a></h2>
+<p>Click spawn. The agent appears at a desk, joins the hive with its own mailbox and long-term memory, and is immediately routable: assign it kanban tasks, or just tell the GOD orchestrator what you need and let <a href="/blog/how-the-god-orchestrator-works/">Michael route the work</a>.</p>
+<p>From browsing a card to a working coworker is genuinely a five-minute path — and every minute of it kept you in the loop: you read the manifest, you set the budget, you clicked spawn.</p>
+<p>Grab the latest build from the <a href="https://github.com/chaitanyagiri/munder-difflin/releases/latest">releases page</a>, and if the gallery saves you a blank-form afternoon, a <a href="https://github.com/chaitanyagiri/munder-difflin">GitHub star</a> is appreciated.</p>
+
+
+      
+      <section class="faq" aria-label="Frequently asked questions">
+        <h2 id="faq">FAQ</h2>
+        
+        <div class="qa">
+          <p class="q">What is the Agent Gallery?</p>
+          <p class="a">It&#39;s a free gallery of ready-made agent roles for Munder Difflin at munderdiffl.in/hires — no login, no trackers. Each role, called a hire, is a small JSON manifest that packages a configured agent: name, avatar, provider, model, flags, a goal, capability tags, and a token budget. It ships with six off-the-shelf hires you can import in one click and adapt to your project.</p>
+        </div>
+        
+        <div class="qa">
+          <p class="q">Does importing a hire from the gallery start an agent automatically?</p>
+          <p class="a">No. Import only pre-fills the Add-Agent modal behind an explicit imported banner. You review every field, change anything you like, and the agent spawns only when you click spawn. There is no code path that runs an agent on import — the human is always the spawn gate.</p>
+        </div>
+        
+        <div class="qa">
+          <p class="q">Is it safe to import a hire manifest someone sent me?</p>
+          <p class="a">The import pipeline is built on the assumption that it isn&#39;t — every manifest is validated as untrusted input. There is no executable field, so a manifest can never name a program to run; command flags pass a default-deny allowlist; and deep-link fetches are https-only and bounded. Even after all that, you still review the pre-filled form before anything spawns. Treat the goal text with the same skepticism you&#39;d give any file from the internet.</p>
+        </div>
+        
+        <div class="qa">
+          <p class="q">Can I change the engine or model a gallery hire uses?</p>
+          <p class="a">Yes. The manifest is a starting point, not a lock. In the Add-Agent modal you can switch the hire onto any engine you have — Claude Code, Antigravity, Codex, OpenCode, Crush, pi.dev, or GitHub Copilot CLI — pick a different model, and on local-capable engines use the OSS-model quick-picks to run it on open models via Ollama or a BYOK provider.</p>
+        </div>
+        
+        <div class="qa">
+          <p class="q">What should I customize before spawning a hire?</p>
+          <p class="a">Four things. Identity: the name and avatar you&#39;ll recognize on the floor. Workspace: the working directory it operates in, ideally with the git-isolation toggle on so it gets its own worktree. Engine: the CLI and model that match the job&#39;s difficulty and your budget. Briefing: rewrite the goal so it names your repo, your conventions, and what done means — a generic goal produces generic work.</p>
+        </div>
+        
+        <div class="qa">
+          <p class="q">How much does hiring from the gallery cost?</p>
+          <p class="a">The gallery and the app are free and open source (MIT-licensed code). You pay only for the model usage of whatever CLI or key the agent runs on. Every hire carries a token budget field, and the harness pairs per-agent budgets with live fleet monitoring and a circuit breaker, so an imported role can&#39;t quietly outspend the ceiling you gave it.</p>
+        </div>
+        
+      </section>
+      
+
+      
+      <hr />
+      <div class="share">
+        <span class="lbl">Tags</span>
+        <a class="tag" href="/blog/tags/guides/">Guides</a><a class="tag" href="/blog/tags/multi-agent/">Multi-Agent</a><a class="tag" href="/blog/tags/agent-design/">Agent Design</a><a class="tag" href="/blog/tags/getting-started/">Getting Started</a><a class="tag" href="/blog/tags/security/">Security</a>
+      </div>
+      
+    </div>
+
+    
+    <aside class="toc-rail" aria-label="Table of contents">
+      <div class="tt">On this page</div>
+      <ol>
+        <li class="lvl-2"><a href="#step-1-browse-the-gallery">Step 1: Browse the gallery</a></li><li class="lvl-2"><a href="#step-2-import-the-hire">Step 2: Import the hire</a></li><li class="lvl-2"><a href="#step-3-actually-read-the-manifest">Step 3: Actually read the manifest</a></li><li class="lvl-2"><a href="#step-4-customize-the-four-things-that-matter">Step 4: Customize the four things that matter</a></li><li class="lvl-2"><a href="#step-5-spawn-and-put-it-to-work">Step 5: Spawn, and put it to work</a></li>
+      </ol>
+    </aside>
+    
+  </div>
+
+  <footer class="post-foot wrap"><div class="prevnext">
+      <a class="pn prev" href="/blog/how-to-talk-to-your-orchestrator/"><span class="k">← Older</span><span class="t">How to Brief Your Orchestrator (So the Floor Actually Ships)</span></a>
+      <a class="pn next" href="/blog/how-to-add-a-github-copilot-cli-agent/"><span class="k">Newer →</span><span class="t">How to Add a GitHub Copilot CLI Agent to Your Floor</span></a>
+    </div>
+    <section class="related">
+      <h2>Related in Guides</h2>
+      <div class="post-grid">
+        <article class="card t-guides">
+  <a class="thumb t-guides" href="/blog/command-center-guide/" aria-hidden="true" tabindex="-1"><img src="/blog/assets/media/command-center-guide/hero.png" alt="" loading="lazy" decoding="async" /></a>
+  <div class="body">
+    <div class="meta">
+      <time datetime="2026-07-03">Jul 3, 2026</time>
+      <span class="dot" aria-hidden="true"></span>
+      <span>5 min</span>
+    </div>
+    <h3><a href="/blog/command-center-guide/">The Command Center: Kanban, Fleet, and Budgets in One Place</a></h3>
+    <p class="dek">A guide to Munder Difflin&#39;s Command Center — the task kanban, live fleet monitoring, per-agent budgets and cost telemetry — and when to watch the board instead of the floor.</p>
+    <div class="foot">
+      <span class="tag kind">Guides</span>
+      <a class="more" href="/blog/command-center-guide/" aria-label="Read: The Command Center: Kanban, Fleet, and Budgets in One Place">Read →</a>
+    </div>
+  </div>
+</article>
+<article class="card t-guides">
+  <a class="thumb t-guides" href="/blog/how-to-add-a-github-copilot-cli-agent/" aria-hidden="true" tabindex="-1"><img src="/blog/assets/media/how-to-add-a-github-copilot-cli-agent/hero.png" alt="" loading="lazy" decoding="async" /></a>
+  <div class="body">
+    <div class="meta">
+      <time datetime="2026-07-03">Jul 3, 2026</time>
+      <span class="dot" aria-hidden="true"></span>
+      <span>4 min</span>
+    </div>
+    <h3><a href="/blog/how-to-add-a-github-copilot-cli-agent/">How to Add a GitHub Copilot CLI Agent to Your Floor</a></h3>
+    <p class="dek">A step-by-step v0.3.3 walkthrough: install GitHub Copilot CLI (or let the harness install it for you), hire a Copilot worker, pick a model, and know exactly what print mode can and can&#39;t do.</p>
+    <div class="foot">
+      <span class="tag kind">Guides</span>
+      <a class="more" href="/blog/how-to-add-a-github-copilot-cli-agent/" aria-label="Read: How to Add a GitHub Copilot CLI Agent to Your Floor">Read →</a>
+    </div>
+  </div>
+</article>
+<article class="card t-guides">
+  <a class="thumb t-guides" href="/blog/how-to-talk-to-your-orchestrator/" aria-hidden="true" tabindex="-1"><img src="/blog/assets/media/how-to-talk-to-your-orchestrator/hero.png" alt="" loading="lazy" decoding="async" /></a>
+  <div class="body">
+    <div class="meta">
+      <time datetime="2026-07-03">Jul 3, 2026</time>
+      <span class="dot" aria-hidden="true"></span>
+      <span>5 min</span>
+    </div>
+    <h3><a href="/blog/how-to-talk-to-your-orchestrator/">How to Brief Your Orchestrator (So the Floor Actually Ships)</a></h3>
+    <p class="dek">A practical guide to briefing Munder Difflin&#39;s GOD orchestrator: state the goal not the steps, set constraints and budgets, name the deliverable, and let Michael staff the floor. With bad-vs-good brief examples, mid-run steering, and Talk mode.</p>
+    <div class="foot">
+      <span class="tag kind">Guides</span>
+      <a class="more" href="/blog/how-to-talk-to-your-orchestrator/" aria-label="Read: How to Brief Your Orchestrator (So the Floor Actually Ships)">Read →</a>
+    </div>
+  </div>
+</article>
+
+      </div>
+    </section>
+    
+  </footer>
+</article>
+
+</main>
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-top">
+      <a class="foot-brand brand" href="https://munderdiffl.in" aria-label="Munder Difflin home">
+        <img class="brand-logo" src="https://munderdiffl.in/logo.png" width="1318" height="840" alt="Munder Difflin, Inc. — Multi-Agent Harness" />
+      </a>
+      <div class="foot-links">
+        <a href="/blog/">Latest</a>
+        <a href="/blog/topics/">Topics</a>
+        <a href="/blog/about/">About</a>
+        <a href="https://munderdiffl.in/blog/feed.xml">RSS</a>
+        <a href="https://github.com/chaitanyagiri/munder-difflin">GitHub</a>
+        <a href="https://munderdiffl.in">munderdiffl.in ↗</a>
+      </div>
+    </div>
+    <div class="foot-meta">
+      © 2026 Munder Difflin · Local-first · MIT-licensed ·
+      Built on <a href="https://munderdiffl.in">Electron, React, Pixi.js, xterm.js &amp; node-pty</a>.
+      Run an office of agents while you sleep.
+    </div>
+  </div>
+</footer>
+
+<script>
+  // sticky-nav border on scroll
+  (function () {
+    var nav = document.getElementById('nav');
+    if (!nav) return;
+    var onScroll = function () { nav.classList.toggle('scrolled', window.scrollY > 8); };
+    onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
+  })();
+  // YouTube click-to-load: thumbnail button → youtube-nocookie iframe
+  (function () {
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest('.yt-load');
+      if (!btn) return;
+      var box = btn.closest('.yt');
+      var id = box && box.getAttribute('data-yt');
+      if (!id) return;
+      var frame = document.createElement('iframe');
+      frame.src = 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1';
+      frame.title = box.getAttribute('data-title') || 'YouTube video';
+      frame.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+      frame.setAttribute('allowfullscreen', '');
+      box.replaceChildren(frame);
+    });
+  })();
+</script>
+
+</body>
+</html>

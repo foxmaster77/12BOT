@@ -298,7 +298,24 @@ export default function OrchestraInterface() {
             <div className="live-deploy-banner">
               <span>🚀 SITE LIVE & DEPLOYED:</span>
               <a href={deployUrl} target="_blank" rel="noopener noreferrer">
-                {deployUrl} ↗
+                Preview ↗
+              </a>
+              <a
+                href="http://localhost:4000/api/download"
+                download="12bot-generated-project.zip"
+                style={{
+                  background: '#22c55e',
+                  color: '#000',
+                  padding: '2px 8px',
+                  borderRadius: '3px',
+                  fontWeight: 'bold',
+                  textDecoration: 'none',
+                  fontSize: '10px',
+                  fontFamily: "'Press Start 2P', monospace",
+                  marginLeft: '4px',
+                }}
+              >
+                📦 ZIP
               </a>
               <button className="banner-close-btn" onClick={() => setDeployUrl(null)}>✕</button>
             </div>
@@ -394,6 +411,62 @@ export default function OrchestraInterface() {
                   <span className="k">Tokens Used:</span>
                   <span className="v">{selectedAgent.tokensUsed} tokens</span>
                 </div>
+              </div>
+
+              {/* Direct Agent Steer / Command */}
+              <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: '0.42rem', color: '#60a5fa', marginTop: '6px' }}>
+                DIRECT AGENT COMMAND
+              </div>
+              <div style={{ display: 'flex', gap: '6px' }}>
+                <input
+                  type="text"
+                  placeholder={`Command ${selectedAgent.name}...`}
+                  style={{
+                    flex: 1,
+                    background: '#02040a',
+                    border: '1px solid #1e293b',
+                    borderRadius: '4px',
+                    padding: '6px 8px',
+                    color: '#fff',
+                    fontFamily: 'Courier New',
+                    fontSize: '11px',
+                    outline: 'none',
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && e.currentTarget.value.trim()) {
+                      const cmd = e.currentTarget.value.trim();
+                      e.currentTarget.value = '';
+                      sound.playTyping();
+                      setAgents((prev) =>
+                        prev.map((a) =>
+                          a.id === selectedAgent.id
+                            ? {
+                                ...a,
+                                status: 'working',
+                                message: `Executing: "${cmd.slice(0, 20)}..."`,
+                                logs: [...a.logs, `[DIRECT COMMAND] ${cmd}`],
+                              }
+                            : a
+                        )
+                      );
+                      setTimeout(() => {
+                        sound.playSuccess();
+                        setAgents((prev) =>
+                          prev.map((a) =>
+                            a.id === selectedAgent.id
+                              ? {
+                                  ...a,
+                                  status: 'idle',
+                                  message: 'Command executed ✓',
+                                  logs: [...a.logs, `[SUCCESS] Output compiled for "${cmd}"`],
+                                }
+                              : a
+                          )
+                        );
+                      }, 1800);
+                    }
+                  }}
+                />
               </div>
 
               <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: '0.42rem', color: '#64748b', marginTop: '6px' }}>

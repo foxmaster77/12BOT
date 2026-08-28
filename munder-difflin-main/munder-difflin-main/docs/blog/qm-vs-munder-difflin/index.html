@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>qm vs Munder Difflin: YC&#39;s Multiplayer Harness or a Local-First Agent Office? — Munder Difflin Blog</title>
+<meta name="description" content="An honest comparison of YC&#39;s qm and Munder Difflin: both orchestrate fleets of CLI coding agents with security postures, scheduled background work, and Slack — one as a headless multiplayer harness for teams, one as a local-first desktop office with real terminals, voice, and a built-in IDE." />
+<link rel="canonical" href="https://munderdiffl.in/blog/qm-vs-munder-difflin/" />
+
+<link rel="icon" type="image/png" href="https://munderdiffl.in/logo.png" />
+<link rel="apple-touch-icon" href="https://munderdiffl.in/logo.png" />
+<meta name="theme-color" content="#F5F2E8" />
+
+<!-- Open Graph -->
+<meta property="og:site_name" content="Munder Difflin Blog" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="qm vs Munder Difflin: YC&#39;s Multiplayer Harness or a Local-First Agent Office? — Munder Difflin Blog" />
+<meta property="og:description" content="An honest comparison of YC&#39;s qm and Munder Difflin: both orchestrate fleets of CLI coding agents with security postures, scheduled background work, and Slack — one as a headless multiplayer harness for teams, one as a local-first desktop office with real terminals, voice, and a built-in IDE." />
+<meta property="og:url" content="https://munderdiffl.in/blog/qm-vs-munder-difflin/" />
+<meta property="og:image" content="https://munderdiffl.in/media/og.png" />
+<meta property="og:locale" content="en_US" />
+<meta property="article:published_time" content="2026-08-06T00:00:00.000Z" />
+<meta property="article:author" content="Chaitanya Giri" />
+<meta property="article:tag" content="Comparisons" />
+<meta property="article:tag" content="Multi-Agent" />
+<meta property="article:tag" content="Tools" />
+<meta property="article:tag" content="Claude Code" />
+<meta property="article:tag" content="Open Source" />
+
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="qm vs Munder Difflin: YC&#39;s Multiplayer Harness or a Local-First Agent Office? — Munder Difflin Blog" />
+<meta name="twitter:description" content="An honest comparison of YC&#39;s qm and Munder Difflin: both orchestrate fleets of CLI coding agents with security postures, scheduled background work, and Slack — one as a headless multiplayer harness for teams, one as a local-first desktop office with real terminals, voice, and a built-in IDE." />
+<meta name="twitter:image" content="https://munderdiffl.in/media/og.png" />
+
+<link rel="alternate" type="application/atom+xml" title="Munder Difflin Blog" href="https://munderdiffl.in/blog/feed.xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&amp;family=Space+Grotesk:wght@500;600;700&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/blog/assets/blog-press.css" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "qm vs Munder Difflin: YC's Multiplayer Harness or a Local-First Agent Office?",
+  "description": "An honest comparison of YC's qm and Munder Difflin: both orchestrate fleets of CLI coding agents with security postures, scheduled background work, and Slack — one as a headless multiplayer harness for teams, one as a local-first desktop office with real terminals, voice, and a built-in IDE.",
+  "image": ["https://munderdiffl.in/media/og.png"],
+  "datePublished": "2026-08-06T00:00:00.000Z",
+  "dateModified": "2026-08-06T00:00:00.000Z",
+  "author": { "@type": "Person", "name": "Chaitanya Giri" },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Munder Difflin",
+    "logo": { "@type": "ImageObject", "url": "https://munderdiffl.in/logo.png" }
+  },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": "https://munderdiffl.in/blog/qm-vs-munder-difflin/" },
+  "keywords": "qm vs munder difflin, yc qm alternative, qm claude code, qm agent harness, multiplayer agent harness, local first agent orchestration, qm y combinator agents",
+  "articleSection": "Comparisons",
+  "inLanguage": "en-US",
+  "url": "https://munderdiffl.in/blog/qm-vs-munder-difflin/"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://munderdiffl.in/" },
+    { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://munderdiffl.in/blog/" },
+    { "@type": "ListItem", "position": 3, "name": "qm vs Munder Difflin: YC's Multiplayer Harness or a Local-First Agent Office?", "item": "https://munderdiffl.in/blog/qm-vs-munder-difflin/" }
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "What is qm?", "acceptedAnswer": { "@type": "Answer", "text": "qm (github.com/yc-software/qm) is Y Combinator's open-source 'multiplayer agent harness for work' — a headless Node.js core with a web UI and a Slack plugin. Team members get agent 'employees' with isolated workspaces, shared skills with scope-based permissions, background crons and watches, and three security postures (Strict, Auto, Dangerous). It's MIT-licensed and installs via npm." } },
+    { "@type": "Question", "name": "What's the main difference between qm and Munder Difflin?", "acceptedAnswer": { "@type": "Answer", "text": "Where the harness lives and what you can see. qm is multiplayer-first: a shared server your whole team reaches through Slack and the browser. Munder Difflin is local-first: a desktop app on your machine where every agent is a real CLI process in a real terminal you can watch, with a visual office floor, voice orchestration, and a built-in IDE. They cover the same core jobs — postures, scheduled work, Slack, skills — from opposite ends." } },
+    { "@type": "Question", "name": "Does Munder Difflin do what qm's security postures do?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, the same job with different controls: a floor-wide auto-mode toggle (the equivalent of switching between approval-gated and autonomous), per-agent pause/halt, voice-level confirm words for destructive actions, tool gating, a circuit breaker for runaway agents, and spend/scope escalation to a human. qm's Strict/Auto/Dangerous is org-level configuration; Munder Difflin's controls are per-floor and per-agent." } },
+    { "@type": "Question", "name": "Does qm have voice control, an IDE, or git visualization?", "acceptedAnswer": { "@type": "Answer", "text": "Not as of this writing. qm's interfaces are Slack and a web UI. Munder Difflin ships realtime voice orchestration (a talking Michael with live floor context), a built-in Monaco IDE with commit history, branch compare and side-by-side diffs, markdown previews, real watchable terminals, and auto-update." } },
+    { "@type": "Question", "name": "Which one should I use?", "acceptedAnswer": { "@type": "Answer", "text": "Use qm if your whole team wants one shared harness in Slack with org-level admin control. Use Munder Difflin if you want your agent office on your own machine — watchable, local-first, with voice and an IDE — riding the CLI subscriptions you already pay for. Both are MIT-licensed; some teams will genuinely want both: qm as the shared org layer, Munder Difflin as the personal floor." } },
+    { "@type": "Question", "name": "Is Munder Difflin older than qm?", "acceptedAnswer": { "@type": "Answer", "text": "Munder Difflin has been shipping public releases since v0.2.0 in mid-2026 and is on v0.3.5 with a stable auto-updating release train, while qm is a newer project that grew popular quickly. Popularity and maturity are different axes — evaluate both against your workflow." } }
+    
+  ]
+}
+</script>
+
+
+<script>
+  // Anonymous blog analytics (PostHog) — same posture as the main site and the
+  // app's TELEMETRY.md: public write-only token ('' = inert), anonymous-only
+  // (person_profiles 'never'), no autocapture/recording, DNT respected.
+  (function () {
+    var PH_KEY = 'phc_qJzsokwcbtTGHemnvywR3nSqivNNgMjHeNVEWkZNydFB';
+    if (!PH_KEY || navigator.doNotTrack === '1') return;
+    var s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://us-assets.i.posthog.com/static/array.js';
+    s.onload = function () {
+      if (!window.posthog) return;
+      window.posthog.init(PH_KEY, {
+        api_host: 'https://us.i.posthog.com',
+        person_profiles: 'never',
+        autocapture: false,
+        before_send: function (event) {
+          // PostHog fills $ip from the connection unless the event carries one.
+          // Null it here and disable the GeoIP lookup so no IP, city, postal
+          // code or lat/long is ever derived or stored for this page view.
+          if (event && event.properties) {
+            event.properties.$ip = null;
+            event.properties.$geoip_disable = true;
+          }
+          return event;
+        },
+        disable_session_recording: true,
+        respect_dnt: true
+      });
+    };
+    document.head.appendChild(s);
+  })();
+</script>
+</head>
+<body class="theme-press">
+<a class="skip-link" href="#main">Skip to content</a>
+<nav id="nav">
+  <a class="brand" href="https://munderdiffl.in" aria-label="Munder Difflin home">
+    <img class="brand-logo" src="https://munderdiffl.in/logo.png" width="1318" height="840" alt="Munder Difflin, Inc. — Multi-Agent Harness" />
+  </a>
+  <span class="spacer"></span>
+  <div class="links">
+    <a href="/blog/">Latest</a>
+    <a href="/blog/topics/">Topics</a>
+    <a href="/blog/about/">About</a>
+    <a href="https://munderdiffl.in">↗ Product</a>
+  </div>
+  <div class="nav-actions">
+    <a class="btn sm" href="https://munderdiffl.in/blog/feed.xml" aria-label="RSS feed">⤵ RSS</a>
+    <a class="btn sm primary" href="https://munderdiffl.in/#install">⤓ Download</a>
+  </div>
+</nav>
+
+<main id="main">
+
+<article class="t-comparisons">
+  <header class="post-head wrap">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="/blog/">Blog</a>
+      <span>/</span>
+      <a href="/blog/topics/comparisons/">Comparisons</a>
+    </nav>
+    <h1>qm vs Munder Difflin: YC&#39;s Multiplayer Harness or a Local-First Agent Office?</h1>
+    <p class="dek">An honest comparison of YC&#39;s qm and Munder Difflin: both orchestrate fleets of CLI coding agents with security postures, scheduled background work, and Slack — one as a headless multiplayer harness for teams, one as a local-first desktop office with real terminals, voice, and a built-in IDE.</p>
+    <div class="byline">
+      <span class="av" aria-hidden="true">CG</span>
+      <strong>Chaitanya Giri</strong>
+      <span class="dot" aria-hidden="true">·</span>
+      <time datetime="2026-08-06">Aug 6, 2026</time>
+      <span class="dot" aria-hidden="true">·</span>
+      <span>3 min read</span>
+      <span class="tag kind">Comparisons</span>
+    </div>
+  </header>
+
+  <div class="hero-wrap wrap"><figure class="fig fig-hero"><img src="/blog/assets/media/qm-vs-munder-difflin/hero.png" alt="Illustration: qm vs Munder Difflin: YC's Multiplayer Harness or a Local-First Agent Office?" loading="lazy" decoding="async" /></figure></div>
+
+  <div class="post-wrap wrap">
+    <div class="prose">
+      <div class="callout tldr"><span class="ic">TL;DR</span><p><strong>qm</strong> is YC's
+multiplayer agent harness — headless, org-shaped, living in <strong>Slack and a web
+UI</strong>, great when a whole team shares one fleet. <strong>Munder Difflin</strong> is
+the same idea grown from the other end: a <strong>local-first desktop office</strong> where
+every agent is a real CLI process in a terminal you can watch, with <strong>voice
+orchestration, a built-in IDE with git history, and auto-update</strong> — things a
+headless harness doesn't have. Same jobs, opposite ends of the wire. Both MIT-licensed.</p></div>
+<p><a href="https://github.com/yc-software/qm">qm</a> earned its stars fast — “a multiplayer agent
+harness for work, in Slack and on the web” is a great pitch, and Y Combinator shipping
+open-source agent tooling is good for everyone. We get asked about it a lot, so here’s the
+honest comparison.</p>
+<h2 id="the-same-problem-from-opposite-ends" tabindex="-1">The same problem, from opposite ends <a class="anchor" href="#the-same-problem-from-opposite-ends" aria-hidden="true">#</a></h2>
+<p>Both tools exist because one CLI agent in one terminal doesn’t scale: you want several
+agents working in parallel, safely, with scheduled background work and a way to reach them
+from where you already are.</p>
+<p><strong>qm answers it org-first.</strong> A headless Node core (installed via <code>npm exec qm init</code>) that
+your team reaches through Slack and a web UI. Each “employee” gets an isolated workspace;
+skills are shared with scope-based permissions and can be promoted org-wide; admins set the
+security posture — <strong>Strict</strong> (approval-gated), <strong>Auto</strong> (default screening), or
+<strong>Dangerous</strong> — for everyone at once. Background work runs as <strong>crons and watches</strong>.</p>
+<p><strong>Munder Difflin answers it desk-first.</strong> A desktop app on your machine where every agent
+is a <strong>real CLI process in a real terminal</strong> — Claude Code, Codex, Antigravity, Copilot,
+Grok, Kimi, and more, riding the subscriptions you already pay for. The floor is visual
+(yes, it looks like The Office), a GOD orchestrator routes work, agents share long-term
+memory, and background work runs as <strong>scheduled missions</strong> with Slack and webhook triggers.</p>
+<p>If you map the concepts across, most of qm’s vocabulary has a Munder Difflin counterpart:</p>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th>Job to be done</th>
+<th>qm</th>
+<th>Munder Difflin</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Safety levels</td>
+<td>Strict / Auto / Dangerous postures</td>
+<td>Auto-mode toggle, per-agent pause/halt, tool gating, circuit breaker, confirm-word voice safety</td>
+</tr>
+<tr>
+<td>Background work</td>
+<td>Crons and watches</td>
+<td>Scheduled missions + Slack/webhook triggers</td>
+</tr>
+<tr>
+<td>Reusable behaviors</td>
+<td>Shared skills with scoped permissions</td>
+<td>Agent Gallery roles + shareable agent recipes</td>
+</tr>
+<tr>
+<td>Reach it from anywhere</td>
+<td>Slack + web UI</td>
+<td>Slack + Remote Control from your phone</td>
+</tr>
+<tr>
+<td>Isolation</td>
+<td>Isolated workspaces per employee</td>
+<td>Isolated git worktrees per agent</td>
+</tr>
+<tr>
+<td>License</td>
+<td>MIT</td>
+<td>MIT</td>
+</tr>
+</tbody>
+</table>
+</div>
+<figure class="fig fig-inline"><img src="/blog/assets/media/qm-vs-munder-difflin/note-1.png" alt="Hand-drawn sketch from “qm vs Munder Difflin: YC's Multiplayer Harness or a Local-First Agent Office?”" loading="lazy" decoding="async" /></figure>
+<h2 id="what-each-has-that-the-other-doesnt" tabindex="-1">What each has that the other doesn’t <a class="anchor" href="#what-each-has-that-the-other-doesnt" aria-hidden="true">#</a></h2>
+<p><strong>qm’s edge is multiplayer.</strong> One shared harness, unified identity, org-level admin,
+skills promotion across scopes. If your team wants a <em>single</em> fleet everyone shares from
+Slack, that’s qm’s home turf, and Munder Difflin doesn’t try to be that.</p>
+<p><strong>Munder Difflin’s edge is everything you can see and touch:</strong></p>
+<ul>
+<li><strong>Real terminals.</strong> Every agent is a watchable CLI process — when something goes
+sideways, you read the actual session, not a log abstraction.</li>
+<li><strong>Voice orchestration.</strong> Flip on talk mode and Michael greets you already knowing every
+agent’s status, steers work, changes settings from an allowlist, and waits for a spoken
+confirm word before anything destructive.</li>
+<li><strong>A built-in IDE.</strong> Monaco (the VS Code engine) one click over the floor: side-by-side
+diffs of agent changes, clickable commit history, branch compare, guarded checkout, live
+markdown previews.</li>
+<li><strong>Local-first by construction.</strong> No shared server, no code upload — agents, state, and
+memory live on your machine.</li>
+<li><strong>Auto-update.</strong> The app ships its own updates from GitHub releases; you just click
+“restart to update.”</li>
+<li><strong>A longer release train.</strong> Public releases since v0.2.0, now at v0.3.5, with the
+reliability work battle-tested by a growing contributor community.</li>
+</ul>
+<figure class="fig fig-inline"><img src="/blog/assets/media/qm-vs-munder-difflin/note-2.png" alt="Hand-drawn sketch from “qm vs Munder Difflin: YC's Multiplayer Harness or a Local-First Agent Office?”" loading="lazy" decoding="async" /></figure>
+<h2 id="which-should-you-use" tabindex="-1">Which should you use? <a class="anchor" href="#which-should-you-use" aria-hidden="true">#</a></h2>
+<ul>
+<li><strong>Your whole team wants one shared fleet with org-level control → qm.</strong> That’s what
+multiplayer-first buys you.</li>
+<li><strong>You want your own agent office, on your own machine, with everything visible → Munder
+Difflin.</strong> Simpler to adopt (download, open, hire), nothing leaves your computer, and
+the interfaces — floor, voice, IDE — are things a headless harness structurally can’t
+offer.</li>
+<li><strong>Honestly? Some teams will run both.</strong> qm as the shared org layer, Munder Difflin as
+the personal floor where you watch and steer your own agents. They don’t compete for
+the same seat.</li>
+</ul>
+<p>Facts about qm above come from its public README as of August 2026 — check
+<a href="https://github.com/yc-software/qm">the repo</a> for the current state, because both projects
+move fast.</p>
+<p><strong><a href="https://munderdiffl.in/">Try Munder Difflin free</a></strong> — macOS, Windows, Linux, MIT-licensed.
+And if this comparison helped, a <a href="https://github.com/chaitanyagiri/munder-difflin">GitHub star</a>
+helps more people find it.</p>
+
+
+      
+      <section class="faq" aria-label="Frequently asked questions">
+        <h2 id="faq">FAQ</h2>
+        
+        <div class="qa">
+          <p class="q">What is qm?</p>
+          <p class="a">qm (github.com/yc-software/qm) is Y Combinator&#39;s open-source &#39;multiplayer agent harness for work&#39; — a headless Node.js core with a web UI and a Slack plugin. Team members get agent &#39;employees&#39; with isolated workspaces, shared skills with scope-based permissions, background crons and watches, and three security postures (Strict, Auto, Dangerous). It&#39;s MIT-licensed and installs via npm.</p>
+        </div>
+        
+        <div class="qa">
+          <p class="q">What&#39;s the main difference between qm and Munder Difflin?</p>
+          <p class="a">Where the harness lives and what you can see. qm is multiplayer-first: a shared server your whole team reaches through Slack and the browser. Munder Difflin is local-first: a desktop app on your machine where every agent is a real CLI process in a real terminal you can watch, with a visual office floor, voice orchestration, and a built-in IDE. They cover the same core jobs — postures, scheduled work, Slack, skills — from opposite ends.</p>
+        </div>
+        
+        <div class="qa">
+          <p class="q">Does Munder Difflin do what qm&#39;s security postures do?</p>
+          <p class="a">Yes, the same job with different controls: a floor-wide auto-mode toggle (the equivalent of switching between approval-gated and autonomous), per-agent pause/halt, voice-level confirm words for destructive actions, tool gating, a circuit breaker for runaway agents, and spend/scope escalation to a human. qm&#39;s Strict/Auto/Dangerous is org-level configuration; Munder Difflin&#39;s controls are per-floor and per-agent.</p>
+        </div>
+        
+        <div class="qa">
+          <p class="q">Does qm have voice control, an IDE, or git visualization?</p>
+          <p class="a">Not as of this writing. qm&#39;s interfaces are Slack and a web UI. Munder Difflin ships realtime voice orchestration (a talking Michael with live floor context), a built-in Monaco IDE with commit history, branch compare and side-by-side diffs, markdown previews, real watchable terminals, and auto-update.</p>
+        </div>
+        
+        <div class="qa">
+          <p class="q">Which one should I use?</p>
+          <p class="a">Use qm if your whole team wants one shared harness in Slack with org-level admin control. Use Munder Difflin if you want your agent office on your own machine — watchable, local-first, with voice and an IDE — riding the CLI subscriptions you already pay for. Both are MIT-licensed; some teams will genuinely want both: qm as the shared org layer, Munder Difflin as the personal floor.</p>
+        </div>
+        
+        <div class="qa">
+          <p class="q">Is Munder Difflin older than qm?</p>
+          <p class="a">Munder Difflin has been shipping public releases since v0.2.0 in mid-2026 and is on v0.3.5 with a stable auto-updating release train, while qm is a newer project that grew popular quickly. Popularity and maturity are different axes — evaluate both against your workflow.</p>
+        </div>
+        
+      </section>
+      
+
+      
+      <hr />
+      <div class="share">
+        <span class="lbl">Tags</span>
+        <a class="tag" href="/blog/tags/comparisons/">Comparisons</a><a class="tag" href="/blog/tags/multi-agent/">Multi-Agent</a><a class="tag" href="/blog/tags/tools/">Tools</a><a class="tag" href="/blog/tags/claude-code/">Claude Code</a><a class="tag" href="/blog/tags/open-source/">Open Source</a>
+      </div>
+      
+    </div>
+
+    
+    <aside class="toc-rail" aria-label="Table of contents">
+      <div class="tt">On this page</div>
+      <ol>
+        <li class="lvl-2"><a href="#the-same-problem-from-opposite-ends">The same problem, from opposite ends</a></li><li class="lvl-2"><a href="#what-each-has-that-the-other-doesnt">What each has that the other doesn’t</a></li><li class="lvl-2"><a href="#which-should-you-use">Which should you use?</a></li>
+      </ol>
+    </aside>
+    
+  </div>
+
+  <footer class="post-foot wrap"><div class="prevnext">
+      <a class="pn prev" href="/blog/command-center-guide/"><span class="k">← Older</span><span class="t">The Command Center: Kanban, Fleet, and Budgets in One Place</span></a>
+      <a class="pn next" href="/blog/launching-munder-difflin-v0-3-5/"><span class="k">Newer →</span><span class="t">Launching Munder Difflin v0.3.5: A Michael Who Knows the Floor, a Git Time-Machine, and an App That Updates Itself</span></a>
+    </div>
+    <section class="related">
+      <h2>Related in Comparisons</h2>
+      <div class="post-grid">
+        <article class="card t-comparisons">
+  <a class="thumb t-comparisons" href="/blog/crewai-autogen-vs-a-local-agent-harness/" aria-hidden="true" tabindex="-1"><img src="/blog/assets/media/crewai-autogen-vs-a-local-agent-harness/hero.png" alt="" loading="lazy" decoding="async" /></a>
+  <div class="body">
+    <div class="meta">
+      <time datetime="2026-07-03">Jul 3, 2026</time>
+      <span class="dot" aria-hidden="true"></span>
+      <span>5 min</span>
+    </div>
+    <h3><a href="/blog/crewai-autogen-vs-a-local-agent-harness/">CrewAI and AutoGen vs a Local Agent Harness: Framework or App?</a></h3>
+    <p class="dek">CrewAI, AutoGen (now Microsoft Agent Framework), and LangGraph are frameworks — Python you write to build your own agent system. A multi-agent harness is an app you download that runs a team on your repos today. Here&#39;s how to tell which one you actually need.</p>
+    <div class="foot">
+      <span class="tag kind">Comparisons</span>
+      <a class="more" href="/blog/crewai-autogen-vs-a-local-agent-harness/" aria-label="Read: CrewAI and AutoGen vs a Local Agent Harness: Framework or App?">Read →</a>
+    </div>
+  </div>
+</article>
+<article class="card t-comparisons">
+  <a class="thumb t-comparisons" href="/blog/github-copilot-cli-vs-claude-code-for-hive-work/" aria-hidden="true" tabindex="-1"><img src="/blog/assets/media/github-copilot-cli-vs-claude-code-for-hive-work/hero.png" alt="" loading="lazy" decoding="async" /></a>
+  <div class="body">
+    <div class="meta">
+      <time datetime="2026-07-03">Jul 3, 2026</time>
+      <span class="dot" aria-hidden="true"></span>
+      <span>5 min</span>
+    </div>
+    <h3><a href="/blog/github-copilot-cli-vs-claude-code-for-hive-work/">GitHub Copilot CLI vs Claude Code as Hive Workers</a></h3>
+    <p class="dek">How GitHub Copilot CLI and Claude Code behave as agent engines inside a multi-agent harness: hooks, inbox mail, orchestration, session lifecycle — and why the right answer is to run both.</p>
+    <div class="foot">
+      <span class="tag kind">Comparisons</span>
+      <a class="more" href="/blog/github-copilot-cli-vs-claude-code-for-hive-work/" aria-label="Read: GitHub Copilot CLI vs Claude Code as Hive Workers">Read →</a>
+    </div>
+  </div>
+</article>
+<article class="card t-comparisons">
+  <a class="thumb t-comparisons" href="/blog/orca-vs-munder-difflin/" aria-hidden="true" tabindex="-1"><img src="/blog/assets/media/orca-vs-munder-difflin/hero.png" alt="" loading="lazy" decoding="async" /></a>
+  <div class="body">
+    <div class="meta">
+      <time datetime="2026-07-03">Jul 3, 2026</time>
+      <span class="dot" aria-hidden="true"></span>
+      <span>5 min</span>
+    </div>
+    <h3><a href="/blog/orca-vs-munder-difflin/">Orca vs Munder Difflin: Agent IDE or Agent Office?</a></h3>
+    <p class="dek">Orca is a YC-backed Agent IDE for driving coding agents side by side in isolated worktrees. Munder Difflin is an agent office that runs itself. An honest comparison of the two — and when each one is the right pick.</p>
+    <div class="foot">
+      <span class="tag kind">Comparisons</span>
+      <a class="more" href="/blog/orca-vs-munder-difflin/" aria-label="Read: Orca vs Munder Difflin: Agent IDE or Agent Office?">Read →</a>
+    </div>
+  </div>
+</article>
+
+      </div>
+    </section>
+    
+  </footer>
+</article>
+
+</main>
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-top">
+      <a class="foot-brand brand" href="https://munderdiffl.in" aria-label="Munder Difflin home">
+        <img class="brand-logo" src="https://munderdiffl.in/logo.png" width="1318" height="840" alt="Munder Difflin, Inc. — Multi-Agent Harness" />
+      </a>
+      <div class="foot-links">
+        <a href="/blog/">Latest</a>
+        <a href="/blog/topics/">Topics</a>
+        <a href="/blog/about/">About</a>
+        <a href="https://munderdiffl.in/blog/feed.xml">RSS</a>
+        <a href="https://github.com/chaitanyagiri/munder-difflin">GitHub</a>
+        <a href="https://munderdiffl.in">munderdiffl.in ↗</a>
+      </div>
+    </div>
+    <div class="foot-meta">
+      © 2026 Munder Difflin · Local-first · MIT-licensed ·
+      Built on <a href="https://munderdiffl.in">Electron, React, Pixi.js, xterm.js &amp; node-pty</a>.
+      Run an office of agents while you sleep.
+    </div>
+  </div>
+</footer>
+
+<script>
+  // sticky-nav border on scroll
+  (function () {
+    var nav = document.getElementById('nav');
+    if (!nav) return;
+    var onScroll = function () { nav.classList.toggle('scrolled', window.scrollY > 8); };
+    onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
+  })();
+  // YouTube click-to-load: thumbnail button → youtube-nocookie iframe
+  (function () {
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest('.yt-load');
+      if (!btn) return;
+      var box = btn.closest('.yt');
+      var id = box && box.getAttribute('data-yt');
+      if (!id) return;
+      var frame = document.createElement('iframe');
+      frame.src = 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1';
+      frame.title = box.getAttribute('data-title') || 'YouTube video';
+      frame.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+      frame.setAttribute('allowfullscreen', '');
+      box.replaceChildren(frame);
+    });
+  })();
+</script>
+
+</body>
+</html>
