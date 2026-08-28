@@ -1,48 +1,50 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import Head from 'next/head';
 import { sound } from '../lib/soundFx';
 
-interface AgentState {
+export type AgentStateType = 'IDLE' | 'TYPING' | 'DRINKING_COFFEE' | 'OUT_OF_TOKENS' | 'WALKING';
+
+interface PixelAgent {
   id: string;
   name: string;
   role: string;
-  model: string;
-  color: string;
-  state: 'idle' | 'walking' | 'working' | 'coffee' | 'done' | 'out_of_tokens';
+  hairColor: string;
+  shirtColor: string;
+  state: AgentStateType;
   message: string;
-  deskX: number;
-  deskY: number;
+  deskX: number; // percentage (0 - 100)
+  deskY: number; // percentage (0 - 100)
   currentX: number;
   currentY: number;
-  carrying: string | null;
   tokensUsed: number;
   logs: string[];
 }
 
 interface FlyingEnvelope {
   id: number;
-  fromX: number;
-  fromY: number;
   toX: number;
   toY: number;
 }
 
-const INITIAL_AGENTS: AgentState[] = [
-  // Top Row (6 Desks)
-  { id: 'pm', name: 'A01 PM', role: 'Lead Architect (Michael)', model: 'Groq / Qwen-3', color: '#38bdf8', state: 'idle', message: 'Standing by', deskX: 27.8, deskY: 29.5, currentX: 27.8, currentY: 29.5, carrying: null, tokensUsed: 0, logs: ['System initialized.'] },
-  { id: 'idea', name: 'A02 Idea', role: 'Copywriter & Sitemap', model: 'Gemini 2.0 Flash', color: '#facc15', state: 'idle', message: 'Waiting for brief', deskX: 37.8, deskY: 29.5, currentX: 37.8, currentY: 29.5, carrying: null, tokensUsed: 0, logs: ['Copy engine ready.'] },
-  { id: 'designer', name: 'A03 Design', role: 'UI/UX & Design Tokens', model: 'Gemini 2.0 Flash', color: '#f472b6', state: 'idle', message: 'Palettes ready', deskX: 44.8, deskY: 29.5, currentX: 44.8, currentY: 29.5, carrying: null, tokensUsed: 0, logs: ['Design system loaded.'] },
-  { id: 'html_dev', name: 'A04 HTML', role: 'HTML5 Semantic Dev', model: 'Groq / Qwen-3', color: '#22d3ee', state: 'idle', message: 'Markup ready', deskX: 54.8, deskY: 29.5, currentX: 54.8, currentY: 29.5, carrying: null, tokensUsed: 0, logs: ['HTML parser ready.'] },
-  { id: 'css_dev', name: 'A05 CSS', role: 'Responsive Stylesheets', model: 'Gemini 2.0 Flash', color: '#c084fc', state: 'idle', message: 'CSS ready', deskX: 62.4, deskY: 29.5, currentX: 62.4, currentY: 29.5, carrying: null, tokensUsed: 0, logs: ['CSS3 tokens active.'] },
-  { id: 'js_dev', name: 'A06 JS', role: 'Interactive Scripts', model: 'Groq / Qwen-3', color: '#fb923c', state: 'idle', message: 'DOM ready', deskX: 72.8, deskY: 29.5, currentX: 72.8, currentY: 29.5, carrying: null, tokensUsed: 0, logs: ['JS runtime idle.'] },
+// 12 Distinct Agent Identities arranged across the 2D Office Quad
+const INITIAL_AGENTS: PixelAgent[] = [
+  // Executive Office / PM
+  { id: 'pm', name: 'A01 PM', role: 'Michael (Architect)', hairColor: '#1e293b', shirtColor: '#38bdf8', state: 'IDLE', message: 'Standing by', deskX: 12, deskY: 28, currentX: 12, currentY: 28, tokensUsed: 0, logs: ['Lead supervisor online.'] },
+  { id: 'idea', name: 'A02 Idea', role: 'Copywriter & Sitemap', hairColor: '#b45309', shirtColor: '#facc15', state: 'IDLE', message: 'Waiting for concept', deskX: 28, deskY: 28, currentX: 28, currentY: 28, tokensUsed: 0, logs: ['Copywriting engine ready.'] },
+  { id: 'designer', name: 'A03 Design', role: 'UI/UX & Tokens', hairColor: '#be185d', shirtColor: '#f472b6', state: 'IDLE', message: 'Palettes ready', deskX: 44, deskY: 28, currentX: 44, currentY: 28, tokensUsed: 0, logs: ['Design system loaded.'] },
+  { id: 'html_dev', name: 'A04 HTML', role: 'HTML5 Semantic Dev', hairColor: '#0369a1', shirtColor: '#22d3ee', state: 'IDLE', message: 'Markup ready', deskX: 60, deskY: 28, currentX: 60, currentY: 28, tokensUsed: 0, logs: ['HTML parser ready.'] },
 
-  // Bottom Row (6 Desks)
-  { id: 'anim_dev', name: 'A07 Anim', role: 'Motion & FX Engineer', model: 'Gemini 2.0 Flash', color: '#a3e635', state: 'idle', message: 'Keyframes ready', deskX: 24.2, deskY: 56.5, currentX: 24.2, currentY: 56.5, carrying: null, tokensUsed: 0, logs: ['Canvas engine active.'] },
-  { id: 'backend_dev', name: 'A08 Back', role: 'Express API Server', model: 'Groq / Qwen-3', color: '#4ade80', state: 'idle', message: 'Endpoints ready', deskX: 35.2, deskY: 56.5, currentX: 35.2, currentY: 56.5, carrying: null, tokensUsed: 0, logs: ['Express router idle.'] },
-  { id: 'db_dev', name: 'A09 DB', role: 'Database & SQL Dev', model: 'Gemini 2.0 Flash', color: '#fbbf24', state: 'idle', message: 'Schema ready', deskX: 44.2, deskY: 56.5, currentX: 44.2, currentY: 56.5, carrying: null, tokensUsed: 0, logs: ['SQL client active.'] },
-  { id: 'debugger_1', name: 'A10 QA-1', role: 'Frontend QA Linter', model: 'Groq / Qwen-3', color: '#f87171', state: 'idle', message: 'Linter ready', deskX: 54.8, deskY: 56.5, currentX: 54.8, currentY: 56.5, carrying: null, tokensUsed: 0, logs: ['Test runner ready.'] },
-  { id: 'debugger_2', name: 'A11 QA-2', role: 'System Reviewer', model: 'Gemini 2.0 Flash', color: '#2dd4bf', state: 'idle', message: 'QA ready', deskX: 62.4, deskY: 56.5, currentX: 62.4, currentY: 56.5, carrying: null, tokensUsed: 0, logs: ['Audit suite ready.'] },
-  { id: 'docs_writer', name: 'A12 Docs', role: 'Technical Writer', model: 'Groq / Qwen-3', color: '#818cf8', state: 'idle', message: 'Docs ready', deskX: 72.8, deskY: 56.5, currentX: 72.8, currentY: 56.5, carrying: null, tokensUsed: 0, logs: ['README builder ready.'] },
+  // Mid Developer Row
+  { id: 'css_dev', name: 'A05 CSS', role: 'CSS3 Stylesheets', hairColor: '#6b21a8', shirtColor: '#c084fc', state: 'IDLE', message: 'Styles ready', deskX: 12, deskY: 58, currentX: 12, currentY: 58, tokensUsed: 0, logs: ['CSS3 tokens active.'] },
+  { id: 'js_dev', name: 'A06 JS', role: 'JavaScript Logic', hairColor: '#c2410c', shirtColor: '#fb923c', state: 'IDLE', message: 'DOM scripts ready', deskX: 28, deskY: 58, currentX: 28, currentY: 58, tokensUsed: 0, logs: ['JS runtime initialized.'] },
+  { id: 'anim_dev', name: 'A07 Anim', role: 'Motion & FX Engineer', hairColor: '#4d7c0f', shirtColor: '#a3e635', state: 'IDLE', message: 'Keyframes ready', deskX: 44, deskY: 58, currentX: 44, currentY: 58, tokensUsed: 0, logs: ['Canvas engine active.'] },
+  { id: 'backend_dev', name: 'A08 Back', role: 'Express Backend Dev', hairColor: '#047857', shirtColor: '#4ade80', state: 'IDLE', message: 'API ready', deskX: 60, deskY: 58, currentX: 60, currentY: 58, tokensUsed: 0, logs: ['Express router idle.'] },
+
+  // Bottom Row / QA & DB
+  { id: 'db_dev', name: 'A09 DB', role: 'Database & SQL Dev', hairColor: '#d97706', shirtColor: '#fbbf24', state: 'IDLE', message: 'Schema ready', deskX: 12, deskY: 84, currentX: 12, currentY: 84, tokensUsed: 0, logs: ['SQL client active.'] },
+  { id: 'debugger_1', name: 'A10 QA-1', role: 'Frontend Linter', hairColor: '#b91c1c', shirtColor: '#f87171', state: 'IDLE', message: 'Linter ready', deskX: 28, deskY: 84, currentX: 28, currentY: 84, tokensUsed: 0, logs: ['Test runner ready.'] },
+  { id: 'debugger_2', name: 'A11 QA-2', role: 'System Auditor', hairColor: '#0f766e', shirtColor: '#2dd4bf', state: 'IDLE', message: 'QA test ready', deskX: 44, deskY: 84, currentX: 44, currentY: 84, tokensUsed: 0, logs: ['Audit suite ready.'] },
+  { id: 'docs_writer', name: 'A12 Docs', role: 'Documentation Dev', hairColor: '#3730a3', shirtColor: '#818cf8', state: 'IDLE', message: 'README ready', deskX: 60, deskY: 84, currentX: 60, currentY: 84, tokensUsed: 0, logs: ['README builder ready.'] },
 ];
 
 const NICHE_PROMPTS: Record<string, string> = {
@@ -59,16 +61,11 @@ const NICHE_PROJECT: Record<string, string> = {
   Game: 'Retro Arcade Game',
 };
 
-// Workstations Coordinates
-const STATIONS = {
-  PLANNING_BOARD: { x: 12.0, y: 22.0, name: '📋 PLANNING BOARD' },
-  DESIGN_EASEL:   { x: 38.0, y: 18.0, name: '🎨 DESIGN STUDIO' },
-  COFFEE_BAR:     { x: 89.0, y: 18.0, name: '☕ COFFEE STATION' },
-  DEPLOY_PORTAL:  { x: 88.0, y: 58.0, name: '🌐 DEPLOY PORTAL' },
-};
+// Key station coordinates on the floor
+const COFFEE_STATION = { x: 89, y: 22 };
+const SERVER_STATION = { x: 89, y: 76 };
 
 export default function OrchestraInterface() {
-  const [isDayMode, setIsDayMode] = useState(true);
   const [viewMode, setViewMode] = useState<'floor' | 'split' | 'logs'>('floor');
   const [isMuted, setIsMuted] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -76,13 +73,12 @@ export default function OrchestraInterface() {
   const [selectedNiche, setSelectedNiche] = useState('Website');
   const [prompt, setPrompt] = useState(NICHE_PROMPTS['Website']);
   const [tokensRemaining, setTokensRemaining] = useState(500);
-  const [agents, setAgents] = useState<AgentState[]>(INITIAL_AGENTS);
-  const [selectedAgent, setSelectedAgent] = useState<AgentState | null>(null);
+  const [agents, setAgents] = useState<PixelAgent[]>(INITIAL_AGENTS);
+  const [selectedAgent, setSelectedAgent] = useState<PixelAgent | null>(null);
   const [envelopes, setEnvelopes] = useState<FlyingEnvelope[]>([]);
   const [deployUrl, setDeployUrl] = useState<string | null>(null);
   const [previewKey, setPreviewKey] = useState(0);
 
-  // Sound Toggle
   const toggleSound = () => {
     const active = sound.toggleMute();
     setIsMuted(!active);
@@ -99,28 +95,27 @@ export default function OrchestraInterface() {
     sound.playClick();
     setTokensRemaining((t) => t + 500);
     setAgents((prev) =>
-      prev.map((a) => (a.state === 'out_of_tokens' ? { ...a, state: 'idle', message: 'Restored & Ready' } : a))
+      prev.map((a) => (a.state === 'OUT_OF_TOKENS' ? { ...a, state: 'IDLE', message: 'Restored & Ready' } : a))
     );
   };
 
-  // Dispatch an envelope particle from Agent A to Agent B
-  const dispatchEnvelope = (fromX: number, fromY: number, toX: number, toY: number) => {
+  const dispatchEnvelope = (toX: number, toY: number) => {
     sound.playDispatch();
     const envId = Date.now() + Math.random();
-    setEnvelopes((prev) => [...prev, { id: envId, fromX, fromY, toX, toY }]);
+    setEnvelopes((prev) => [...prev, { id: envId, toX, toY }]);
     setTimeout(() => {
       setEnvelopes((prev) => prev.filter((e) => e.id !== envId));
     }, 850);
   };
 
-  // Trigger 2D Multi-Agent Office Execution
+  // Main 12BOT Execution Pipeline
   const handleGenerate = async () => {
     if (isProcessing) return;
 
     if (tokensRemaining <= 0) {
       sound.playError();
       setAgents((prev) =>
-        prev.map((a) => ({ ...a, state: 'out_of_tokens', message: '🪫 Out of tokens' }))
+        prev.map((a) => ({ ...a, state: 'OUT_OF_TOKENS', message: '🪫 Zzz...' }))
       );
       return;
     }
@@ -130,10 +125,10 @@ export default function OrchestraInterface() {
     setDeployUrl(null);
     setTokensRemaining((t) => Math.max(0, t - 60));
 
-    // Reset agent positions
+    // Reset everyone to desk
     setAgents(INITIAL_AGENTS.map((a) => ({ ...a })));
 
-    // 1. Trigger Real Backend Build Call
+    // Trigger backend build
     const buildReq = fetch('http://localhost:4000/api/build', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -142,189 +137,101 @@ export default function OrchestraInterface() {
       .then((r) => r.json())
       .catch(() => null);
 
-    // ── STAGE 1: PM walks to Planning Board ──
-    setProcessingStage('PM Planning Architecture…');
+    // ── STAGE 1: PM & Idea Drafting ──
+    setProcessingStage('PM & Copywriter Drafting Architecture…');
     sound.playTyping();
     setAgents((prev) =>
       prev.map((a) =>
-        a.id === 'pm'
+        ['pm', 'idea'].includes(a.id)
           ? {
               ...a,
-              state: 'walking',
-              currentX: STATIONS.PLANNING_BOARD.x,
-              currentY: STATIONS.PLANNING_BOARD.y,
-              message: 'Walking to Board 📋',
-            }
-          : a
-      )
-    );
-    await new Promise((r) => setTimeout(r, 650));
-
-    setAgents((prev) =>
-      prev.map((a) =>
-        a.id === 'pm'
-          ? {
-              ...a,
-              state: 'working',
-              message: 'Drafting Spec 💡',
+              state: 'TYPING',
+              message: 'Writing Spec 💡',
               tokensUsed: a.tokensUsed + 35,
               logs: [...a.logs, `Architecture drafted for [${selectedNiche}]`],
             }
           : a
       )
     );
-    await new Promise((r) => setTimeout(r, 550));
+    await new Promise((r) => setTimeout(r, 1000));
 
-    // PM walks back with Spec Artifact
-    setAgents((prev) =>
-      prev.map((a) =>
-        a.id === 'pm'
-          ? {
-              ...a,
-              state: 'walking',
-              currentX: a.deskX,
-              currentY: a.deskY,
-              carrying: '📄 Spec.md',
-              message: 'Returning to Desk',
-            }
-          : a
-      )
-    );
-    await new Promise((r) => setTimeout(r, 600));
+    // Dispatch envelopes from PM/Idea to Designer & Devs
+    dispatchEnvelope(44, 28);
+    dispatchEnvelope(60, 28);
 
-    // PM sends envelopes to Designer & HTML dev
-    dispatchEnvelope(27.8, 29.5, 44.8, 29.5); // to Designer
-    dispatchEnvelope(27.8, 29.5, 54.8, 29.5); // to HTML
-
-    // ── STAGE 2: Designer walks to Design Studio ──
-    setProcessingStage('Designer Creating Palettes…');
-    sound.playTyping();
-    setAgents((prev) =>
-      prev.map((a) =>
-        a.id === 'designer'
-          ? {
-              ...a,
-              state: 'walking',
-              currentX: STATIONS.DESIGN_EASEL.x,
-              currentY: STATIONS.DESIGN_EASEL.y,
-              message: 'Heading to Easel 🎨',
-            }
-          : a.id === 'pm'
-          ? { ...a, state: 'done', carrying: null, message: 'Spec Complete ✓' }
-          : a
-      )
-    );
-    await new Promise((r) => setTimeout(r, 650));
-
-    setAgents((prev) =>
-      prev.map((a) =>
-        a.id === 'designer'
-          ? {
-              ...a,
-              state: 'working',
-              message: 'Styling Palette 🎨',
-              tokensUsed: a.tokensUsed + 40,
-              logs: [...a.logs, 'Design system and dark tokens created.'],
-            }
-          : a
-      )
-    );
-    await new Promise((r) => setTimeout(r, 550));
-
-    // Designer returns to desk
-    setAgents((prev) =>
-      prev.map((a) =>
-        a.id === 'designer'
-          ? {
-              ...a,
-              state: 'walking',
-              currentX: a.deskX,
-              currentY: a.deskY,
-              carrying: '🎨 Palette.css',
-              message: 'Returning to Desk',
-            }
-          : a
-      )
-    );
-    await new Promise((r) => setTimeout(r, 600));
-    dispatchEnvelope(44.8, 29.5, 62.4, 29.5); // Designer sends to CSS dev
-
-    // ── STAGE 3: Core Dev Team Writing HTML, CSS, JS in Parallel ──
-    setProcessingStage('Core Devs Coding in Quad…');
+    // ── STAGE 2: Designer & HTML/CSS/JS Coding ──
+    setProcessingStage('Designer & Frontend Quad Coding…');
     sound.playTyping();
     setAgents((prev) =>
       prev.map((a) => {
-        if (['html_dev', 'css_dev', 'js_dev'].includes(a.id)) {
+        if (['designer', 'html_dev', 'css_dev', 'js_dev'].includes(a.id)) {
           return {
             ...a,
-            state: 'working',
-            message: `${a.id.toUpperCase().replace('_', ' ')} Coding 💻`,
-            tokensUsed: a.tokensUsed + 50,
-            logs: [...a.logs, `Generated core ${a.id} module components.`],
-          };
-        }
-        if (a.id === 'designer') return { ...a, state: 'done', carrying: null };
-        return a;
-      })
-    );
-    await new Promise((r) => setTimeout(r, 900));
-
-    // Core devs send to Backend & Animator
-    dispatchEnvelope(54.8, 29.5, 35.2, 56.5);
-    dispatchEnvelope(72.8, 29.5, 24.2, 56.5);
-
-    // ── STAGE 4: Backend, Database & Animator Building Engine ──
-    setProcessingStage('Backend & Motion Integration…');
-    sound.playTyping();
-    setAgents((prev) =>
-      prev.map((a) => {
-        if (['html_dev', 'css_dev', 'js_dev'].includes(a.id)) {
-          return { ...a, state: 'done', message: 'Code Written ✓' };
-        }
-        if (['anim_dev', 'backend_dev', 'db_dev'].includes(a.id)) {
-          return {
-            ...a,
-            state: 'working',
-            message: `${a.role.split(' ')[0]} Active 🚀`,
+            state: 'TYPING',
+            message: 'Writing code 💻',
             tokensUsed: a.tokensUsed + 45,
-            logs: [...a.logs, `Compiled ${a.role} assets and endpoints.`],
+            logs: [...a.logs, `Compiled ${a.role} templates & logic.`],
           };
         }
+        if (['pm', 'idea'].includes(a.id)) return { ...a, state: 'IDLE', message: 'Spec Complete ✓' };
         return a;
       })
     );
-    await new Promise((r) => setTimeout(r, 900));
+    await new Promise((r) => setTimeout(r, 1200));
 
-    // ── STAGE 5: QA Testing & Deploy Portal Verification ──
-    setProcessingStage('QA & Deploy Portal Finalizing…');
+    // Dispatch envelopes to Backend, DB & Animator
+    dispatchEnvelope(60, 58);
+    dispatchEnvelope(12, 84);
+
+    // ── STAGE 3: Backend, DB & Animation ──
+    setProcessingStage('Backend, Database & Animation Engines…');
     sound.playTyping();
     setAgents((prev) =>
       prev.map((a) => {
         if (['anim_dev', 'backend_dev', 'db_dev'].includes(a.id)) {
-          return { ...a, state: 'done', message: 'Modules Ready ✓' };
+          return {
+            ...a,
+            state: 'TYPING',
+            message: 'Building endpoints 🚀',
+            tokensUsed: a.tokensUsed + 40,
+            logs: [...a.logs, `Compiled ${a.role} schema & API routes.`],
+          };
         }
+        if (['designer', 'html_dev', 'css_dev', 'js_dev'].includes(a.id)) {
+          return { ...a, state: 'IDLE', message: 'Code Written ✓' };
+        }
+        return a;
+      })
+    );
+    await new Promise((r) => setTimeout(r, 1200));
+
+    // ── STAGE 4: QA walks to Server Rack for Deployment ──
+    setProcessingStage('QA Walking to Server Rack…');
+    sound.playTyping();
+    setAgents((prev) =>
+      prev.map((a) => {
         if (a.id === 'debugger_2') {
           return {
             ...a,
-            state: 'walking',
-            currentX: STATIONS.DEPLOY_PORTAL.x,
-            currentY: STATIONS.DEPLOY_PORTAL.y,
-            message: 'Deploying at Satellite 🌐',
+            state: 'WALKING',
+            currentX: SERVER_STATION.x,
+            currentY: SERVER_STATION.y,
+            message: 'Auditing at Server 🌐',
           };
         }
         if (['debugger_1', 'docs_writer'].includes(a.id)) {
           return {
             ...a,
-            state: 'working',
+            state: 'TYPING',
             message: 'Audit & README 📚',
             tokensUsed: a.tokensUsed + 30,
-            logs: [...a.logs, 'Full suite audit passed. Documentation ready.'],
+            logs: [...a.logs, 'Full suite audit passed. README published.'],
           };
         }
         return a;
       })
     );
-    await new Promise((r) => setTimeout(r, 700));
+    await new Promise((r) => setTimeout(r, 1200));
 
     // QA returns to desk
     setAgents((prev) =>
@@ -332,7 +239,7 @@ export default function OrchestraInterface() {
         a.id === 'debugger_2'
           ? {
               ...a,
-              state: 'walking',
+              state: 'WALKING',
               currentX: a.deskX,
               currentY: a.deskY,
               message: 'Returning to Desk',
@@ -340,9 +247,9 @@ export default function OrchestraInterface() {
           : a
       )
     );
-    await new Promise((r) => setTimeout(r, 600));
+    await new Promise((r) => setTimeout(r, 1200));
 
-    // ── STAGE 6: Team Coffee Break! ──
+    // ── STAGE 5: Team Walking to Coffee Station! ──
     setProcessingStage('All Tasks Complete! Coffee Break ☕');
     sound.playCoffee();
     setAgents((prev) =>
@@ -350,25 +257,44 @@ export default function OrchestraInterface() {
         if (idx % 2 === 0) {
           return {
             ...a,
-            state: 'coffee',
-            currentX: STATIONS.COFFEE_BAR.x - (idx * 1.5),
-            currentY: STATIONS.COFFEE_BAR.y + (idx % 3 * 2),
-            message: 'Sipping Espresso ☕',
+            state: 'WALKING',
+            currentX: COFFEE_STATION.x - (idx * 2),
+            currentY: COFFEE_STATION.y + (idx % 3 * 3),
+            message: 'Heading to Coffee ☕',
           };
         }
-        return { ...a, state: 'done', currentX: a.deskX, currentY: a.deskY, message: 'Verified ✓' };
+        return { ...a, state: 'IDLE', message: 'Verified ✓' };
       })
     );
-    await new Promise((r) => setTimeout(r, 1400));
+    await new Promise((r) => setTimeout(r, 1200));
 
-    // Return everyone to desk & idle
+    // Sipping coffee
+    setAgents((prev) =>
+      prev.map((a) =>
+        a.state === 'WALKING'
+          ? { ...a, state: 'DRINKING_COFFEE', message: 'Sipping espresso ☕' }
+          : a
+      )
+    );
+    await new Promise((r) => setTimeout(r, 1600));
+
+    // Return to desks
     setAgents((prev) =>
       prev.map((a) => ({
         ...a,
-        state: 'idle',
+        state: 'WALKING',
         currentX: a.deskX,
         currentY: a.deskY,
-        carrying: null,
+        message: 'Returning to Desk',
+      }))
+    );
+    await new Promise((r) => setTimeout(r, 1200));
+
+    // All idle
+    setAgents((prev) =>
+      prev.map((a) => ({
+        ...a,
+        state: 'IDLE',
         message: 'Ready for next mission',
       }))
     );
@@ -396,11 +322,11 @@ export default function OrchestraInterface() {
             <div className="logo-icon">(†!†)</div>
             <div className="header-title-group">
               <h1>Orchestra2D Generator Interface</h1>
-              <span className="header-subtext">12-Agent Autonomous Dev Simulation</span>
+              <span>12-Agent Autonomous Office Simulation</span>
             </div>
           </div>
 
-          {/* View Mode Chips */}
+          {/* View Modes */}
           <div className="view-mode-selector">
             <button
               className={`view-chip ${viewMode === 'floor' ? 'active' : ''}`}
@@ -428,7 +354,7 @@ export default function OrchestraInterface() {
               {isMuted ? '🔇' : '🔊'} SFX
             </button>
 
-            {/* Live Token Budget Pill */}
+            {/* Token Budget Meter */}
             <div className={`token-counter-pill ${tokensRemaining < 100 ? 'low' : ''}`}>
               <span className="tok-label">TOKENS:</span>
               <span className="tok-num">{tokensRemaining}</span>
@@ -436,58 +362,82 @@ export default function OrchestraInterface() {
                 ⚡ +500
               </button>
             </div>
-
-            {/* Day / Night Mode Switcher */}
-            <button className="theme-toggle" onClick={() => { sound.playClick(); setIsDayMode(!isDayMode); }}>
-              {isDayMode ? '🌙 Night' : '☀️ Day'}
-            </button>
           </div>
         </header>
 
-        {/* ── 2. VIEWPORT / FLOOR CANVAS ───────────────────────── */}
+        {/* ── 2. DYNAMIC 2D PIXEL-ART OFFICE FLOOR ─────────────── */}
         <main className="viewport-container">
-          {/* Main 2D Pixel Office Room */}
-          <div className={`pixel-room-canvas ${isDayMode ? 'day-bg' : 'night-bg'}`} style={{ width: viewMode === 'split' ? '50%' : '100%' }}>
-            
-            {/* Interactive Stations Markers */}
-            <div className="station-marker" style={{ left: `${STATIONS.PLANNING_BOARD.x}%`, top: `${STATIONS.PLANNING_BOARD.y}%` }}>
-              {STATIONS.PLANNING_BOARD.name}
-            </div>
-            <div className="station-marker" style={{ left: `${STATIONS.DESIGN_EASEL.x}%`, top: `${STATIONS.DESIGN_EASEL.y}%` }}>
-              {STATIONS.DESIGN_EASEL.name}
-            </div>
-            <div className="station-marker" style={{ left: `${STATIONS.COFFEE_BAR.x}%`, top: `${STATIONS.COFFEE_BAR.y}%` }}>
-              {STATIONS.COFFEE_BAR.name}
-            </div>
-            <div className="station-marker" style={{ left: `${STATIONS.DEPLOY_PORTAL.x}%`, top: `${STATIONS.DEPLOY_PORTAL.y}%` }}>
-              {STATIONS.DEPLOY_PORTAL.name}
+          <div className="pixel-office-stage" style={{ width: viewMode === 'split' ? '50%' : '100%' }}>
+            {/* Isometric Wood Flooring */}
+            <div className="office-flooring" />
+
+            {/* Zone 1: Executive Office (Top-Left) */}
+            <div className="exec-room-border">
+              <span className="exec-room-label">🏢 MICHAEL&apos;S OFFICE</span>
             </div>
 
-            {/* Flying Envelope Particle */}
+            {/* Zone 2: Coffee Break Lounge (Top-Right) */}
+            <div className="coffee-lounge-area">
+              <span className="coffee-bar-label">☕ COFFEE LOUNGE</span>
+              <div className="coffee-bar-counter">
+                <span>☕</span>
+                <span>♨️</span>
+                <span>🧃</span>
+              </div>
+            </div>
+
+            {/* Zone 3: Server Rack / Deploy Station (Bottom-Right) */}
+            <div className="server-rack-zone">
+              <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: '0.38rem', color: '#14b8a6' }}>
+                🌐 SERVER RACK
+              </span>
+              <div className="server-rack-unit">
+                <div className="server-led-strip">
+                  <div className="server-led" />
+                  <div className="server-led" />
+                  <div className="server-led" />
+                </div>
+                <div className="server-led-strip">
+                  <div className="server-led" />
+                  <div className="server-led" />
+                  <div className="server-led" />
+                </div>
+              </div>
+            </div>
+
+            {/* 12 Workstation Desks (Fixed Locations) */}
+            {INITIAL_AGENTS.map((agent) => (
+              <div
+                key={`desk-${agent.id}`}
+                className="office-desk-station"
+                style={{ left: `${agent.deskX}%`, top: `${agent.deskY}%` }}
+              >
+                <div className="desk-monitor">&gt;_</div>
+                <div className="desk-chair" />
+              </div>
+            ))}
+
+            {/* Flying Envelopes */}
             {envelopes.map((env) => (
               <div
                 key={env.id}
-                className="flying-envelope"
-                style={{
-                  left: `${env.toX}%`,
-                  top: `${env.toY}%`,
-                }}
+                className="flying-envelope-item"
+                style={{ left: `${env.toX}%`, top: `${env.toY}%` }}
               >
                 ✉️
               </div>
             ))}
 
-            {/* 12 Interactive Agent Characters */}
+            {/* 12 Dynamic Animated Character Sprites */}
             {agents.map((agent) => {
-              const isWorking = agent.state === 'working';
-              const isWalking = agent.state === 'walking';
-              const isCoffee = agent.state === 'coffee';
-              const isOutOfTokens = agent.state === 'out_of_tokens';
+              const isTyping = agent.state === 'TYPING';
+              const isCoffee = agent.state === 'DRINKING_COFFEE';
+              const isOutOfTokens = agent.state === 'OUT_OF_TOKENS';
 
               return (
                 <div
                   key={agent.id}
-                  className={`agent-character-entity ${agent.state}`}
+                  className={`pixel-agent-entity ${agent.state}`}
                   style={{
                     left: `${agent.currentX}%`,
                     top: `${agent.currentY}%`,
@@ -498,20 +448,28 @@ export default function OrchestraInterface() {
                   }}
                   title={`Click to inspect ${agent.name} (${agent.role})`}
                 >
-                  {/* CRT Monitor Glow */}
-                  <div className="monitor-coding-glow" />
+                  {/* Speech Bubble */}
+                  {isTyping && <div className="agent-status-bubble typing">{agent.message}</div>}
+                  {isCoffee && <div className="agent-status-bubble coffee">{agent.message}</div>}
+                  {isOutOfTokens && <div className="agent-status-bubble out_of_tokens">{agent.message}</div>}
+                  {agent.state === 'WALKING' && <div className="agent-status-bubble typing">{agent.message}</div>}
 
-                  {/* Carried Artifact */}
-                  {agent.carrying && (
-                    <div className="carried-artifact-token">{agent.carrying}</div>
-                  )}
+                  {/* Character Body Construction */}
+                  <div className="sprite-avatar-box">
+                    {/* Hair */}
+                    <div className="sprite-hair" style={{ backgroundColor: agent.hairColor }} />
+                    {/* Head */}
+                    <div className="sprite-head" />
+                    {/* Torso / Outfit */}
+                    <div className="sprite-torso" style={{ backgroundColor: agent.shirtColor }}>
+                      <div className="sprite-hands" />
+                    </div>
+                    {/* Legs */}
+                    <div className="sprite-legs" />
+                  </div>
 
-                  {/* Speech Bubbles */}
-                  {isWorking && <div className="agent-speech-bubble typing">{agent.message}</div>}
-                  {isWalking && <div className="agent-speech-bubble typing">{agent.message}</div>}
-                  {isCoffee && <div className="agent-speech-bubble coffee">{agent.message}</div>}
-                  {isOutOfTokens && <div className="agent-speech-bubble out_of_tokens">{agent.message}</div>}
-                  {agent.state === 'done' && <div className="agent-speech-bubble done">{agent.message}</div>}
+                  {/* Name Tag */}
+                  <div className="agent-name-tag">{agent.name}</div>
                 </div>
               );
             })}
@@ -546,12 +504,11 @@ export default function OrchestraInterface() {
                 <span>💻 LIVE CLUSTER ACTIVITY FEED & TELEMETRY</span>
               </div>
               <div style={{ flex: 1, background: '#02040a', padding: '16px', overflowY: 'auto', fontFamily: 'Courier New', color: '#4ade80', fontSize: '0.8rem', lineHeight: '1.6' }}>
-                <div>[SYSTEM] 12BOT Cluster Online · 12 Agents Registered · Base Sepolia Escrow Enabled</div>
-                <div>[ROSTER] Michael (PM), Idea (Copy), Design (UI), HTML, CSS, JS, Anim, Backend, DB, QA-1, QA-2, Docs</div>
+                <div>[SYSTEM] 12BOT Cluster Online · 12 Autonomous Agents Active</div>
                 <div>[TOKENS] Remaining budget: {tokensRemaining} tokens</div>
                 {agents.map((a) => (
                   <div key={a.id} style={{ marginTop: '8px' }}>
-                    <span style={{ color: a.color, fontWeight: 'bold' }}>[{a.name}]</span> {a.role}: {a.message} (Used: {a.tokensUsed} tokens)
+                    <span style={{ color: a.shirtColor, fontWeight: 'bold' }}>[{a.name}]</span> {a.role}: {a.message} (Tokens: {a.tokensUsed})
                     {a.logs.map((log, i) => (
                       <div key={i} style={{ color: '#94a3b8', marginLeft: '16px' }}>&gt; {log}</div>
                     ))}
@@ -568,15 +525,13 @@ export default function OrchestraInterface() {
               <a href={deployUrl} target="_blank" rel="noopener noreferrer">
                 {deployUrl} ↗
               </a>
-              <div className="banner-btn-group">
-                <button
-                  className="banner-action-btn"
-                  onClick={() => { sound.playClick(); setViewMode('split'); }}
-                >
-                  SPLIT PREVIEW
-                </button>
-                <button className="banner-close-btn" onClick={() => setDeployUrl(null)}>✕</button>
-              </div>
+              <button
+                className="banner-action-btn"
+                onClick={() => { sound.playClick(); setViewMode('split'); }}
+              >
+                SPLIT PREVIEW
+              </button>
+              <button className="banner-close-btn" onClick={() => setDeployUrl(null)}>✕</button>
             </div>
           )}
         </main>
@@ -644,7 +599,7 @@ export default function OrchestraInterface() {
                 <h3>
                   {selectedAgent.name}
                   <br />
-                  <span style={{ fontSize: '0.45rem', color: selectedAgent.color }}>{selectedAgent.role}</span>
+                  <span style={{ fontSize: '0.45rem', color: selectedAgent.shirtColor }}>{selectedAgent.role}</span>
                 </h3>
                 <button className="close-btn" onClick={() => setSelectedAgent(null)}>
                   ✕
@@ -653,13 +608,13 @@ export default function OrchestraInterface() {
 
               <div className="agent-stats-card">
                 <div className="stat-item">
-                  <span className="k">LLM Model:</span>
-                  <span className="v">{selectedAgent.model}</span>
+                  <span className="k">Role:</span>
+                  <span className="v">{selectedAgent.role}</span>
                 </div>
                 <div className="stat-item">
                   <span className="k">State:</span>
-                  <span className="v" style={{ color: selectedAgent.color }}>
-                    {selectedAgent.state.toUpperCase()}
+                  <span className="v" style={{ color: selectedAgent.shirtColor }}>
+                    {selectedAgent.state}
                   </span>
                 </div>
                 <div className="stat-item">
