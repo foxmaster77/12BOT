@@ -1,8 +1,8 @@
 /* ==========================================================================
-   ORCHESTRA2D — Game-Grade Pixel-Art Office Engine & SNES HUD
+   ORCHESTRA2D — High-Definition Retro 16-Bit Pixel-Art Office & HUD
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
 * {
   box-sizing: border-box;
@@ -16,10 +16,7 @@
   --neon-purple: #bf5fff;
   --neon-orange: #ff9100;
   --neon-red: #ff3c3c;
-  --neon-yellow: #ffd700;
-  --bg-dark: #080812;
-  --panel-bg: rgba(10, 14, 28, 0.94);
-  --border-snes: 2px solid #1e3a8a;
+  --bg-dark: #07070e;
 }
 
 html, body {
@@ -28,7 +25,7 @@ html, body {
   margin: 0;
   padding: 0;
   background: var(--bg-dark);
-  color: #c8d8ff;
+  color: #f1f5f9;
   overflow: hidden;
   user-select: none;
   font-family: 'Courier New', monospace;
@@ -52,14 +49,14 @@ html, body {
   z-index: 999;
   background: repeating-linear-gradient(
     0deg,
-    rgba(0, 0, 0, 0.07) 0px,
-    rgba(0, 0, 0, 0.07) 1px,
+    rgba(0, 0, 0, 0.06) 0px,
+    rgba(0, 0, 0, 0.06) 1px,
     transparent 1px,
     transparent 3px
   );
 }
 
-/* ── 1. TOP RETRO COMMAND BAR ────────────────────────────── */
+/* ── 1. RETRO TOP COMMAND BAR ────────────────────────────── */
 .app-header {
   height: 48px;
   flex-shrink: 0;
@@ -67,9 +64,9 @@ html, body {
   align-items: center;
   justify-content: space-between;
   padding: 0 16px;
-  background: linear-gradient(180deg, #12122b 0%, #0a0a18 100%);
+  background: linear-gradient(180deg, #141428 0%, #0c0c18 100%);
   border-bottom: 2px solid #000;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(0, 212, 255, 0.3);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(0, 212, 255, 0.25);
   z-index: 50;
 }
 
@@ -91,7 +88,7 @@ html, body {
   font-size: 11px;
   font-weight: 900;
   color: var(--neon-blue);
-  box-shadow: 0 0 10px rgba(0, 212, 255, 0.4), inset 0 0 6px rgba(0, 212, 255, 0.2);
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.4);
   font-family: 'Press Start 2P', monospace;
 }
 
@@ -105,42 +102,15 @@ html, body {
 }
 
 .header-title-group span {
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   color: #64748b;
   font-weight: bold;
-}
-
-.view-mode-selector {
-  display: flex;
-  background: #0a0a1a;
-  border: 1px solid #1e293b;
-  border-radius: 4px;
-  padding: 2px;
-  gap: 2px;
-}
-
-.view-chip {
-  padding: 4px 10px;
-  font-family: 'Press Start 2P', monospace;
-  font-size: 0.45rem;
-  color: #64748b;
-  cursor: pointer;
-  border-radius: 2px;
-  border: none;
-  background: transparent;
-  transition: all 0.15s;
-}
-
-.view-chip.active {
-  background: #1e3a8a;
-  color: var(--neon-blue);
-  box-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
 }
 
 .header-right-cluster {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .sound-toggle-btn {
@@ -151,6 +121,10 @@ html, body {
   border-radius: 4px;
   cursor: pointer;
   font-size: 11px;
+}
+.sound-toggle-btn:hover {
+  color: #fff;
+  border-color: var(--neon-blue);
 }
 
 .token-counter-pill {
@@ -167,6 +141,11 @@ html, body {
 .token-counter-pill .tok-label { font-size: 0.45rem; color: #4ade80; }
 .token-counter-pill .tok-num { font-size: 0.55rem; }
 
+.token-counter-pill.low {
+  border-color: var(--neon-red);
+  color: var(--neon-red);
+}
+
 .recharge-quick-btn {
   background: transparent;
   border: 1px solid var(--neon-green);
@@ -182,404 +161,173 @@ html, body {
   color: #000;
 }
 
-/* ── 2. DYNAMIC 2D PIXEL ART OFFICE FLOOR ─────────────────── */
+.theme-toggle {
+  background: #111124;
+  color: var(--neon-purple);
+  border: 1px solid var(--neon-purple);
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: bold;
+  box-shadow: 0 0 6px rgba(191, 95, 255, 0.3);
+}
+.theme-toggle:hover {
+  background: var(--neon-purple);
+  color: #000;
+}
+
+/* ── 2. HD PIXEL ART OFFICE VIEWPORT ─────────────────────── */
 .viewport-container {
   flex: 1;
   position: relative;
   overflow: hidden;
   min-height: 0;
-  background: #070913;
-  display: flex;
+  background: #07070e;
 }
 
-.pixel-office-stage {
-  flex: 1;
-  position: relative;
-  overflow: hidden;
-  background: #0a0e1c;
-  image-rendering: pixelated;
-}
-
-/* Procedural Isometric Wood Tile Grid */
-.office-flooring {
+.pixel-room-canvas {
   position: absolute;
   inset: 0;
-  background-color: #1a1e2f;
-  background-image: 
-    linear-gradient(45deg, #161a28 25%, transparent 25%), 
-    linear-gradient(-45deg, #161a28 25%, transparent 25%), 
-    linear-gradient(45deg, transparent 75%, #161a28 75%), 
-    linear-gradient(-45deg, transparent 75%, #161a28 75%);
-  background-size: 32px 32px;
-  background-position: 0 0, 0 16px, 16px -16px, -16px 0px;
-  opacity: 0.85;
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  transition: filter 0.4s ease-in-out;
 }
 
-/* Office Room Zones & Walls */
-.office-zone-decor {
+.day-bg {
+  background-image: url('/office-day.jpg');
+}
+
+.night-bg {
+  background-image: url('/office-night.jpg');
+}
+
+/* Ambient Sunbeam */
+.sunlight-beam {
   position: absolute;
+  top: 5%;
+  left: 20%;
+  width: 140px;
+  height: 280px;
+  background: linear-gradient(135deg, rgba(255, 240, 160, 0.25) 0%, rgba(255, 240, 160, 0) 75%);
   pointer-events: none;
-  z-index: 4;
+  transform: rotate(-10deg);
+  filter: blur(8px);
+  animation: sunBeamPulse 4s infinite ease-in-out alternate;
 }
 
-/* Top Executive Room Partition */
-.exec-room-border {
+@keyframes sunBeamPulse {
+  0% { opacity: 0.5; transform: rotate(-10deg) scale(0.98); }
+  100% { opacity: 1; transform: rotate(-10deg) scale(1.04); }
+}
+
+/* Steaming Coffee Machine */
+.coffee-steam-emitter {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 24%;
-  height: 48%;
-  border-right: 3px solid #334155;
-  border-bottom: 3px solid #334155;
-  background: rgba(30, 41, 59, 0.25);
-}
-
-.exec-room-label {
-  position: absolute;
-  top: 6px;
-  left: 8px;
-  font-family: 'Press Start 2P', monospace;
-  font-size: 0.38rem;
-  color: #facc15;
-  letter-spacing: 0.5px;
-}
-
-/* Coffee Lounge Area */
-.coffee-lounge-area {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 22%;
-  height: 48%;
-  border-left: 3px solid #78350f;
-  border-bottom: 3px solid #78350f;
-  background: rgba(120, 53, 15, 0.15);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 8px;
-}
-
-.coffee-bar-counter {
-  width: 90%;
-  height: 28px;
-  background: #451a03;
-  border: 2px solid #92400e;
-  border-radius: 4px;
-  margin-top: 14px;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  font-size: 14px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
-}
-
-.coffee-bar-label {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 0.38rem;
-  color: #f59e0b;
-  letter-spacing: 0.5px;
-  margin-top: 2px;
-}
-
-/* Server Rack Station */
-.server-rack-zone {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 20%;
-  height: 44%;
-  border-left: 3px solid #0f766e;
-  background: rgba(15, 118, 110, 0.12);
-  padding: 8px;
-}
-
-.server-rack-unit {
-  width: 85%;
-  height: 44px;
-  background: #042f2e;
-  border: 2px solid #14b8a6;
-  border-radius: 4px;
-  margin-top: 10px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  padding: 4px 8px;
-}
-
-.server-led-strip {
+  right: 9.5%;
+  top: 10%;
+  pointer-events: none;
+  z-index: 15;
   display: flex;
   gap: 4px;
 }
-.server-led {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #2dd4bf;
-  animation: ledBlink 0.4s infinite alternate;
+.steam-cloud {
+  font-size: 16px;
+  display: inline-block;
+  animation: steamRise 2.4s infinite ease-in-out;
 }
-.server-led:nth-child(2) { animation-delay: 0.15s; background: #38bdf8; }
-.server-led:nth-child(3) { animation-delay: 0.3s; background: #facc15; }
+.steam-cloud:nth-child(2) { animation-delay: 0.9s; }
 
-@keyframes ledBlink {
-  0% { opacity: 0.3; }
-  100% { opacity: 1; box-shadow: 0 0 6px currentColor; }
+@keyframes steamRise {
+  0% { transform: translateY(0) scale(0.8); opacity: 0; }
+  50% { transform: translateY(-8px) scale(1.2); opacity: 0.8; }
+  100% { transform: translateY(-18px) scale(1.5); opacity: 0; }
 }
 
-/* Workstation Desks */
-.office-desk-station {
+/* ── 3. INTERACTIVE 12 AGENT HOTSPOTS ─────────────────────── */
+.agent-desk-hotspot {
   position: absolute;
   transform: translate(-50%, -50%);
-  width: 58px;
-  height: 42px;
-  background: #1e293b;
-  border: 2px solid #334155;
-  border-radius: 4px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
-  z-index: 8;
-  pointer-events: none;
-}
-
-.office-desk-station .desk-monitor {
-  width: 26px;
-  height: 16px;
-  background: #090d16;
-  border: 1.5px solid #38bdf8;
-  border-radius: 2px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 8px;
-  color: #38bdf8;
-  box-shadow: 0 0 6px rgba(56, 189, 248, 0.3);
-}
-
-.office-desk-station .desk-chair {
-  width: 20px;
-  height: 10px;
-  background: #0f172a;
-  border: 1px solid #475569;
-  border-radius: 2px;
-  margin-top: 2px;
-}
-
-/* ── 3. ANIMATED 2D SPRITE AGENTS ────────────────────────── */
-.pixel-agent-entity {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  width: 54px;
+  height: 64px;
   cursor: pointer;
-  z-index: 20;
-  transition: left 1.2s cubic-bezier(0.25, 1, 0.5, 1), top 1.2s cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-.pixel-agent-entity:hover {
-  transform: translate(-50%, -54%) scale(1.15);
-  z-index: 40;
-}
-
-/* Procedural Pixel Character */
-.sprite-avatar-box {
-  width: 32px;
-  height: 46px;
-  position: relative;
+  z-index: 25;
   display: flex;
   flex-direction: column;
   align-items: center;
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Hair */
-.sprite-hair {
+.agent-desk-hotspot:hover {
+  transform: translate(-50%, -54%) scale(1.1);
+  z-index: 35;
+}
+
+/* CRT Monitor Glow When Active */
+.monitor-coding-glow {
   position: absolute;
-  top: 0;
-  width: 20px;
-  height: 10px;
-  border-radius: 4px 4px 0 0;
-  border: 1.5px solid #000;
-  z-index: 3;
-}
-
-/* Head & Face */
-.sprite-head {
-  width: 18px;
-  height: 18px;
-  background: #fcd34d;
-  border: 1.5px solid #000;
-  border-radius: 3px;
-  position: relative;
-  z-index: 2;
-  margin-top: 4px;
-}
-
-/* Eyes */
-.sprite-head::before {
-  content: '';
-  position: absolute;
-  width: 3px;
-  height: 3px;
-  background: #000;
-  left: 3px;
   top: 6px;
-  box-shadow: 7px 0 0 #000;
-}
-
-/* Torso / Clothes */
-.sprite-torso {
-  width: 24px;
-  height: 18px;
-  border: 1.5px solid #000;
-  border-radius: 3px;
-  margin-top: 1px;
-  position: relative;
-  z-index: 2;
-  display: flex;
-  justify-content: center;
-}
-
-/* Hands for Typing */
-.sprite-hands {
-  position: absolute;
-  bottom: -2px;
-  width: 18px;
-  height: 4px;
-  display: flex;
-  justify-content: space-between;
+  width: 22px;
+  height: 14px;
+  border-radius: 2px;
+  background: rgba(0, 212, 255, 0.35);
+  box-shadow: 0 0 14px var(--neon-blue);
+  pointer-events: none;
   opacity: 0;
-}
-.sprite-hands::before, .sprite-hands::after {
-  content: '';
-  width: 4px;
-  height: 4px;
-  background: #fcd34d;
-  border: 1px solid #000;
-  border-radius: 1px;
+  transition: opacity 0.3s;
+  animation: crtFlicker 0.18s infinite alternate;
 }
 
-/* Legs / Feet */
-.sprite-legs {
-  width: 16px;
-  height: 6px;
-  display: flex;
-  justify-content: space-between;
-  z-index: 1;
-}
-.sprite-legs::before, .sprite-legs::after {
-  content: '';
-  width: 5px;
-  height: 6px;
-  background: #1e293b;
-  border: 1px solid #000;
-}
-
-/* ── SPRITE STATE ANIMATIONS ─────────────────────────────── */
-
-/* 1. TYPING ANIMATION */
-.pixel-agent-entity.TYPING .sprite-hands {
+.agent-desk-hotspot.working .monitor-coding-glow {
   opacity: 1;
-  animation: handsTyping 0.12s infinite alternate;
-}
-.pixel-agent-entity.TYPING .sprite-avatar-box {
-  animation: typingBob 0.12s infinite alternate;
 }
 
-@keyframes handsTyping {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(-3px); }
-}
-@keyframes typingBob {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(-1.5px); }
-}
-
-/* 2. DRINKING COFFEE ANIMATION */
-.pixel-agent-entity.DRINKING_COFFEE .sprite-head {
-  animation: coffeeSipHead 1.2s infinite ease-in-out;
-}
-
-@keyframes coffeeSipHead {
-  0%, 100% { transform: rotate(0deg); }
-  50% { transform: rotate(-8deg) translateY(-2px); }
-}
-
-/* 3. WALKING ANIMATION */
-.pixel-agent-entity.WALKING .sprite-avatar-box {
-  animation: walkCycleBob 0.22s infinite alternate ease-in-out;
-}
-.pixel-agent-entity.WALKING .sprite-legs::before {
-  animation: legStepA 0.22s infinite alternate;
-}
-.pixel-agent-entity.WALKING .sprite-legs::after {
-  animation: legStepB 0.22s infinite alternate;
-}
-
-@keyframes walkCycleBob {
-  0% { transform: translateY(0) rotate(-2deg); }
-  100% { transform: translateY(-4px) rotate(2deg); }
-}
-@keyframes legStepA {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(-3px); }
-}
-@keyframes legStepB {
-  0% { transform: translateY(-3px); }
-  100% { transform: translateY(0); }
-}
-
-/* 4. OUT OF TOKENS (SLEEPING Zzz) */
-.pixel-agent-entity.OUT_OF_TOKENS .sprite-head {
-  transform: translateY(4px) rotate(12deg);
-  filter: grayscale(0.6);
+@keyframes crtFlicker {
+  from { box-shadow: 0 0 6px var(--neon-blue); }
+  to { box-shadow: 0 0 18px var(--neon-blue); }
 }
 
 /* Speech Bubbles */
-.agent-status-bubble {
+.agent-speech-bubble {
   position: absolute;
   top: -26px;
-  padding: 2px 6px;
-  font-size: 8px;
+  padding: 3px 8px;
+  font-size: 9px;
   font-weight: 800;
-  border-radius: 3px;
+  border-radius: 4px;
   white-space: nowrap;
   pointer-events: none;
-  z-index: 30;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+  z-index: 35;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.9);
+  animation: bubblePop 0.2s ease-out;
 }
-.agent-status-bubble.typing {
-  background: #022c16;
+
+@keyframes bubblePop {
+  from { transform: scale(0.7) translateY(4px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.agent-speech-bubble.typing {
+  background: rgba(2, 44, 22, 0.96);
   border: 1px solid var(--neon-green);
   color: var(--neon-green);
 }
-.agent-status-bubble.coffee {
-  background: #331500;
+.agent-speech-bubble.coffee {
+  background: rgba(51, 21, 0, 0.96);
   border: 1px solid var(--neon-orange);
   color: var(--neon-orange);
 }
-.agent-status-bubble.out_of_tokens {
-  background: #2b0c0c;
+.agent-speech-bubble.out_of_tokens {
+  background: rgba(43, 12, 12, 0.96);
   border: 1px solid var(--neon-red);
   color: var(--neon-red);
-  animation: zzzFloat 0.8s infinite alternate;
 }
-
-@keyframes zzzFloat {
-  0% { transform: translateY(0) scale(0.95); }
-  100% { transform: translateY(-4px) scale(1.05); }
-}
-
-/* Agent Name Tag */
-.agent-name-tag {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 0.38rem;
-  margin-top: 3px;
-  color: #e2e8f0;
-  text-shadow: 1px 1px 2px #000;
-  white-space: nowrap;
+.agent-speech-bubble.done {
+  background: rgba(2, 26, 48, 0.96);
+  border: 1px solid var(--neon-blue);
+  color: var(--neon-blue);
 }
 
 /* Flying Envelope */
@@ -598,41 +346,11 @@ html, body {
   100% { transform: scale(1.1) rotate(12deg); }
 }
 
-/* ── 4. SPLIT PREVIEW & LOGS PANE ────────────────────────── */
-.split-preview-pane {
-  width: 50%;
-  height: 100%;
-  background: #0a0a14;
-  border-left: 2px solid #1e293b;
-  display: flex;
-  flex-direction: column;
-  z-index: 30;
-}
-
-.split-preview-header {
-  height: 36px;
-  background: #111827;
-  border-bottom: 1px solid #1f2937;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 12px;
-  font-family: 'Press Start 2P', monospace;
-}
-.split-preview-header span { color: var(--neon-green); font-size: 0.45rem; }
-
-.preview-iframe {
-  flex: 1;
-  width: 100%;
-  border: none;
-  background: #ffffff;
-}
-
-/* ── 5. BOTTOM SNES GAME HUD ─────────────────────────────── */
+/* ── 4. BOTTOM SNES GAME HUD ─────────────────────────────── */
 .control-panel {
   height: 175px;
   flex-shrink: 0;
-  background: linear-gradient(180deg, #0d0d22 0%, #060610 100%);
+  background: linear-gradient(180deg, #101026 0%, #080814 100%);
   border-top: 2px solid #1e3a8a;
   box-shadow: 0 -4px 30px rgba(0, 60, 180, 0.35);
   display: flex;
@@ -653,7 +371,7 @@ html, body {
 }
 
 .panel-section {
-  background: rgba(4, 8, 24, 0.75);
+  background: rgba(6, 10, 26, 0.85);
   border: 1px solid #1a2a50;
   border-radius: 6px;
   padding: 8px 12px;
@@ -671,36 +389,33 @@ html, body {
   text-transform: uppercase;
 }
 
-/* Section 1: Project Info */
 .info-section { flex: 1.1; min-width: 170px; }
 .info-box { display: flex; flex-direction: column; gap: 6px; font-size: 0.8rem; }
 .info-box p { margin: 0; }
 .info-box .label { color: #64748b; font-size: 0.72rem; }
 .info-box .val { color: var(--neon-blue); font-weight: bold; }
 
-/* Section 2: Prompt Input */
 .prompt-section { flex: 2.6; min-width: 280px; }
 .prompt-input {
   flex: 1;
   background: transparent;
   border: none;
-  color: #c8d8ff;
+  color: #ffffff;
   resize: none;
   font-family: 'Courier New', monospace;
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   line-height: 1.5;
   outline: none;
   caret-color: var(--neon-blue);
 }
-.prompt-input::placeholder { color: #334155; }
+.prompt-input::placeholder { color: #475569; }
 
-/* Section 3: Niche Picker */
 .niche-section { flex: 0.9; min-width: 120px; }
 .niche-list { display: flex; flex-direction: column; gap: 3px; }
 .niche-item {
   padding: 4px 8px;
   cursor: pointer;
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   color: #64748b;
   border: 1px solid transparent;
   border-radius: 3px;
@@ -710,12 +425,11 @@ html, body {
 .niche-item.active {
   color: var(--neon-blue);
   border-color: var(--neon-blue);
-  background: rgba(0, 100, 255, 0.15);
-  box-shadow: 0 0 8px rgba(0, 212, 255, 0.25);
+  background: rgba(0, 100, 255, 0.18);
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.3);
   font-weight: bold;
 }
 
-/* Section 4: Action Generate */
 .action-section {
   flex: 0.95;
   min-width: 135px;
@@ -791,16 +505,6 @@ html, body {
   to { transform: translate(-50%, 0); opacity: 1; }
 }
 .live-deploy-banner a { color: #ffffff; text-decoration: underline; }
-.banner-action-btn {
-  background: var(--neon-green);
-  color: #000000;
-  border: none;
-  padding: 2px 8px;
-  border-radius: 2px;
-  font-family: 'Press Start 2P', monospace;
-  font-size: 0.4rem;
-  cursor: pointer;
-}
 .banner-close-btn { background: none; border: none; color: var(--neon-green); cursor: pointer; }
 
 /* Agent Drawer */
