@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import Head from 'next/head';
 import { sound } from '../lib/soundFx';
+import OfficeCanvas from '../components/OfficeCanvas';
+import type { AgentStatus } from '../components/OfficeCanvas';
 
 interface AgentInfo {
   id: string;
@@ -8,10 +10,8 @@ interface AgentInfo {
   role: string;
   model: string;
   color: string;
-  status: 'idle' | 'working' | 'coffee' | 'done' | 'out_of_tokens';
+  status: AgentStatus;
   message: string;
-  x: number; // percentage coordinate
-  y: number; // percentage coordinate
   tokensUsed: number;
   logs: string[];
 }
@@ -22,37 +22,30 @@ interface FlyingEnvelope {
   toY: number;
 }
 
-// 12 Exact Desk Coordinates matching the 12 Chairs in the pixel-art room
 const INITIAL_AGENTS: AgentInfo[] = [
-  // Top Row (6 Desks)
-  { id: 'pm', name: 'A01 PM', role: 'Project Manager / Architect', model: 'Groq / Qwen-3', color: '#38bdf8', status: 'idle', message: 'Ready for brief', x: 27.8, y: 46.5, tokensUsed: 0, logs: ['System initialized.'] },
-  { id: 'idea', name: 'A02 Idea', role: 'Idea & Copywriter', model: 'Gemini 2.0 Flash', color: '#facc15', status: 'idle', message: 'Waiting for concept', x: 37.8, y: 46.5, tokensUsed: 0, logs: ['Copy engine ready.'] },
-  { id: 'designer', name: 'A03 Design', role: 'UI/UX Designer', model: 'Gemini 2.0 Flash', color: '#f472b6', status: 'idle', message: 'Palettes ready', x: 44.8, y: 46.5, tokensUsed: 0, logs: ['Design system loaded.'] },
-  { id: 'html_dev', name: 'A04 HTML', role: 'HTML5 Semantic Dev', model: 'Groq / Qwen-3', color: '#22d3ee', status: 'idle', message: 'Markup ready', x: 54.8, y: 46.5, tokensUsed: 0, logs: ['HTML parser ready.'] },
-  { id: 'css_dev', name: 'A05 CSS', role: 'CSS3 Stylesheet Dev', model: 'Gemini 2.0 Flash', color: '#c084fc', status: 'idle', message: 'CSS tokens ready', x: 62.4, y: 46.5, tokensUsed: 0, logs: ['CSS3 tokens active.'] },
-  { id: 'js_dev', name: 'A06 JS', role: 'JavaScript Interactivity', model: 'Groq / Qwen-3', color: '#fb923c', status: 'idle', message: 'DOM scripts ready', x: 72.8, y: 46.5, tokensUsed: 0, logs: ['JS runtime idle.'] },
-
-  // Bottom Row (6 Desks)
-  { id: 'anim_dev', name: 'A07 Anim', role: 'Animation Developer', model: 'Gemini 2.0 Flash', color: '#a3e635', status: 'idle', message: 'Keyframes ready', x: 24.2, y: 73.5, tokensUsed: 0, logs: ['Canvas engine active.'] },
-  { id: 'backend_dev', name: 'A08 Back', role: 'Express Backend Dev', model: 'Groq / Qwen-3', color: '#4ade80', status: 'idle', message: 'Server API ready', x: 35.2, y: 73.5, tokensUsed: 0, logs: ['Express router idle.'] },
-  { id: 'db_dev', name: 'A09 DB', role: 'Database & SQL Dev', model: 'Gemini 2.0 Flash', color: '#fbbf24', status: 'idle', message: 'Schema ready', x: 44.2, y: 73.5, tokensUsed: 0, logs: ['SQL client active.'] },
-  { id: 'debugger_1', name: 'A10 QA-1', role: 'Frontend Debugger', model: 'Groq / Qwen-3', color: '#f87171', status: 'idle', message: 'Linter ready', x: 54.8, y: 73.5, tokensUsed: 0, logs: ['Test runner ready.'] },
-  { id: 'debugger_2', name: 'A11 QA-2', role: 'System Review QA', model: 'Gemini 2.0 Flash', color: '#2dd4bf', status: 'idle', message: 'QA test ready', x: 62.4, y: 73.5, tokensUsed: 0, logs: ['Audit suite ready.'] },
-  { id: 'docs_writer', name: 'A12 Docs', role: 'Documentation Dev', model: 'Groq / Qwen-3', color: '#818cf8', status: 'idle', message: 'README ready', x: 72.8, y: 73.5, tokensUsed: 0, logs: ['README builder ready.'] },
+  { id: 'pm',           name: 'A01 PM',   role: 'Project Manager',    model: 'Groq / Qwen-3',     color: '#38bdf8', status: 'idle', message: 'Ready for brief',    tokensUsed: 0, logs: ['System initialized.'] },
+  { id: 'idea',         name: 'A02 Idea', role: 'Idea & Copywriter',  model: 'Gemini 2.0 Flash',  color: '#facc15', status: 'idle', message: 'Waiting for concept',  tokensUsed: 0, logs: ['Copy engine ready.'] },
+  { id: 'designer',     name: 'A03 Des',  role: 'UI/UX Designer',     model: 'Gemini 2.0 Flash',  color: '#f472b6', status: 'idle', message: 'Palettes ready',       tokensUsed: 0, logs: ['Design system loaded.'] },
+  { id: 'html_dev',     name: 'A04 HTML', role: 'HTML5 Dev',          model: 'Groq / Qwen-3',     color: '#22d3ee', status: 'idle', message: 'Markup ready',         tokensUsed: 0, logs: ['HTML parser ready.'] },
+  { id: 'css_dev',      name: 'A05 CSS',  role: 'CSS3 Dev',           model: 'Gemini 2.0 Flash',  color: '#c084fc', status: 'idle', message: 'CSS tokens ready',    tokensUsed: 0, logs: ['CSS3 tokens active.'] },
+  { id: 'js_dev',       name: 'A06 JS',   role: 'JavaScript Dev',     model: 'Groq / Qwen-3',     color: '#fb923c', status: 'idle', message: 'DOM scripts ready',   tokensUsed: 0, logs: ['JS runtime idle.'] },
+  { id: 'animation_dev',name: 'A07 Anim', role: 'Animation Dev',      model: 'Gemini 2.0 Flash',  color: '#a3e635', status: 'idle', message: 'Keyframes ready',     tokensUsed: 0, logs: ['Canvas engine active.'] },
+  { id: 'backend_dev',  name: 'A08 Back', role: 'Backend Dev',        model: 'Groq / Qwen-3',     color: '#4ade80', status: 'idle', message: 'Server API ready',    tokensUsed: 0, logs: ['Express router idle.'] },
+  { id: 'db_dev',       name: 'A09 DB',   role: 'Database Dev',       model: 'Gemini 2.0 Flash',  color: '#fbbf24', status: 'idle', message: 'Schema ready',        tokensUsed: 0, logs: ['SQL client active.'] },
+  { id: 'debugger_1',   name: 'A10 QA1',  role: 'Frontend QA',        model: 'Groq / Qwen-3',     color: '#f87171', status: 'idle', message: 'Linter ready',        tokensUsed: 0, logs: ['Test runner ready.'] },
+  { id: 'debugger_2',   name: 'A11 QA2',  role: 'System QA',          model: 'Gemini 2.0 Flash',  color: '#2dd4bf', status: 'idle', message: 'QA test ready',       tokensUsed: 0, logs: ['Audit suite ready.'] },
+  { id: 'docs_writer',  name: 'A12 Docs', role: 'Documentation Dev',  model: 'Groq / Qwen-3',     color: '#818cf8', status: 'idle', message: 'README ready',        tokensUsed: 0, logs: ['README builder ready.'] },
 ];
 
 const NICHE_PROMPTS: Record<string, string> = {
-  Website: 'Build a high-end dark portfolio site for a wildlife photographer named LUMEN with neon cyan highlights.',
-  App: 'Build a modern responsive habit tracking web app with streaks, dark mode, and interactive charts.',
+  Website:   'Build a high-end dark portfolio site for a wildlife photographer named LUMEN with neon cyan highlights.',
+  App:       'Build a modern responsive habit tracking web app with streaks, dark mode, and interactive charts.',
   Dashboard: 'Build an analytics SaaS dashboard with real-time KPI metrics, dark glassmorphism, and revenue tables.',
-  Game: 'Build a retro 16-bit browser arcade game with canvas scoreboards, sound effects, and particle FX.',
+  Game:      'Build a retro 16-bit browser arcade game with canvas scoreboards, sound effects, and particle FX.',
 };
 
 const NICHE_PROJECT: Record<string, string> = {
-  Website: 'LUMEN Portfolio',
-  App: 'Habit Tracker App',
-  Dashboard: 'Analytics SaaS',
-  Game: 'Retro Arcade Game',
+  Website: 'LUMEN Portfolio', App: 'Habit Tracker App', Dashboard: 'Analytics SaaS', Game: 'Retro Arcade Game',
 };
 
 export default function OrchestraInterface() {
@@ -67,6 +60,21 @@ export default function OrchestraInterface() {
   const [selectedAgent, setSelectedAgent] = useState<AgentInfo | null>(null);
   const [envelopes, setEnvelopes] = useState<FlyingEnvelope[]>([]);
   const [deployUrl, setDeployUrl] = useState<string | null>(null);
+
+  // Bridge ref: OfficeCanvas registers its ticker-dispatch callback here
+  // This lets us push status changes directly into the PixiJS engine (zero React re-render)
+  const pixiDispatch = useRef<((id: string, status: AgentStatus) => void) | null>(null);
+
+  // Called by OfficeCanvas once its internal updateAgentStateRef is ready
+  const handleCanvasReady = useCallback((dispatchFn: (id: string, status: AgentStatus) => void) => {
+    pixiDispatch.current = dispatchFn;
+  }, []);
+
+  // Push to both React state (for drawer) AND PixiJS ticker (for animation)
+  const dispatchAgentStatus = (id: string, status: AgentStatus, extra: Partial<AgentInfo> = {}) => {
+    if (pixiDispatch.current) pixiDispatch.current(id, status);
+    setAgents((prev) => prev.map((a) => a.id === id ? { ...a, status, ...extra } : a));
+  };
 
   const toggleSound = () => {
     const active = sound.toggleMute();
@@ -83,18 +91,14 @@ export default function OrchestraInterface() {
   const handleRechargeTokens = () => {
     sound.playClick();
     setTokensRemaining((t) => t + 500);
-    setAgents((prev) =>
-      prev.map((a) => (a.status === 'out_of_tokens' ? { ...a, status: 'idle', message: 'Restored & Ready' } : a))
-    );
+    agents.forEach((a) => { if (a.status === 'blocked') dispatchAgentStatus(a.id, 'idle', { message: 'Restored & Ready' }); });
   };
 
   const dispatchEnvelope = (toX: number, toY: number) => {
     sound.playDispatch();
     const envId = Date.now() + Math.random();
     setEnvelopes((prev) => [...prev, { id: envId, toX, toY }]);
-    setTimeout(() => {
-      setEnvelopes((prev) => prev.filter((e) => e.id !== envId));
-    }, 850);
+    setTimeout(() => { setEnvelopes((prev) => prev.filter((e) => e.id !== envId)); }, 850);
   };
 
   const handleGenerate = async () => {
@@ -102,9 +106,7 @@ export default function OrchestraInterface() {
 
     if (tokensRemaining <= 0) {
       sound.playError();
-      setAgents((prev) =>
-        prev.map((a) => ({ ...a, status: 'out_of_tokens', message: '🪫 Zzz...' }))
-      );
+      INITIAL_AGENTS.forEach((a) => dispatchAgentStatus(a.id, 'blocked', { message: '⛔ No tokens' }));
       return;
     }
 
@@ -113,31 +115,28 @@ export default function OrchestraInterface() {
     setDeployUrl(null);
     setTokensRemaining((t) => Math.max(0, t - 60));
 
-    // Reset agents
-    setAgents(INITIAL_AGENTS.map((a) => ({ ...a })));
+    // Reset everyone to idle in the Pixi engine
+    INITIAL_AGENTS.forEach((a) => dispatchAgentStatus(a.id, 'idle', { message: 'Ready', tokensUsed: 0 }));
 
-    // Real backend build call
     const buildReq = fetch('http://localhost:4000/api/build', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ brief: `[${selectedNiche}] ${prompt}` }),
-    })
-      .then((r) => r.json())
-      .catch(() => null);
+    }).then((r) => r.json()).catch(() => null);
 
     const stages = [
-      { id: 'pm', stage: 'PM Planning Architecture…', msg: 'Breaking down brief 💡' },
-      { id: 'idea', stage: 'Drafting Copywriting…', msg: 'Writing sitemap ✍️' },
-      { id: 'designer', stage: 'Creating UI System…', msg: 'Styling Palette 🎨' },
-      { id: 'html_dev', stage: 'Writing HTML Markup…', msg: 'index.html ready 📄' },
-      { id: 'css_dev', stage: 'Styling Responsive CSS…', msg: 'styles.css 💅' },
-      { id: 'js_dev', stage: 'Adding Interactive JS…', msg: 'script.js ⚡' },
-      { id: 'anim_dev', stage: 'Adding Micro-Animations…', msg: 'Scroll FX ✨' },
-      { id: 'backend_dev', stage: 'Building API Endpoints…', msg: 'server.js 🚀' },
-      { id: 'db_dev', stage: 'Designing SQL Schema…', msg: 'schema.sql 🗄️' },
-      { id: 'debugger_1', stage: 'Frontend QA Pass…', msg: 'Checking HTML/CSS 🔍' },
-      { id: 'debugger_2', stage: 'System Audit Pass…', msg: 'Full test suite ✓' },
-      { id: 'docs_writer', stage: 'Generating Documentation…', msg: 'README.md 📚' },
+      { id: 'pm',           stage: 'PM Planning Architecture…',   msg: 'Breaking down brief 💡' },
+      { id: 'idea',         stage: 'Drafting Copywriting…',        msg: 'Writing sitemap ✍️' },
+      { id: 'designer',     stage: 'Creating UI System…',          msg: 'Styling Palette 🎨' },
+      { id: 'html_dev',     stage: 'Writing HTML Markup…',         msg: 'index.html ready 📄' },
+      { id: 'css_dev',      stage: 'Styling Responsive CSS…',      msg: 'styles.css 💅' },
+      { id: 'js_dev',       stage: 'Adding Interactive JS…',       msg: 'script.js ⚡' },
+      { id: 'animation_dev',stage: 'Adding Micro-Animations…',     msg: 'Scroll FX ✨' },
+      { id: 'backend_dev',  stage: 'Building API Endpoints…',      msg: 'server.js 🚀' },
+      { id: 'db_dev',       stage: 'Designing SQL Schema…',        msg: 'schema.sql 🗄️' },
+      { id: 'debugger_1',   stage: 'Frontend QA Pass…',            msg: 'Checking HTML/CSS 🔍' },
+      { id: 'debugger_2',   stage: 'System Audit Pass…',           msg: 'Full test suite ✓' },
+      { id: 'docs_writer',  stage: 'Generating Documentation…',    msg: 'README.md 📚' },
     ];
 
     for (let i = 0; i < stages.length; i++) {
@@ -145,50 +144,28 @@ export default function OrchestraInterface() {
       setProcessingStage(stage);
       sound.playTyping();
 
-      setAgents((prev) =>
-        prev.map((a) => {
-          if (a.id === id) {
-            return {
-              ...a,
-              status: 'working',
-              message: msg,
-              tokensUsed: a.tokensUsed + 45,
-              logs: [...a.logs, `Executed phase: ${stage}`],
-            };
-          }
-          return a;
-        })
-      );
+      // Dispatch working → PixiJS ticker picks it up immediately (no React re-render delay)
+      dispatchAgentStatus(id, 'working', { message: msg, tokensUsed: 45 });
 
-      // Dispatch envelope to next agent
       if (i < stages.length - 1) {
-        const nextAgent = INITIAL_AGENTS.find((a) => a.id === stages[i + 1].id);
-        if (nextAgent) dispatchEnvelope(nextAgent.x, nextAgent.y);
+        const next = INITIAL_AGENTS.find((a) => a.id === stages[i + 1].id);
+        if (next) dispatchEnvelope(next.tokensUsed, 0);
       }
 
       await new Promise((r) => setTimeout(r, 450));
-
-      setAgents((prev) =>
-        prev.map((a) => (a.id === id ? { ...a, status: 'done', message: 'Done ✓' } : a))
-      );
+      dispatchAgentStatus(id, 'done', { message: 'Done ✓' });
     }
 
-    // Coffee Break phase
+    // Coffee break: half the team walks to coffee station in the Pixi engine
     setProcessingStage('All Tasks Complete! Coffee Break ☕');
     sound.playCoffee();
-    setAgents((prev) =>
-      prev.map((a, idx) =>
-        idx % 2 === 0
-          ? { ...a, status: 'coffee', message: 'Sipping espresso ☕' }
-          : { ...a, status: 'done', message: 'Verified ✓' }
-      )
-    );
-    await new Promise((r) => setTimeout(r, 1400));
+    INITIAL_AGENTS.forEach((a, i) => {
+      if (i % 2 === 0) dispatchAgentStatus(a.id, 'on_break', { message: 'Sipping espresso ☕' });
+    });
+    await new Promise((r) => setTimeout(r, 2000));
 
-    // Reset to idle
-    setAgents((prev) =>
-      prev.map((a) => ({ ...a, status: 'idle', message: 'Ready for next mission' }))
-    );
+    // Everyone back to idle
+    INITIAL_AGENTS.forEach((a) => dispatchAgentStatus(a.id, 'idle', { message: 'Ready for next mission' }));
 
     await buildReq;
     sound.playSuccess();
@@ -231,61 +208,20 @@ export default function OrchestraInterface() {
           </div>
         </header>
 
-        {/* ── 2. HD PIXEL ART OFFICE VIEWPORT ──────────────────── */}
+        {/* ── 2. PIXI GAME ENGINE VIEWPORT ────────────────────── */}
         <main className="viewport-container">
-          <div className={`pixel-room-canvas ${isDayMode ? 'day-bg' : 'night-bg'}`} />
+          {/* OfficeCanvas handles ALL agent rendering inside a single PixiJS Ticker.
+              No CSS transitions. No fractional positions. Everything is 8fps, integer-pixel. */}
+          <OfficeCanvas
+            onReady={handleCanvasReady}
+            onAgentSelect={(id) => {
+              sound.playClick();
+              const agent = agents.find((a) => a.id === id);
+              if (agent) setSelectedAgent(agent);
+            }}
+          />
 
-          {/* Ambient Day Sunlight Beam */}
-          {isDayMode && <div className="sunlight-beam" />}
 
-          {/* Animated Steam over Coffee Station */}
-          <div className="coffee-steam-emitter">
-            <span className="steam-cloud">♨️</span>
-            <span className="steam-cloud">♨️</span>
-          </div>
-
-          {/* Flying Envelopes */}
-          {envelopes.map((env) => (
-            <div
-              key={env.id}
-              className="flying-envelope-item"
-              style={{ left: `${env.toX}%`, top: `${env.toY}%` }}
-            >
-              ✉️
-            </div>
-          ))}
-
-          {/* 12 Interactive Agent Hotspots */}
-          {agents.map((agent) => {
-            const isWorking = agent.status === 'working';
-            const isCoffee = agent.status === 'coffee';
-            const isOutOfTokens = agent.status === 'out_of_tokens';
-
-            return (
-              <div
-                key={agent.id}
-                className={`agent-desk-hotspot ${agent.status}`}
-                style={{
-                  left: `${agent.x}%`,
-                  top: `${agent.y}%`,
-                }}
-                onClick={() => {
-                  sound.playClick();
-                  setSelectedAgent(agent);
-                }}
-                title={`Click to inspect ${agent.name} (${agent.role})`}
-              >
-                {/* Glowing CRT Monitor when Coding */}
-                <div className="monitor-coding-glow" />
-
-                {/* Floating Speech Bubbles */}
-                {isWorking && <div className="agent-speech-bubble typing">{agent.message}</div>}
-                {isCoffee && <div className="agent-speech-bubble coffee">{agent.message}</div>}
-                {isOutOfTokens && <div className="agent-speech-bubble out_of_tokens">{agent.message}</div>}
-                {agent.status === 'done' && <div className="agent-speech-bubble done">{agent.message}</div>}
-              </div>
-            );
-          })}
 
           {/* Dedicated Live Deployment & Download Floating Action HUD */}
           {deployUrl && (

@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LUMEN Portfolio — Built by 12BOT</title>
+  <title>Retro Arcade Game — Built by 12BOT</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Inter', sans-serif;
-      background: #070d1a;
+      background: #0a050f;
       color: #e2e8f0;
       min-height: 100vh;
       overflow-x: hidden;
@@ -18,8 +18,8 @@
     body::before {
       content: '';
       position: fixed; inset: 0;
-      background: radial-gradient(ellipse at 20% 20%, #00d4ff22 0%, transparent 60%),
-                  radial-gradient(ellipse at 80% 80%, #00d4ff11 0%, transparent 60%);
+      background: radial-gradient(ellipse at 20% 20%, #bf5fff22 0%, transparent 60%),
+                  radial-gradient(ellipse at 80% 80%, #bf5fff11 0%, transparent 60%);
       pointer-events: none; z-index: 0;
       animation: bgPulse 8s infinite alternate;
     }
@@ -31,17 +31,17 @@
       display: flex; align-items: center; justify-content: space-between;
       padding: 16px 40px;
       background: rgba(0,0,0,0.7);
-      border-bottom: 1px solid #00d4ff44;
+      border-bottom: 1px solid #bf5fff44;
       backdrop-filter: blur(12px);
       z-index: 100;
     }
-    .nav-logo { font-weight: 800; font-size: 1.2rem; color: #00d4ff; letter-spacing: 1px; }
+    .nav-logo { font-weight: 800; font-size: 1.2rem; color: #bf5fff; letter-spacing: 1px; }
     .nav-links a {
       color: #94a3b8; text-decoration: none; margin-left: 28px;
       font-size: 0.9rem; font-weight: 500;
       transition: color 0.2s;
     }
-    .nav-links a:hover { color: #00d4ff; }
+    .nav-links a:hover { color: #bf5fff; }
     .hero {
       min-height: 90vh; display: flex; flex-direction: column;
       align-items: center; justify-content: center;
@@ -51,15 +51,15 @@
     .hero-badge {
       display: inline-block; margin-bottom: 20px;
       padding: 4px 16px; border-radius: 20px;
-      border: 1px solid #00d4ff66;
-      color: #00d4ff; font-size: 0.75rem; font-weight: 600;
+      border: 1px solid #bf5fff66;
+      color: #bf5fff; font-size: 0.75rem; font-weight: 600;
       letter-spacing: 2px; text-transform: uppercase;
-      background: #00d4ff11;
+      background: #bf5fff11;
     }
     .hero h1 {
       font-size: clamp(2.5rem, 6vw, 4.5rem);
       font-weight: 800; line-height: 1.1;
-      background: linear-gradient(135deg, #ffffff 0%, #00d4ff 100%);
+      background: linear-gradient(135deg, #ffffff 0%, #bf5fff 100%);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       margin-bottom: 20px;
     }
@@ -71,19 +71,19 @@
     .btn-primary {
       padding: 14px 32px; border-radius: 8px; font-weight: 700;
       font-size: 0.95rem; cursor: pointer; border: none;
-      background: #00d4ff; color: #000;
-      box-shadow: 0 0 30px #00d4ff55;
+      background: #bf5fff; color: #000;
+      box-shadow: 0 0 30px #bf5fff55;
       transition: all 0.2s;
     }
     .btn-primary:hover { filter: brightness(1.2); transform: translateY(-2px); }
     .btn-ghost {
       padding: 14px 32px; border-radius: 8px; font-weight: 600;
       font-size: 0.95rem; cursor: pointer;
-      background: transparent; color: #00d4ff;
-      border: 1px solid #00d4ff66;
+      background: transparent; color: #bf5fff;
+      border: 1px solid #bf5fff66;
       transition: all 0.2s;
     }
-    .btn-ghost:hover { background: #00d4ff11; }
+    .btn-ghost:hover { background: #bf5fff11; }
     .cards {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 24px; padding: 60px 40px; max-width: 1200px; margin: 0 auto;
@@ -91,12 +91,12 @@
     }
     .card {
       background: rgba(255,255,255,0.03);
-      border: 1px solid #00d4ff22;
+      border: 1px solid #bf5fff22;
       border-radius: 16px; padding: 28px;
       transition: all 0.3s;
       animation: cardIn 0.6s ease both;
     }
-    .card:hover { border-color: #00d4ff66; transform: translateY(-4px); box-shadow: 0 10px 40px #00d4ff22; }
+    .card:hover { border-color: #bf5fff66; transform: translateY(-4px); box-shadow: 0 10px 40px #bf5fff22; }
     @keyframes cardIn {
       from { opacity: 0; transform: translateY(20px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -111,12 +111,12 @@
       font-size: 0.8rem; border-top: 1px solid #1e293b;
       position: relative; z-index: 1;
     }
-    footer span { color: #00d4ff; }
+    footer span { color: #bf5fff; }
   </style>
 </head>
 <body>
   <nav>
-    <div class="nav-logo">LUMEN Portfolio</div>
+    <div class="nav-logo">Retro Arcade Game</div>
     <div class="nav-links">
       <a href="#">Home</a>
       <a href="#">Work</a>
@@ -127,8 +127,8 @@
 
   <section class="hero">
     <div class="hero-badge">Built by 12BOT AI Dev Team</div>
-    <h1>LUMEN Portfolio</h1>
-    <p>Build a high-end dark portfolio site for a wildlife photographer named LUMEN with neon cyan highlights.</p>
+    <h1>Retro Arcade Game</h1>
+    <p>Build a retro 16-bit browser arcade game with canvas scoreboards, sound effects, and particle FX.</p>
     <div class="btn-group">
       <button class="btn-primary">Get Started →</button>
       <button class="btn-ghost">View Demo</button>
