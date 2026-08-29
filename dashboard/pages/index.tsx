@@ -14,8 +14,8 @@ interface AgentInfo {
   message: string;
   tokensUsed: number;
   logs: string[];
-  /** 'avatar' | 'html' | 'css' | 'js' | 'db' | 'docs' */
   iconType: string;
+  colIndex: number;
 }
 
 interface FlyingEnvelope {
@@ -31,18 +31,18 @@ interface HistoryEntry {
 
 // ─── AGENT DEFINITIONS ──────────────────────────────────────
 const INITIAL_AGENTS: AgentInfo[] = [
-  { id: 'pm',           name: 'A01-PM',     role: 'Project Manager',    model: 'Groq / Qwen-3',    color: '#38bdf8', status: 'idle', message: 'Ready for brief',   tokensUsed: 0, logs: ['System initialized.'],     iconType: 'avatar' },
-  { id: 'idea',         name: 'A02-IDEA',   role: 'Idea & Copywriter',  model: 'Gemini Flash',     color: '#facc15', status: 'idle', message: 'Waiting for concept', tokensUsed: 0, logs: ['Copy engine ready.'],      iconType: 'avatar' },
-  { id: 'designer',     name: 'A03-DESIGN', role: 'UI/UX Designer',     model: 'Gemini Flash',     color: '#f472b6', status: 'idle', message: 'Palettes ready',      tokensUsed: 0, logs: ['Design system loaded.'],   iconType: 'avatar' },
-  { id: 'html_dev',     name: 'A04-HTML',   role: 'HTML5 Dev',          model: 'Groq / Qwen-3',    color: '#22d3ee', status: 'idle', message: 'Markup ready',        tokensUsed: 0, logs: ['HTML parser ready.'],     iconType: 'html'   },
-  { id: 'css_dev',      name: 'A05-CSS',    role: 'CSS3 Dev',           model: 'Gemini Flash',     color: '#c084fc', status: 'idle', message: 'CSS tokens ready',   tokensUsed: 0, logs: ['CSS3 tokens active.'],    iconType: 'css'    },
-  { id: 'js_dev',       name: 'A06-JS',     role: 'JavaScript Dev',     model: 'Groq / Qwen-3',    color: '#fb923c', status: 'idle', message: 'DOM scripts ready',  tokensUsed: 0, logs: ['JS runtime idle.'],       iconType: 'js'     },
-  { id: 'animation_dev',name: 'A07-ANIM',   role: 'Animation Dev',      model: 'Gemini Flash',     color: '#a3e635', status: 'idle', message: 'Keyframes ready',    tokensUsed: 0, logs: ['Canvas engine active.'],  iconType: 'avatar' },
-  { id: 'backend_dev',  name: 'A08-BACKEND',role: 'Backend Dev',        model: 'Groq / Qwen-3',    color: '#4ade80', status: 'idle', message: 'Server API ready',   tokensUsed: 0, logs: ['Express router idle.'],   iconType: 'avatar' },
-  { id: 'db_dev',       name: 'A09-DB',     role: 'Database Dev',       model: 'Gemini Flash',     color: '#fbbf24', status: 'idle', message: 'Schema ready',       tokensUsed: 0, logs: ['SQL client active.'],    iconType: 'db'     },
-  { id: 'debugger_1',   name: 'A10-QA1',    role: 'Frontend QA',        model: 'Groq / Qwen-3',    color: '#f87171', status: 'idle', message: 'Linter ready',       tokensUsed: 0, logs: ['Test runner ready.'],    iconType: 'avatar' },
-  { id: 'debugger_2',   name: 'A11-QA2',    role: 'System QA',          model: 'Gemini Flash',     color: '#2dd4bf', status: 'idle', message: 'QA test ready',      tokensUsed: 0, logs: ['Audit suite ready.'],    iconType: 'avatar' },
-  { id: 'docs_writer',  name: 'A12-DOCS',   role: 'Documentation Dev',  model: 'Groq / Qwen-3',    color: '#818cf8', status: 'idle', message: 'README ready',       tokensUsed: 0, logs: ['README builder ready.'], iconType: 'docs'   },
+  { id: 'pm',           name: 'A01-PM',     role: 'Project Manager',    model: 'Groq / Qwen-3',    color: '#38bdf8', status: 'idle', message: 'Ready for brief',   tokensUsed: 0, logs: ['System initialized.'],     iconType: 'avatar', colIndex: 0 },
+  { id: 'idea',         name: 'A02-IDEA',   role: 'Idea & Copywriter',  model: 'Gemini Flash',     color: '#facc15', status: 'idle', message: 'Waiting for concept', tokensUsed: 0, logs: ['Copy engine ready.'],      iconType: 'avatar', colIndex: 1 },
+  { id: 'designer',     name: 'A03-DESIGN', role: 'UI/UX Designer',     model: 'Gemini Flash',     color: '#f472b6', status: 'idle', message: 'Palettes ready',      tokensUsed: 0, logs: ['Design system loaded.'],   iconType: 'avatar', colIndex: 2 },
+  { id: 'html_dev',     name: 'A04-HTML',   role: 'HTML5 Dev',          model: 'Groq / Qwen-3',    color: '#22d3ee', status: 'idle', message: 'Markup ready',        tokensUsed: 0, logs: ['HTML parser ready.'],     iconType: 'html',   colIndex: 3 },
+  { id: 'css_dev',      name: 'A05-CSS',    role: 'CSS3 Dev',           model: 'Gemini Flash',     color: '#c084fc', status: 'idle', message: 'CSS tokens ready',   tokensUsed: 0, logs: ['CSS3 tokens active.'],    iconType: 'css',    colIndex: 4 },
+  { id: 'js_dev',       name: 'A06-JS',     role: 'JavaScript Dev',     model: 'Groq / Qwen-3',    color: '#fb923c', status: 'idle', message: 'DOM scripts ready',  tokensUsed: 0, logs: ['JS runtime idle.'],       iconType: 'js',     colIndex: 5 },
+  { id: 'animation_dev',name: 'A07-ANIM',   role: 'Animation Dev',      model: 'Gemini Flash',     color: '#a3e635', status: 'idle', message: 'Keyframes ready',    tokensUsed: 0, logs: ['Canvas engine active.'],  iconType: 'avatar', colIndex: 6 },
+  { id: 'backend_dev',  name: 'A08-BACKEND',role: 'Backend Dev',        model: 'Groq / Qwen-3',    color: '#4ade80', status: 'idle', message: 'Server API ready',   tokensUsed: 0, logs: ['Express router idle.'],   iconType: 'avatar', colIndex: 7 },
+  { id: 'db_dev',       name: 'A09-DB',     role: 'Database Dev',       model: 'Gemini Flash',     color: '#fbbf24', status: 'idle', message: 'Schema ready',       tokensUsed: 0, logs: ['SQL client active.'],    iconType: 'db',     colIndex: 8 },
+  { id: 'debugger_1',   name: 'A10-QA1',    role: 'Frontend QA',        model: 'Groq / Qwen-3',    color: '#f87171', status: 'idle', message: 'Linter ready',       tokensUsed: 0, logs: ['Test runner ready.'],    iconType: 'avatar', colIndex: 9 },
+  { id: 'debugger_2',   name: 'A11-QA2',    role: 'System QA',          model: 'Gemini Flash',     color: '#2dd4bf', status: 'idle', message: 'QA test ready',      tokensUsed: 0, logs: ['Audit suite ready.'],    iconType: 'avatar', colIndex: 10 },
+  { id: 'docs_writer',  name: 'A12-DOCS',   role: 'Documentation Dev',  model: 'Groq / Qwen-3',    color: '#818cf8', status: 'idle', message: 'README ready',       tokensUsed: 0, logs: ['README builder ready.'], iconType: 'docs',   colIndex: 11 },
 ];
 
 const NICHE_PROMPTS: Record<string, string> = {
@@ -64,25 +64,56 @@ const PROJECT_HISTORY: HistoryEntry[] = [
 ];
 
 // ─── ICON RENDERER ──────────────────────────────────────────
-function AgentIcon({ iconType }: { iconType: string }) {
+function AgentIcon({ iconType, colIndex }: { iconType: string; colIndex: number }) {
   switch (iconType) {
-    case 'html': return <div className="tech-icon tech-html">HTML<br/><small style={{fontSize:'0.55em'}}>5</small></div>;
-    case 'css':  return <div className="tech-icon tech-css" style={{fontSize:'2rem',fontWeight:900}}>CSS<br/><small style={{fontSize:'0.55em'}}>3</small></div>;
-    case 'js':   return <div className="tech-icon tech-js">JS</div>;
-    case 'db':   return (
-      <div className="tech-icon tech-db" style={{fontSize:'2.2rem',flexDirection:'column',gap:2}}>
-        <span>🗄️</span>
-      </div>
-    );
-    case 'docs': return (
-      <div className="tech-icon tech-docs" style={{fontSize:'1.5rem',flexDirection:'column',alignItems:'center'}}>
-        <span style={{fontSize:'2rem'}}>📄</span>
-        <span style={{fontSize:'0.4rem',color:'#64748b',letterSpacing:2}}>DOCS</span>
-      </div>
-    );
-    default: return (
-      <div style={{fontSize:'2.8rem',lineHeight:1}}>🧑‍💻</div>
-    );
+    case 'html':
+      return (
+        <div className="tech-badge html-badge">
+          <span className="badge-tag">HTML</span>
+          <span className="badge-num">5</span>
+        </div>
+      );
+    case 'css':
+      return (
+        <div className="tech-badge css-badge">
+          <span className="badge-tag">CSS</span>
+          <span className="badge-num">3</span>
+        </div>
+      );
+    case 'js':
+      return (
+        <div className="tech-badge js-badge">
+          <span>JS</span>
+        </div>
+      );
+    case 'db':
+      return (
+        <div className="tech-badge db-badge">
+          <div className="db-cylinder top" />
+          <div className="db-cylinder mid" />
+          <div className="db-cylinder bot" />
+        </div>
+      );
+    case 'docs':
+      return (
+        <div className="tech-badge docs-badge">
+          <div className="doc-icon-body">
+            <span className="doc-header-text">DOCS</span>
+            <div className="doc-line" />
+            <div className="doc-line" />
+            <div className="doc-line short" />
+          </div>
+        </div>
+      );
+    default:
+      return (
+        <div
+          className="pixel-sprite-avatar"
+          style={{
+            backgroundPosition: `${(colIndex / 11) * 100}% 0%`,
+          }}
+        />
+      );
   }
 }
 
@@ -359,7 +390,7 @@ export default function OrchestraInterface() {
 
                   {/* Avatar / Tech Icon */}
                   <div className="card-avatar">
-                    <AgentIcon iconType={agent.iconType} />
+                    <AgentIcon iconType={agent.iconType} colIndex={agent.colIndex} />
                   </div>
 
                   {/* Label + status */}
@@ -376,31 +407,9 @@ export default function OrchestraInterface() {
               ))}
             </div>
 
-            {/* ── BOTTOM ROW ────────────────────────────── */}
+            {/* ── BOTTOM ROW (Mission Prompt + Configuration & Generate) ── */}
             <div className="bottom-row">
-              {/* Current Project summary */}
-              <div className="bottom-panel curr-project-panel">
-                <div className="bottom-panel-title">CURRENT PROJECT</div>
-                <div className="curr-build">
-                  Build: <span className="cv">{NICHE_PROJECT[selectedNiche]}</span>
-                </div>
-                <div className="curr-build">
-                  Niche: <span className="gv">{selectedNiche}</span>
-                </div>
-                <div className="progress-bar-wrap">
-                  <div className="progress-bar-fill" style={{ width: `${buildProgress}%` }} />
-                </div>
-                {activeAgent && (
-                  <div className="active-agent-label">
-                    Active Agent: <span>{activeAgent.toUpperCase()}</span>
-                  </div>
-                )}
-                <div className="console-log" style={{ flex: 1 }}>
-                  {consoleLogs.map((l, i) => <div key={i}>{l}</div>)}
-                </div>
-              </div>
-
-              {/* Mission Prompt */}
+              {/* Mission Prompt (Left Panel) */}
               <div className="bottom-panel mission-panel">
                 <div className="mission-panel-header">
                   <div className="bottom-panel-title">MISSION PROMPT</div>
@@ -408,31 +417,37 @@ export default function OrchestraInterface() {
                     🪄 Magic Wand
                   </button>
                 </div>
-                <div className="mission-text" style={{ flex: 1 }}>
+                <div className="mission-text">
                   <textarea
                     className="mission-prompt-input"
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
+                    placeholder="Enter your build prompt..."
                     spellCheck={false}
                   />
                 </div>
+                <div className="mission-panel-footer">
+                  <span className="prompt-hint">📎 Prompt ready for multi-agent dispatch</span>
+                  {isProcessing && <span className="processing-stage">{processingStage}</span>}
+                </div>
               </div>
 
-              {/* Configuration panel */}
+              {/* Configuration + Action (Right Panel) */}
               <div className="bottom-panel config-panel">
                 <div className="bottom-panel-title">CONFIGURATION</div>
 
                 <div className="config-row">
                   <span className="config-label">Niche</span>
-                  <div className="niche-selector" style={{ flex: 1, gap: 2 }}>
-                    {['Website', 'App', 'Dashboard', 'Game'].map((n) => (
-                      <button
-                        key={n}
-                        className={`niche-btn ${selectedNiche === n ? 'active' : ''}`}
-                        onClick={() => handleSelectNiche(n)}
-                      >{n}</button>
-                    ))}
-                  </div>
+                  <select
+                    className="config-select"
+                    value={selectedNiche}
+                    onChange={(e) => handleSelectNiche(e.target.value)}
+                  >
+                    <option value="Website">Website</option>
+                    <option value="App">App</option>
+                    <option value="Dashboard">Dashboard</option>
+                    <option value="Game">Game</option>
+                  </select>
                 </div>
 
                 <div className="config-row">
@@ -447,30 +462,29 @@ export default function OrchestraInterface() {
 
                 <div className="config-row">
                   <span className="config-label">Complexity</span>
-                  <div className="complexity-wrap" style={{ flex: 1 }}>
+                  <div className="complexity-wrap">
                     <input type="range" min={0} max={100} defaultValue={60} className="complexity-slider" />
                     <div className="complexity-labels">
-                      <span>MVP</span><span>Production</span>
+                      <span>MVP</span>
+                      <span>Production</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="token-limit-row">
+                <div className="config-row token-limit-row">
                   <span className="config-label">Token Limit</span>
                   <span className="token-limit-val">300</span>
                 </div>
 
-                {/* Generate button */}
-                <div className="generate-area">
-                  {isProcessing && <div className="processing-stage">{processingStage}</div>}
-                  <button
-                    className={`generate-btn ${isProcessing ? 'processing' : ''}`}
-                    onClick={handleGenerate}
-                    disabled={isProcessing}
-                  >
-                    {isProcessing ? '⬛ RUNNING…' : '▶ GENERATE'}
-                  </button>
-                </div>
+                {/* Prominent High-Visibility Generate Button */}
+                <button
+                  className={`generate-btn ${isProcessing ? 'processing' : ''}`}
+                  onClick={handleGenerate}
+                  disabled={isProcessing}
+                  title="Dispatch brief to all 12 agents"
+                >
+                  {isProcessing ? (processingStage ? `⬛ ${processingStage}` : '⬛ GENERATING…') : '▶ GENERATE'}
+                </button>
               </div>
             </div>
           </div>
