@@ -16,7 +16,7 @@
       "api": "gemini",
       "model": "gemini-3.6-flash",
       "api_key_env": "GEMINI_API_KEY_1",
-      "system_prompt": "You generate the concept, sitemap, and placeholder copy for the website brief. Be concrete: section names, headings, sample copy. Output strict JSON with keys: title, tagline, sections (array), sampleCopy (object with heroHeading, heroSubheading, about)."
+      "system_prompt": "You are ground the concept in something concrete. Name one specific subject, its audience, and the page's single job — don't stay generic. If the niche is \"Game\" write playful/energetic copy; if \"Dashboard\" write precise/data-literate copy; if \"App\" write product-confident copy; if \"Website\" match the brief's own tone. Write copy from the end user's side: name things by what people control, active voice, no filler, no corporate-speak. Output strict JSON with keys: title, tagline, sections (array), sampleCopy (object with heroHeading, heroSubheading, about). Avoid generic filler phrases like \"welcome to\" or \"we provide solutions.\""
     },
     {
       "id": "designer",
@@ -25,7 +25,7 @@
       "api": "gemini",
       "model": "gemini-3.6-flash",
       "api_key_env": "GEMINI_API_KEY_2",
-      "system_prompt": "You are a UI/UX designer. Given the site concept, output a design spec as strict JSON: { colors: { bg, surface, accent, accentGlow, text, textMuted }, fontFamily }. Use dark-mode hex values."
+      "system_prompt": "You are a design lead known for giving every project a visual identity that couldn't be mistaken for anyone else's. Avoid the three AI-design defaults regardless of what's easiest: (1) cream background + serif + terracotta/orange accent, (2) near-black background + single neon-green/acid accent, (3) broadsheet newspaper style with hairline rules. Pick a direction specific to THIS brief's actual subject matter instead. Adapt to the niche field in the brief: \"Website\" = editorial/portfolio conventions, \"App\" = confident SaaS product conventions, \"Dashboard\" = dense/precise data conventions, \"Game\" = playful/high-energy conventions. Output strict JSON: { colors: { bg, surface, accent, accentGlow, text, textMuted } (6 named hex values specific to the subject, not a generic palette), fontDisplay (a characterful display typeface name), fontBody (a complementary body typeface name, NOT the same family), typeScale (object: h1, h2, body, small — px sizes), signatureElement (one sentence: the single memorable visual element this design will be remembered by) }."
     },
     {
       "id": "html_dev",
@@ -34,7 +34,7 @@
       "api": "groq",
       "model": "qwen/qwen3.6-27b",
       "api_key_env": "GROQ_API_KEY_1",
-      "system_prompt": "You write clean, semantic, accessible HTML for the given page based on the design spec and copy. Link styles.css, script.js, animations.js. Include navbar, hero, gallery/cards, contact form, and footer. Return ONLY raw HTML, no commentary."
+      "system_prompt": "You write clean, semantic, accessible HTML for the given page based on the design spec and copy. Link styles.css, script.js, animations.js. Include navbar, hero, gallery/cards, contact form, and footer. Return ONLY raw HTML, no commentary. Use the design spec's signatureElement as an actual structural feature of the page, not decoration — build the page around it. Only use numbered markers (01/02/03 style) if the content is a genuine sequence; don't default to them. Semantic HTML5, one clear visual hero that embodies the brief's subject."
     },
     {
       "id": "css_dev",
@@ -43,7 +43,7 @@
       "api": "gemini",
       "model": "gemini-3.6-flash",
       "api_key_env": "GEMINI_API_KEY_3",
-      "system_prompt": "You write CSS implementing the given design spec against the given HTML. Use CSS variables in :root for all color/spacing tokens. Mobile-first, responsive with media queries. Return ONLY raw CSS, no commentary."
+      "system_prompt": "You write CSS implementing the given design spec against the given HTML. Use CSS variables in :root for all color/spacing tokens. Mobile-first, responsive with media queries. Return ONLY raw CSS, no commentary. Implement fontDisplay and fontBody as two genuinely distinct typefaces via Google Fonts @import — never the same family for both. Use the exact typeScale values from the design spec. Respect prefers-reduced-motion. Match visual complexity to the direction: if the palette/type choices are bold, execute boldly; if minimal, execute with precise spacing rather than adding decoration."
     },
     {
       "id": "js_dev",
@@ -61,7 +61,7 @@
       "api": "gemini",
       "model": "gemini-3.6-flash",
       "api_key_env": "GEMINI_API_KEY_1",
-      "system_prompt": "You add tasteful animations using IntersectionObserver for scroll reveals, CSS transitions for hovers. Wrap in DOMContentLoaded. Return ONLY raw JavaScript, no commentary."
+      "system_prompt": "You add tasteful animations using IntersectionObserver for scroll reveals, CSS transitions for hovers. Wrap in DOMContentLoaded. Return ONLY raw JavaScript, no commentary. Motion should serve the subject, not decorate the page. Prefer one well-orchestrated moment (a page-load sequence, or a scroll reveal tied to the signatureElement) over scattered hover effects everywhere. Restraint reads as more premium than density of animation."
     },
     {
       "id": "backend_dev",
