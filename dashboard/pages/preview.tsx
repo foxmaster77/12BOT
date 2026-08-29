@@ -1,18 +1,33 @@
-import type { GetServerSideProps } from 'next';
-import { generateSiteHtml } from '../lib/templates';
+import React from 'react';
+import { useRouter } from 'next/router';
+import Head from 'next/head';
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const niche = (context.query.niche as string) || 'Website';
-  const prompt = (context.query.prompt as string) || '';
-  const html = generateSiteHtml(niche, prompt);
+export default function PreviewPage() {
+  const router = useRouter();
+  const niche = (router.query.niche as string) || 'Website';
+  const prompt = (router.query.prompt as string) || '';
 
-  context.res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  context.res.write(html);
-  context.res.end();
+  const previewSrc = `/api/preview?niche=${encodeURIComponent(niche)}&prompt=${encodeURIComponent(prompt)}`;
 
-  return { props: {} };
-};
-
-export default function Preview() {
-  return null;
+  return (
+    <>
+      <Head>
+        <title>{niche} — Live Preview | 12BOT</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      </Head>
+      <iframe
+        src={previewSrc}
+        style={{
+          width: '100vw',
+          height: '100vh',
+          border: 'none',
+          margin: 0,
+          padding: 0,
+          display: 'block',
+          background: '#070b14',
+        }}
+        title="12BOT Generated Site Preview"
+      />
+    </>
+  );
 }
