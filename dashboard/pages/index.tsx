@@ -1,9 +1,13 @@
 import React, { useState, useRef, useCallback } from 'react';
 import Head from 'next/head';
+import dynamic from 'next/dynamic';
 import { sound } from '../lib/soundFx';
-import OfficeCanvas from '../components/OfficeCanvas';
 import type { AgentStatus } from '../components/OfficeCanvas';
 import { generateSiteHtml } from '../lib/templates';
+
+const OfficeCanvas = dynamic(() => import('../components/OfficeCanvas'), {
+  ssr: false,
+});
 
 interface AgentInfo {
   id: string;
