@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { sound } from '../lib/soundFx';
 import OfficeCanvas from '../components/OfficeCanvas';
 import type { AgentStatus } from '../components/OfficeCanvas';
+import { generateSiteHtml } from '../lib/templates';
 
 interface AgentInfo {
   id: string;
@@ -255,13 +256,22 @@ export default function OrchestraInterface() {
     await new Promise((r) => setTimeout(r, 2000));
 
     INITIAL_AGENTS.forEach((a) => dispatchAgentStatus(a.id, 'idle', { message: 'Ready for next mission' }));
+
+    // Generate fresh Claude/Antigravity-tier HTML5 production application
+    const generatedHtml = generateSiteHtml(selectedNiche, prompt);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('12bot_preview_html', generatedHtml);
+      localStorage.setItem('12bot_preview_niche', selectedNiche);
+      localStorage.setItem('12bot_preview_prompt', prompt);
+    }
+
     await buildReq;
     sound.playSuccess();
     setIsProcessing(false);
     setProcessingStage('');
     setActiveAgent('');
     setBuildProgress(100);
-    setDeployUrl('http://localhost:4000/preview');
+    setDeployUrl('/preview?niche=' + encodeURIComponent(selectedNiche));
   };
 
   // ── RENDER ─────────────────────────────────────────────────
