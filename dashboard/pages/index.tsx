@@ -6,7 +6,7 @@ import type { AgentStatus } from '../components/OfficeCanvas';
 
 interface AgentInfo {
   id: string;
-  name: string;
+  name: string;   // e.g. "A03-DESIGN"
   role: string;
   model: string;
   color: string;
@@ -14,6 +14,8 @@ interface AgentInfo {
   message: string;
   tokensUsed: number;
   logs: string[];
+  /** 'avatar' | 'html' | 'css' | 'js' | 'db' | 'docs' */
+  iconType: string;
 }
 
 interface FlyingEnvelope {
@@ -22,19 +24,25 @@ interface FlyingEnvelope {
   toY: number;
 }
 
+interface HistoryEntry {
+  name: string;
+  date: string;
+}
+
+// ─── AGENT DEFINITIONS ──────────────────────────────────────
 const INITIAL_AGENTS: AgentInfo[] = [
-  { id: 'pm',           name: 'A01 PM',   role: 'Project Manager',    model: 'Groq / Qwen-3',     color: '#38bdf8', status: 'idle', message: 'Ready for brief',    tokensUsed: 0, logs: ['System initialized.'] },
-  { id: 'idea',         name: 'A02 Idea', role: 'Idea & Copywriter',  model: 'Gemini 2.0 Flash',  color: '#facc15', status: 'idle', message: 'Waiting for concept',  tokensUsed: 0, logs: ['Copy engine ready.'] },
-  { id: 'designer',     name: 'A03 Des',  role: 'UI/UX Designer',     model: 'Gemini 2.0 Flash',  color: '#f472b6', status: 'idle', message: 'Palettes ready',       tokensUsed: 0, logs: ['Design system loaded.'] },
-  { id: 'html_dev',     name: 'A04 HTML', role: 'HTML5 Dev',          model: 'Groq / Qwen-3',     color: '#22d3ee', status: 'idle', message: 'Markup ready',         tokensUsed: 0, logs: ['HTML parser ready.'] },
-  { id: 'css_dev',      name: 'A05 CSS',  role: 'CSS3 Dev',           model: 'Gemini 2.0 Flash',  color: '#c084fc', status: 'idle', message: 'CSS tokens ready',    tokensUsed: 0, logs: ['CSS3 tokens active.'] },
-  { id: 'js_dev',       name: 'A06 JS',   role: 'JavaScript Dev',     model: 'Groq / Qwen-3',     color: '#fb923c', status: 'idle', message: 'DOM scripts ready',   tokensUsed: 0, logs: ['JS runtime idle.'] },
-  { id: 'animation_dev',name: 'A07 Anim', role: 'Animation Dev',      model: 'Gemini 2.0 Flash',  color: '#a3e635', status: 'idle', message: 'Keyframes ready',     tokensUsed: 0, logs: ['Canvas engine active.'] },
-  { id: 'backend_dev',  name: 'A08 Back', role: 'Backend Dev',        model: 'Groq / Qwen-3',     color: '#4ade80', status: 'idle', message: 'Server API ready',    tokensUsed: 0, logs: ['Express router idle.'] },
-  { id: 'db_dev',       name: 'A09 DB',   role: 'Database Dev',       model: 'Gemini 2.0 Flash',  color: '#fbbf24', status: 'idle', message: 'Schema ready',        tokensUsed: 0, logs: ['SQL client active.'] },
-  { id: 'debugger_1',   name: 'A10 QA1',  role: 'Frontend QA',        model: 'Groq / Qwen-3',     color: '#f87171', status: 'idle', message: 'Linter ready',        tokensUsed: 0, logs: ['Test runner ready.'] },
-  { id: 'debugger_2',   name: 'A11 QA2',  role: 'System QA',          model: 'Gemini 2.0 Flash',  color: '#2dd4bf', status: 'idle', message: 'QA test ready',       tokensUsed: 0, logs: ['Audit suite ready.'] },
-  { id: 'docs_writer',  name: 'A12 Docs', role: 'Documentation Dev',  model: 'Groq / Qwen-3',     color: '#818cf8', status: 'idle', message: 'README ready',        tokensUsed: 0, logs: ['README builder ready.'] },
+  { id: 'pm',           name: 'A01-PM',     role: 'Project Manager',    model: 'Groq / Qwen-3',    color: '#38bdf8', status: 'idle', message: 'Ready for brief',   tokensUsed: 0, logs: ['System initialized.'],     iconType: 'avatar' },
+  { id: 'idea',         name: 'A02-IDEA',   role: 'Idea & Copywriter',  model: 'Gemini Flash',     color: '#facc15', status: 'idle', message: 'Waiting for concept', tokensUsed: 0, logs: ['Copy engine ready.'],      iconType: 'avatar' },
+  { id: 'designer',     name: 'A03-DESIGN', role: 'UI/UX Designer',     model: 'Gemini Flash',     color: '#f472b6', status: 'idle', message: 'Palettes ready',      tokensUsed: 0, logs: ['Design system loaded.'],   iconType: 'avatar' },
+  { id: 'html_dev',     name: 'A04-HTML',   role: 'HTML5 Dev',          model: 'Groq / Qwen-3',    color: '#22d3ee', status: 'idle', message: 'Markup ready',        tokensUsed: 0, logs: ['HTML parser ready.'],     iconType: 'html'   },
+  { id: 'css_dev',      name: 'A05-CSS',    role: 'CSS3 Dev',           model: 'Gemini Flash',     color: '#c084fc', status: 'idle', message: 'CSS tokens ready',   tokensUsed: 0, logs: ['CSS3 tokens active.'],    iconType: 'css'    },
+  { id: 'js_dev',       name: 'A06-JS',     role: 'JavaScript Dev',     model: 'Groq / Qwen-3',    color: '#fb923c', status: 'idle', message: 'DOM scripts ready',  tokensUsed: 0, logs: ['JS runtime idle.'],       iconType: 'js'     },
+  { id: 'animation_dev',name: 'A07-ANIM',   role: 'Animation Dev',      model: 'Gemini Flash',     color: '#a3e635', status: 'idle', message: 'Keyframes ready',    tokensUsed: 0, logs: ['Canvas engine active.'],  iconType: 'avatar' },
+  { id: 'backend_dev',  name: 'A08-BACKEND',role: 'Backend Dev',        model: 'Groq / Qwen-3',    color: '#4ade80', status: 'idle', message: 'Server API ready',   tokensUsed: 0, logs: ['Express router idle.'],   iconType: 'avatar' },
+  { id: 'db_dev',       name: 'A09-DB',     role: 'Database Dev',       model: 'Gemini Flash',     color: '#fbbf24', status: 'idle', message: 'Schema ready',       tokensUsed: 0, logs: ['SQL client active.'],    iconType: 'db'     },
+  { id: 'debugger_1',   name: 'A10-QA1',    role: 'Frontend QA',        model: 'Groq / Qwen-3',    color: '#f87171', status: 'idle', message: 'Linter ready',       tokensUsed: 0, logs: ['Test runner ready.'],    iconType: 'avatar' },
+  { id: 'debugger_2',   name: 'A11-QA2',    role: 'System QA',          model: 'Gemini Flash',     color: '#2dd4bf', status: 'idle', message: 'QA test ready',      tokensUsed: 0, logs: ['Audit suite ready.'],    iconType: 'avatar' },
+  { id: 'docs_writer',  name: 'A12-DOCS',   role: 'Documentation Dev',  model: 'Groq / Qwen-3',    color: '#818cf8', status: 'idle', message: 'README ready',       tokensUsed: 0, logs: ['README builder ready.'], iconType: 'docs'   },
 ];
 
 const NICHE_PROMPTS: Record<string, string> = {
@@ -48,34 +56,84 @@ const NICHE_PROJECT: Record<string, string> = {
   Website: 'LUMEN Portfolio', App: 'Habit Tracker App', Dashboard: 'Analytics SaaS', Game: 'Retro Arcade Game',
 };
 
+const PROJECT_HISTORY: HistoryEntry[] = [
+  { name: 'Space Invaders Clone', date: 'Oct 26' },
+  { name: 'Personal Blog v1',     date: 'Oct 24' },
+  { name: 'E-commerce UI',        date: 'Oct 20' },
+  { name: 'RPG Character Sheet',  date: 'Oct 18' },
+];
+
+// ─── ICON RENDERER ──────────────────────────────────────────
+function AgentIcon({ iconType }: { iconType: string }) {
+  switch (iconType) {
+    case 'html': return <div className="tech-icon tech-html">HTML<br/><small style={{fontSize:'0.55em'}}>5</small></div>;
+    case 'css':  return <div className="tech-icon tech-css" style={{fontSize:'2rem',fontWeight:900}}>CSS<br/><small style={{fontSize:'0.55em'}}>3</small></div>;
+    case 'js':   return <div className="tech-icon tech-js">JS</div>;
+    case 'db':   return (
+      <div className="tech-icon tech-db" style={{fontSize:'2.2rem',flexDirection:'column',gap:2}}>
+        <span>🗄️</span>
+      </div>
+    );
+    case 'docs': return (
+      <div className="tech-icon tech-docs" style={{fontSize:'1.5rem',flexDirection:'column',alignItems:'center'}}>
+        <span style={{fontSize:'2rem'}}>📄</span>
+        <span style={{fontSize:'0.4rem',color:'#64748b',letterSpacing:2}}>DOCS</span>
+      </div>
+    );
+    default: return (
+      <div style={{fontSize:'2.8rem',lineHeight:1}}>🧑‍💻</div>
+    );
+  }
+}
+
+// ─── STATUS DISPLAY ─────────────────────────────────────────
+function statusLabel(s: AgentStatus): string {
+  switch (s) {
+    case 'working':   return '● WORKING';
+    case 'done':      return '● DONE';
+    case 'on_break':  return '● BREAK';
+    case 'cooldown':  return '● BREAK';
+    case 'debugging': return '● DEBUG';
+    case 'token_swap':
+    case 'token':     return '● TOKEN';
+    case 'blocked':   return '● BLOCKED';
+    default:          return '● IDLE';
+  }
+}
+
+// ─── MAIN COMPONENT ─────────────────────────────────────────
 export default function OrchestraInterface() {
-  const [isDayMode, setIsDayMode] = useState(true);
-  const [isMuted, setIsMuted] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [isDayMode, setIsDayMode]           = useState(true);
+  const [isMuted, setIsMuted]               = useState(false);
+  const [isProcessing, setIsProcessing]     = useState(false);
   const [processingStage, setProcessingStage] = useState('');
-  const [selectedNiche, setSelectedNiche] = useState('Website');
-  const [prompt, setPrompt] = useState(NICHE_PROMPTS['Website']);
-  const [tokensRemaining, setTokensRemaining] = useState(500);
-  const [agents, setAgents] = useState<AgentInfo[]>(INITIAL_AGENTS);
-  const [selectedAgent, setSelectedAgent] = useState<AgentInfo | null>(null);
-  const [envelopes, setEnvelopes] = useState<FlyingEnvelope[]>([]);
-  const [deployUrl, setDeployUrl] = useState<string | null>(null);
+  const [selectedNiche, setSelectedNiche]   = useState('Website');
+  const [prompt, setPrompt]                 = useState(NICHE_PROMPTS['Website']);
+  const [tokensRemaining, setTokensRemaining] = useState(640);
+  const [agents, setAgents]                 = useState<AgentInfo[]>(INITIAL_AGENTS);
+  const [selectedAgent, setSelectedAgent]   = useState<AgentInfo | null>(null);
+  const [envelopes, setEnvelopes]           = useState<FlyingEnvelope[]>([]);
+  const [deployUrl, setDeployUrl]           = useState<string | null>(null);
+  const [activeAgent, setActiveAgent]       = useState<string>('');
+  const [buildProgress, setBuildProgress]   = useState(0);
+  const [consoleLogs, setConsoleLogs]       = useState<string[]>([
+    '[18:35:52] Scrolling Console log...',
+    '[18:38:57] Scrolling: Console...',
+    '[18:38:58] Scrolling: cfhooling and pawinieniy...',
+  ]);
 
-  // Bridge ref: OfficeCanvas registers its ticker-dispatch callback here
-  // This lets us push status changes directly into the PixiJS engine (zero React re-render)
+  // ── PIXI bridge (animation engine — DO NOT TOUCH) ──────────
   const pixiDispatch = useRef<((id: string, status: AgentStatus) => void) | null>(null);
-
-  // Called by OfficeCanvas once its internal updateAgentStateRef is ready
-  const handleCanvasReady = useCallback((dispatchFn: (id: string, status: AgentStatus) => void) => {
-    pixiDispatch.current = dispatchFn;
+  const handleCanvasReady = useCallback((fn: (id: string, status: AgentStatus) => void) => {
+    pixiDispatch.current = fn;
   }, []);
 
-  // Push to both React state (for drawer) AND PixiJS ticker (for animation)
   const dispatchAgentStatus = (id: string, status: AgentStatus, extra: Partial<AgentInfo> = {}) => {
     if (pixiDispatch.current) pixiDispatch.current(id, status);
     setAgents((prev) => prev.map((a) => a.id === id ? { ...a, status, ...extra } : a));
   };
 
+  // ── SOUND / UI HANDLERS (DO NOT TOUCH) ─────────────────────
   const toggleSound = () => {
     const active = sound.toggleMute();
     setIsMuted(!active);
@@ -101,6 +159,7 @@ export default function OrchestraInterface() {
     setTimeout(() => { setEnvelopes((prev) => prev.filter((e) => e.id !== envId)); }, 850);
   };
 
+  // ── GENERATE PIPELINE (DO NOT TOUCH) ───────────────────────
   const handleGenerate = async () => {
     if (isProcessing) return;
 
@@ -113,9 +172,8 @@ export default function OrchestraInterface() {
     sound.playClick();
     setIsProcessing(true);
     setDeployUrl(null);
+    setBuildProgress(0);
     setTokensRemaining((t) => Math.max(0, t - 60));
-
-    // Reset everyone to idle in the Pixi engine
     INITIAL_AGENTS.forEach((a) => dispatchAgentStatus(a.id, 'idle', { message: 'Ready', tokensUsed: 0 }));
 
     const buildReq = fetch('http://localhost:4000/api/build', {
@@ -125,27 +183,29 @@ export default function OrchestraInterface() {
     }).then((r) => r.json()).catch(() => null);
 
     const stages = [
-      { id: 'pm',           stage: 'PM Planning Architecture…',   msg: 'Breaking down brief 💡' },
-      { id: 'idea',         stage: 'Drafting Copywriting…',        msg: 'Writing sitemap ✍️' },
-      { id: 'designer',     stage: 'Creating UI System…',          msg: 'Styling Palette 🎨' },
-      { id: 'html_dev',     stage: 'Writing HTML Markup…',         msg: 'index.html ready 📄' },
-      { id: 'css_dev',      stage: 'Styling Responsive CSS…',      msg: 'styles.css 💅' },
-      { id: 'js_dev',       stage: 'Adding Interactive JS…',       msg: 'script.js ⚡' },
-      { id: 'animation_dev',stage: 'Adding Micro-Animations…',     msg: 'Scroll FX ✨' },
-      { id: 'backend_dev',  stage: 'Building API Endpoints…',      msg: 'server.js 🚀' },
-      { id: 'db_dev',       stage: 'Designing SQL Schema…',        msg: 'schema.sql 🗄️' },
-      { id: 'debugger_1',   stage: 'Frontend QA Pass…',            msg: 'Checking HTML/CSS 🔍' },
-      { id: 'debugger_2',   stage: 'System Audit Pass…',           msg: 'Full test suite ✓' },
-      { id: 'docs_writer',  stage: 'Generating Documentation…',    msg: 'README.md 📚' },
+      { id: 'pm',           stage: 'PM Planning Architecture…',  msg: 'Breaking down brief 💡' },
+      { id: 'idea',         stage: 'Drafting Copywriting…',       msg: 'Writing sitemap ✍️'    },
+      { id: 'designer',     stage: 'Creating UI System…',         msg: 'Styling Palette 🎨'    },
+      { id: 'html_dev',     stage: 'Writing HTML Markup…',        msg: 'index.html ready 📄'   },
+      { id: 'css_dev',      stage: 'Styling Responsive CSS…',     msg: 'styles.css 💅'         },
+      { id: 'js_dev',       stage: 'Adding Interactive JS…',      msg: 'script.js ⚡'          },
+      { id: 'animation_dev',stage: 'Adding Micro-Animations…',    msg: 'Scroll FX ✨'          },
+      { id: 'backend_dev',  stage: 'Building API Endpoints…',     msg: 'server.js 🚀'          },
+      { id: 'db_dev',       stage: 'Designing SQL Schema…',       msg: 'schema.sql 🗄️'        },
+      { id: 'debugger_1',   stage: 'Frontend QA Pass…',           msg: 'Checking HTML/CSS 🔍'  },
+      { id: 'debugger_2',   stage: 'System Audit Pass…',          msg: 'Full test suite ✓'     },
+      { id: 'docs_writer',  stage: 'Generating Documentation…',   msg: 'README.md 📚'          },
     ];
 
     for (let i = 0; i < stages.length; i++) {
       const { id, stage, msg } = stages[i];
       setProcessingStage(stage);
+      setActiveAgent(id);
+      setBuildProgress(Math.round(((i + 1) / stages.length) * 100));
       sound.playTyping();
-
-      // Dispatch working → PixiJS ticker picks it up immediately (no React re-render delay)
       dispatchAgentStatus(id, 'working', { message: msg, tokensUsed: 45 });
+      const ts = new Date().toLocaleTimeString('en-GB', { hour12: false });
+      setConsoleLogs((prev) => [...prev.slice(-8), `[${ts}] ${stage}`]);
 
       if (i < stages.length - 1) {
         const next = INITIAL_AGENTS.find((a) => a.id === stages[i + 1].id);
@@ -156,24 +216,24 @@ export default function OrchestraInterface() {
       dispatchAgentStatus(id, 'done', { message: 'Done ✓' });
     }
 
-    // Coffee break: half the team walks to coffee station in the Pixi engine
-    setProcessingStage('All Tasks Complete! Coffee Break ☕');
+    setProcessingStage('Coffee Break ☕');
     sound.playCoffee();
     INITIAL_AGENTS.forEach((a, i) => {
       if (i % 2 === 0) dispatchAgentStatus(a.id, 'on_break', { message: 'Sipping espresso ☕' });
     });
     await new Promise((r) => setTimeout(r, 2000));
 
-    // Everyone back to idle
     INITIAL_AGENTS.forEach((a) => dispatchAgentStatus(a.id, 'idle', { message: 'Ready for next mission' }));
-
     await buildReq;
     sound.playSuccess();
     setIsProcessing(false);
     setProcessingStage('');
+    setActiveAgent('');
+    setBuildProgress(100);
     setDeployUrl('http://localhost:4000/preview');
   };
 
+  // ── RENDER ─────────────────────────────────────────────────
   return (
     <>
       <Head>
@@ -182,236 +242,298 @@ export default function OrchestraInterface() {
       </Head>
 
       <div className="orchestra-app">
-        {/* ── 1. RETRO TOP COMMAND BAR ─────────────────────────── */}
+
+        {/* ── HEADER ───────────────────────────────────────── */}
         <header className="app-header">
           <div className="header-left-cluster">
+            {/* Spinning logo circle */}
             <div className="logo-icon">
-              <span>(†!†)</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#00d4ff" strokeWidth="2">
+                <circle cx="12" cy="12" r="9"/>
+                <path d="M12 3a9 9 0 0 1 0 18" strokeLinecap="round" strokeDasharray="4 4"/>
+                <circle cx="12" cy="12" r="3" fill="#00d4ff"/>
+              </svg>
             </div>
-            <h1>Orchestra2D Generator Interface</h1>
+            <h1>Orchestra2D</h1>
           </div>
 
           <div className="header-right-cluster">
-            {/* Token Budget Meter */}
+            {/* Token pill */}
             <div className={`token-counter-pill ${tokensRemaining < 100 ? 'low' : ''}`}>
+              <span>🪙</span>
               <span className="tok-label">TOKENS:</span>
               <span className="tok-num">{tokensRemaining}</span>
-              <button className="recharge-quick-btn" onClick={handleRechargeTokens} title="Recharge +500">
-                +500
-              </button>
+              <button className="recharge-quick-btn" onClick={handleRechargeTokens} title="Recharge +500">+500</button>
             </div>
 
-            {/* Day / Night Mode Toggle */}
+            {/* Night Mode toggle */}
             <button className="theme-toggle" onClick={() => { sound.playClick(); setIsDayMode(!isDayMode); }}>
-              Toggle {isDayMode ? 'Night' : 'Day'} Mode
+              Night Mode
+              <div className="toggle-track">
+                <div className="toggle-knob" style={{ right: isDayMode ? '2px' : 'auto', left: isDayMode ? 'auto' : '2px' }} />
+              </div>
             </button>
           </div>
         </header>
 
-        {/* ── 2. PIXI GAME ENGINE VIEWPORT ────────────────────── */}
-        <main className="viewport-container">
-          {/* OfficeCanvas handles ALL agent rendering inside a single PixiJS Ticker.
-              No CSS transitions. No fractional positions. Everything is 8fps, integer-pixel. */}
+        {/* ── BODY ─────────────────────────────────────────── */}
+        <div className="app-body">
+
+          {/* ── LEFT SIDEBAR ─────────────────────────────── */}
+          <aside className="left-sidebar">
+            {/* Project History */}
+            <div className="history-panel">
+              <div className="history-panel-header">
+                <h3>PROJECT HISTORY</h3>
+                <button className="search-icon-btn" title="Search">🔍</button>
+              </div>
+              <div className="history-list">
+                {PROJECT_HISTORY.map((item, i) => (
+                  <div key={i} className="history-item">
+                    <div className="history-item-date">{item.date}</div>
+                    <div className="history-item-name">{item.name}</div>
+                    <div className="history-item-check">✓</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Current Project */}
+            <div className="current-project-panel">
+              <h3>CURRENT PROJECT</h3>
+              <div className="project-meta">
+                <span className="label">Build:</span>
+                <span className="val-cyan">{NICHE_PROJECT[selectedNiche]}</span>
+              </div>
+              <div className="project-meta">
+                <span className="label">Niche:</span>
+                <span className="val-green">{selectedNiche}</span>
+              </div>
+              {/* Progress bar */}
+              <div className="progress-bar-wrap">
+                <div className="progress-bar-fill" style={{ width: `${buildProgress}%` }} />
+              </div>
+              {activeAgent && (
+                <div className="active-agent-label">
+                  Active Agent: <span>{activeAgent.toUpperCase()}</span>
+                </div>
+              )}
+              <div className="console-log">
+                {consoleLogs.map((l, i) => <div key={i}>{l}</div>)}
+              </div>
+            </div>
+          </aside>
+
+          {/* ── MAIN CONTENT ─────────────────────────────── */}
+          <div className="main-content">
+            {/* Deploy HUD — shows when build is ready */}
+            {deployUrl && (
+              <div className="deploy-hud">
+                <a href={deployUrl} target="_blank" rel="noopener noreferrer" className="deploy-hud-btn">
+                  🌐 LIVE PREVIEW
+                </a>
+                <div className="deploy-hud-sep" />
+                <a href="http://localhost:4000/api/download" download="12bot-project.zip" className="deploy-hud-btn">
+                  ⬇️ DOWNLOAD .ZIP
+                </a>
+                <div className="deploy-hud-sep" />
+                <button className="deploy-hud-btn" onClick={() => setDeployUrl(null)}>
+                  🚀 DEPLOY
+                </button>
+              </div>
+            )}
+
+            {/* ── AGENT CARD GRID ───────────────────────── */}
+            <div className="agent-grid-area">
+              {agents.map((agent) => (
+                <div
+                  key={agent.id}
+                  className={`agent-card ${agent.status}`}
+                  onClick={() => { sound.playClick(); setSelectedAgent(agent); }}
+                  title={`${agent.name} — ${agent.role}`}
+                >
+                  {/* Checkbox top-right */}
+                  <div className={`card-checkbox ${agent.status === 'done' ? 'checked' : ''}`}>
+                    {agent.status === 'done' ? '✓' : ''}
+                  </div>
+
+                  {/* Avatar / Tech Icon */}
+                  <div className="card-avatar">
+                    <AgentIcon iconType={agent.iconType} />
+                  </div>
+
+                  {/* Label + status */}
+                  <div className="card-label">
+                    <div className="card-code">{agent.name}</div>
+                    <div className="card-status">
+                      <div className={`status-dot ${agent.status}`} />
+                      <span className={`card-status-text ${agent.status === 'working' ? 'working' : ''}`}>
+                        {agent.status === 'working' ? 'WORKING' : 'IDLE'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* ── BOTTOM ROW ────────────────────────────── */}
+            <div className="bottom-row">
+              {/* Current Project summary */}
+              <div className="bottom-panel curr-project-panel">
+                <div className="bottom-panel-title">CURRENT PROJECT</div>
+                <div className="curr-build">
+                  Build: <span className="cv">{NICHE_PROJECT[selectedNiche]}</span>
+                </div>
+                <div className="curr-build">
+                  Niche: <span className="gv">{selectedNiche}</span>
+                </div>
+                <div className="progress-bar-wrap">
+                  <div className="progress-bar-fill" style={{ width: `${buildProgress}%` }} />
+                </div>
+                {activeAgent && (
+                  <div className="active-agent-label">
+                    Active Agent: <span>{activeAgent.toUpperCase()}</span>
+                  </div>
+                )}
+                <div className="console-log" style={{ flex: 1 }}>
+                  {consoleLogs.map((l, i) => <div key={i}>{l}</div>)}
+                </div>
+              </div>
+
+              {/* Mission Prompt */}
+              <div className="bottom-panel mission-panel">
+                <div className="mission-panel-header">
+                  <div className="bottom-panel-title">MISSION PROMPT</div>
+                  <button className="magic-wand-btn" onClick={() => setPrompt(NICHE_PROMPTS[selectedNiche])}>
+                    🪄 Magic Wand
+                  </button>
+                </div>
+                <div className="mission-text" style={{ flex: 1 }}>
+                  <textarea
+                    className="mission-prompt-input"
+                    value={prompt}
+                    onChange={(e) => setPrompt(e.target.value)}
+                    spellCheck={false}
+                  />
+                </div>
+              </div>
+
+              {/* Configuration panel */}
+              <div className="bottom-panel config-panel">
+                <div className="bottom-panel-title">CONFIGURATION</div>
+
+                <div className="config-row">
+                  <span className="config-label">Niche</span>
+                  <div className="niche-selector" style={{ flex: 1, gap: 2 }}>
+                    {['Website', 'App', 'Dashboard', 'Game'].map((n) => (
+                      <button
+                        key={n}
+                        className={`niche-btn ${selectedNiche === n ? 'active' : ''}`}
+                        onClick={() => handleSelectNiche(n)}
+                      >{n}</button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="config-row">
+                  <span className="config-label">Tech Stack</span>
+                  <select className="config-select">
+                    <option>React, Tailwind, etc...</option>
+                    <option>Vanilla JS + CSS</option>
+                    <option>Next.js + TypeScript</option>
+                    <option>Vue + SCSS</option>
+                  </select>
+                </div>
+
+                <div className="config-row">
+                  <span className="config-label">Complexity</span>
+                  <div className="complexity-wrap" style={{ flex: 1 }}>
+                    <input type="range" min={0} max={100} defaultValue={60} className="complexity-slider" />
+                    <div className="complexity-labels">
+                      <span>MVP</span><span>Production</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="token-limit-row">
+                  <span className="config-label">Token Limit</span>
+                  <span className="token-limit-val">300</span>
+                </div>
+
+                {/* Generate button */}
+                <div className="generate-area">
+                  {isProcessing && <div className="processing-stage">{processingStage}</div>}
+                  <button
+                    className={`generate-btn ${isProcessing ? 'processing' : ''}`}
+                    onClick={handleGenerate}
+                    disabled={isProcessing}
+                  >
+                    {isProcessing ? '⬛ RUNNING…' : '▶ GENERATE'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ── PIXI CANVAS (hidden — drives all sprite animation) ── */}
+        <div style={{ position: 'absolute', left: '-9999px', top: '-9999px', pointerEvents: 'none', opacity: 0 }}>
           <OfficeCanvas
             onReady={handleCanvasReady}
             onAgentSelect={(id) => {
-              sound.playClick();
               const agent = agents.find((a) => a.id === id);
               if (agent) setSelectedAgent(agent);
             }}
           />
+        </div>
 
-
-
-          {/* Dedicated Live Deployment & Download Floating Action HUD */}
-          {deployUrl && (
-            <div className="live-deploy-banner">
-              <div className="deploy-badge-tag">BUILD DEPLOYED</div>
-              <a
-                href={deployUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="deploy-action-btn-preview"
-                title="Open live responsive preview in new tab"
-              >
-                🌐 LIVE PREVIEW ↗
-              </a>
-              <a
-                href="http://localhost:4000/api/download"
-                download="12bot-generated-project.zip"
-                className="deploy-action-btn-zip"
-                title="Download full source code ZIP archive"
-              >
-                📦 DOWNLOAD .ZIP
-              </a>
-              <button
-                className="banner-close-btn"
-                onClick={() => setDeployUrl(null)}
-                title="Close"
-              >
-                ✕
-              </button>
-            </div>
-          )}
-        </main>
-
-        {/* ── 3. BOTTOM SNES GAME HUD ──────────────────────────── */}
-        <footer className="control-panel">
-          {/* Section 1: Project Info */}
-          <div className="panel-section info-section">
-            <h2>Current Project</h2>
-            <div className="info-box">
-              <p>
-                <span className="label">Niche:</span> <span className="val">[{selectedNiche}]</span>
-              </p>
-              <p>
-                <span className="label">Build:</span> <span className="val">[{NICHE_PROJECT[selectedNiche]}]</span>
-              </p>
-            </div>
-          </div>
-
-          {/* Section 2: Prompt Input */}
-          <div className="panel-section prompt-section">
-            <h2>Mission Prompt</h2>
-            <textarea
-              className="prompt-input"
-              placeholder="Enter your build prompt here..."
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-            />
-          </div>
-
-          {/* Section 3: Niche Selector */}
-          <div className="panel-section niche-section">
-            <h2>Niche</h2>
-            <div className="niche-list">
-              {['Website', 'App', 'Dashboard', 'Game'].map((niche) => (
-                <div
-                  key={niche}
-                  className={`niche-item ${selectedNiche === niche ? 'active' : ''}`}
-                  onClick={() => handleSelectNiche(niche)}
-                >
-                  {niche}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Section 4: Action Generate */}
-          <div className="panel-section action-section">
-            {isProcessing && <span className="processing-text">{processingStage}</span>}
-            <button
-              className={`generate-btn ${isProcessing ? 'processing' : ''}`}
-              onClick={handleGenerate}
-              disabled={isProcessing}
-            >
-              {isProcessing ? '⬛ RUNNING…' : '▶ GENERATE'}
-            </button>
-          </div>
-        </footer>
-
-        {/* ── 4. AGENT INSPECT DRAWER ─────────────────────────── */}
+        {/* ── AGENT INSPECT DRAWER ─────────────────────────── */}
         {selectedAgent && (
           <div className="agent-drawer-backdrop" onClick={() => setSelectedAgent(null)}>
             <div className="agent-drawer" onClick={(e) => e.stopPropagation()}>
               <div className="drawer-top">
                 <h3>
-                  {selectedAgent.name}
-                  <br />
+                  {selectedAgent.name}<br />
                   <span style={{ fontSize: '0.45rem', color: selectedAgent.color }}>{selectedAgent.role}</span>
                 </h3>
-                <button className="close-btn" onClick={() => setSelectedAgent(null)}>
-                  ✕
-                </button>
+                <button className="close-btn" onClick={() => setSelectedAgent(null)}>✕</button>
               </div>
 
               <div className="agent-stats-card">
-                <div className="stat-item">
-                  <span className="k">LLM Model:</span>
-                  <span className="v">{selectedAgent.model}</span>
-                </div>
-                <div className="stat-item">
-                  <span className="k">Status:</span>
-                  <span className="v" style={{ color: selectedAgent.color }}>
-                    {selectedAgent.status.toUpperCase()}
-                  </span>
-                </div>
-                <div className="stat-item">
-                  <span className="k">Activity:</span>
-                  <span className="v">{selectedAgent.message}</span>
-                </div>
-                <div className="stat-item">
-                  <span className="k">Tokens Used:</span>
-                  <span className="v">{selectedAgent.tokensUsed} tokens</span>
-                </div>
+                <div className="stat-item"><span className="k">LLM Model:</span><span className="v">{selectedAgent.model}</span></div>
+                <div className="stat-item"><span className="k">Status:</span><span className="v" style={{ color: selectedAgent.color }}>{selectedAgent.status.toUpperCase()}</span></div>
+                <div className="stat-item"><span className="k">Activity:</span><span className="v">{selectedAgent.message}</span></div>
+                <div className="stat-item"><span className="k">Tokens Used:</span><span className="v">{selectedAgent.tokensUsed}</span></div>
               </div>
 
-              {/* Direct Agent Steer / Command */}
-              <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: '0.42rem', color: '#60a5fa', marginTop: '6px' }}>
-                DIRECT AGENT COMMAND
-              </div>
-              <div style={{ display: 'flex', gap: '6px' }}>
+              {/* Direct Agent Command */}
+              <div style={{ fontFamily: 'var(--font-main)', fontSize: '0.42rem', color: '#60a5fa', marginTop: 6 }}>DIRECT AGENT COMMAND</div>
+              <div style={{ display: 'flex', gap: 6 }}>
                 <input
                   type="text"
                   placeholder={`Command ${selectedAgent.name}...`}
-                  style={{
-                    flex: 1,
-                    background: '#02040a',
-                    border: '1px solid #1e293b',
-                    borderRadius: '4px',
-                    padding: '6px 8px',
-                    color: '#fff',
-                    fontFamily: 'Courier New',
-                    fontSize: '11px',
-                    outline: 'none',
-                  }}
+                  style={{ flex: 1, background: '#02040a', border: '1px solid #1e293b', borderRadius: 4, padding: '6px 8px', color: '#fff', fontFamily: 'Courier New', fontSize: 11, outline: 'none' }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && e.currentTarget.value.trim()) {
                       const cmd = e.currentTarget.value.trim();
                       e.currentTarget.value = '';
                       sound.playTyping();
-                      setAgents((prev) =>
-                        prev.map((a) =>
-                          a.id === selectedAgent.id
-                            ? {
-                                ...a,
-                                status: 'working',
-                                message: `Executing: "${cmd.slice(0, 20)}..."`,
-                                logs: [...a.logs, `[DIRECT COMMAND] ${cmd}`],
-                              }
-                            : a
-                        )
-                      );
+                      setAgents((prev) => prev.map((a) => a.id === selectedAgent.id ? { ...a, status: 'working', message: `Executing: "${cmd.slice(0, 20)}..."`, logs: [...a.logs, `[DIRECT COMMAND] ${cmd}`] } : a));
                       setTimeout(() => {
                         sound.playSuccess();
-                        setAgents((prev) =>
-                          prev.map((a) =>
-                            a.id === selectedAgent.id
-                              ? {
-                                  ...a,
-                                  status: 'idle',
-                                  message: 'Command executed ✓',
-                                  logs: [...a.logs, `[SUCCESS] Output compiled for "${cmd}"`],
-                                }
-                              : a
-                          )
-                        );
+                        setAgents((prev) => prev.map((a) => a.id === selectedAgent.id ? { ...a, status: 'idle', message: 'Command executed ✓', logs: [...a.logs, `[SUCCESS] Output compiled for "${cmd}"`] } : a));
                       }, 1800);
                     }
                   }}
                 />
               </div>
 
-              <div style={{ fontFamily: "'Press Start 2P', monospace", fontSize: '0.42rem', color: '#64748b', marginTop: '6px' }}>
-                LIVE OUTPUT & LOGS
-              </div>
+              <div style={{ fontFamily: 'var(--font-main)', fontSize: '0.42rem', color: '#64748b', marginTop: 6 }}>LIVE OUTPUT & LOGS</div>
               <div className="drawer-terminal">
                 <div>[SYSTEM] Agent {selectedAgent.id} online.</div>
                 <div>[ROLE] Specialization: {selectedAgent.role}</div>
                 <div>[STATUS] Current task: {selectedAgent.message}</div>
-                {selectedAgent.logs.map((log, i) => (
-                  <div key={i}>{log}</div>
-                ))}
+                {selectedAgent.logs.map((log, i) => <div key={i}>{log}</div>)}
               </div>
             </div>
           </div>
